@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Sowmya Cherukupally | Data Engineer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  background:
+    radial-gradient(800px circle at 15% 25%, rgba(56,189,248,0.35), transparent 55%),
+    radial-gradient(600px circle at 85% 75%, rgba(34,197,94,0.30), transparent 55%),
+    #020617;
+  color: #e5e7eb;
+  overflow: hidden;
+}
+
+/* 3D canvas */
+#bg {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+}
+
+/* Track */
+.track {
+  display: flex;
+  width: 600vw;
+  height: 100vh;
+  transition: transform 0.8s ease;
+}
+
+/* Scene */
+.scene {
+  width: 100vw;
+  padding: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  opacity: 0;
+  overflow-y: auto;
+  transform: translateY(60px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.scene.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Titles */
+.scene-number {
+  letter-spacing: 4px;
+  font-size: 13px;
+  color: #38bdf8;
+  margin-bottom: 12px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: .6 }
+  50% { opacity: 1 }
+  100% { opacity: .6 }
+}
+
+h1 { font-size: 52px; margin-bottom: 16px; }
+h2 { font-size: 36px; margin-bottom: 18px; }
+
+p {
+  font-size: 18px;
+  max-width: 650px;
+  line-height: 1.7;
+  color: #94a3b8;
+}
+
+/* Badges */
+.badges span {
+  display: inline-block;
+  margin: 6px;
+  padding: 8px 14px;
+  border-radius: 20px;
+  border: 1px solid #1e293b;
+}
+
+/* Cards */
+.project {
+  border: 1px solid #1e293b;
+  padding: 24px;
+  border-radius: 14px;
+  max-width: 720px;
+  margin-bottom: 20px;
+}
+
+/* Contact links */
+.contact-links a {
+  display: inline-block;
+  margin: 12px 16px 0 0;
+  padding: 12px 22px;
+  border-radius: 999px;
+  border: 1px solid #1e293b;
+  color: #94a3b8;
+  text-decoration: none;
+  transition: all .35s ease;
+}
+
+.contact-links a:hover {
+  color: #38bdf8;
+  border-color: #38bdf8;
+  box-shadow: 0 0 25px rgba(56,189,248,.4);
+}
+
+/* Buttons */
+.start-btn, .end-btn, .resume-btn {
+  margin-top: 40px;
+  width: fit-content;
+  padding: 14px 28px;
+  font-size: 14px;
+  letter-spacing: 1px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.35s ease;
+  background: transparent;
+}
+
+.start-btn, .resume-btn {
+  color: #38bdf8;
+  border: 1px solid #38bdf8;
+}
+
+.start-btn:hover,
+.resume-btn:hover {
+  background: #38bdf8;
+  color: #020617;
+  box-shadow: 0 0 30px rgba(56,189,248,0.6);
+}
+
+.end-btn {
+  color: #94a3b8;
+  border: 1px solid #1e293b;
+}
+
+.end-btn:hover {
+  color: #38bdf8;
+  border-color: #38bdf8;
+}
+
+/* Sidebar */
+.progress {
+  position: fixed;
+  left: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+}
+
+.progress::before {
+  content: "";
+  position: absolute;
+  width: 2px;
+  height: 280px;
+  background: linear-gradient(#1e293b, #38bdf8, #1e293b);
+  left: 50%;
+  z-index: -1;
+}
+
+.step {
+  width: 26px;
+  height: 26px;
+  margin: 18px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #1e293b;
+  transition: all .3s ease;
+}
+
+.step::before { content: attr(data-icon); }
+
+.step.active {
+  color: #38bdf8;
+  transform: scale(1.4);
+  text-shadow: 0 0 12px #38bdf8;
+}
+</style>
+</head>
+
+<body tabindex="0">
+<canvas id="bg"></canvas>
+
+<div class="progress">
+  <div class="step active" data-icon="◆"></div>
+  <div class="step" data-icon="⬡"></div>
+  <div class="step" data-icon="▣"></div>
+  <div class="step" data-icon="⬢"></div>
+  <div class="step" data-icon="☎"></div>
+  <div class="step" data-icon="✦"></div>
+</div>
+
+<div class="track" id="track">
+
+<section class="scene active">
+  <div class="scene-number">START</div>
+  <h1>Sowmya Cherukupally</h1>
+  <h2>Data Engineer</h2>
+  <p>
+Experienced in Python with a strong focus on scalable data pipelines, automation, and AI-driven data solutions.
+</p>
+  <button class="start-btn">▶ Start Experience</button>
+</section>
+
+<section class="scene">
+  <div class="scene-number">SKILLS</div>
+  <div class="badges">
+    <span>Snowflake</span><span>Python</span><span>SQL</span>
+    <span>PySpark</span><span>AWS</span><span>GenAI</span><span>Agentic AI(Cortex Search,Cortex Analyst)</span>
+    <span>Flask</span><span>Streamlit</span><span>REST APIs</span>
+    <span>AWS(S3, Lambda, EC2)</span><span>Dialogflow</span>
+  </div>
+</section>
+
+<section class="scene">
+  <div class="scene-number">PROJECT</div>
+  <div class="project">Automated Data Ingestion & Transformation Pipeline (Snowflake + PySpark)</div>
+  <img 
+  src="data.jpg"
+  alt="Data Pipeline Project"
+  style="width:100%; max-width:720px; border-radius:12px; margin:16px 0;"
+>
+
+    <p>
+Designed and implemented a fully automated data ingestion pipeline using Snowflake, PySpark, and Python.
+The system ingests raw files from cloud storage, applies transformation logic, enforces data quality checks,
+and loads curated datasets into analytics-ready tables following medallion architecture.
+    </p>
+    <a href="https://github.com/sowmya-ch-19/Agentic" target="_blank">View on GitHub</a>
+</section>
+
+<section class="scene">
+  <div class="scene-number">PROJECT</div>
+  <div class="project">Real Estate Comparison Tool using Vector Search</div>
+  <img 
+  src="realestate.jpg"
+  alt="Real Estate Comparison Tool"
+  style="width:100%; max-width:720px; border-radius:12px; margin:16px 0;"
+>
+
+
+    <p>
+Developed a real estate comparison tool using vector search capabilities.
+The application allows users to compare properties based on features like price, location, and amenities.
+It leverages vector embeddings for similarity matching and provides an streamlit UI for property browsing.
+    </p>
+    <a href="https://github.com/sowmya-ch-19/PropelensRealestate" target="_blank">View on GitHub</a>
+</section>
+
+<section class="scene">
+  <div class="scene-number">CONTACT</div>
+  <p>Let’s connect and discuss data engineering or AI opportunities.</p>
+
+  <div class="contact-links">
+    <a href="mailto:cherukupally.sowmya19@gmail.com">📧 Email</a>
+    <a href="tel:+917095338146">📞 Call</a>
+    <a href="https://www.linkedin.com/in/sowmya-cherukupally-a92911251" target="_blank">💼 LinkedIn</a>
+    <a href="https://github.com/sowmya-ch-19" target="_blank">🐙 GitHub</a>
+  </div>
+
+  <a class="resume-btn" href="SowmyaCherukupallyResume.pdf" target="_blank">⬇ Download Resume</a>
+</section>
+
+<section class="scene">
+  <div class="scene-number">END</div>
+  <p>Thanks for exploring my work.</p>
+  <button class="end-btn">↺ Restart Experience</button>
+</section>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
+<script>
+let index = 0;
+const track = document.getElementById("track");
+const scenes = document.querySelectorAll(".scene");
+const steps = document.querySelectorAll(".step");
+
+function update() {
+  track.style.transform = `translateX(-${index * 100}vw)`;
+  scenes.forEach((s,i)=>s.classList.toggle("active", i===index));
+  steps.forEach((s,i)=>s.classList.toggle("active", i===index));
+}
+
+window.addEventListener("keydown", e => {
+  if (e.key === "ArrowRight" && index < 5) index++;
+  if (e.key === "ArrowLeft" && index > 0) index--;
+  update();
+});
+
+steps.forEach((step, i) => step.onclick = () => { index=i; update(); });
+
+document.querySelector(".start-btn").onclick = () => { index=1; update(); };
+document.querySelector(".end-btn").onclick = () => { index=0; update(); };
+
+const scene3D = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, .1, 1000);
+camera.position.z = 30;
+
+const renderer = new THREE.WebGLRenderer({ canvas: bg, alpha: true });
+renderer.setSize(innerWidth, innerHeight);
+
+const mesh = new THREE.Mesh(
+  new THREE.IcosahedronGeometry(4,1),
+  new THREE.MeshStandardMaterial({ wireframe:true, color:0x38bdf8 })
+);
+scene3D.add(mesh);
+scene3D.add(new THREE.AmbientLight(0xffffff, .6));
+
+function animate(){
+  requestAnimationFrame(animate);
+  mesh.rotation.y += .003;
+  renderer.render(scene3D, camera);
+}
+animate();
+</script>
+
+</body>
+</html>
