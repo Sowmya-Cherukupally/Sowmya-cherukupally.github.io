@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dice Portfolio</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #020617;
+  font-family: Arial, sans-serif;
+  color: #e5e7eb;
+}
+
+.panel {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 320px;
+  padding: 16px;
+  background: rgba(2,6,23,0.92);
+  border-radius: 14px;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+#leftPanel { left: 20px; }
+#rightPanel { right: 20px; }
+
+.panel.show { opacity: 1; }
+
+#hint {
+  position: fixed;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 13px;
+  opacity: 0.6;
+}
+
+canvas { display: block; }
+</style>
+</head>
+
+<body>
+
+<div id="leftPanel" class="panel">
+  <h3>Contact</h3>
+  <p>📞 +917095338146</p>
+  <p>
+    <a href="SowmyaCherukupallyResume.pdf" target="_blank">Resume</a><br>
+    <a href="https://github.com/Sowmya-Cherukupally" target="_blank">GitHub</a>
+  </p>
+</div>
+
+<div id="rightPanel" class="panel">
+  <h3>Projects</h3>
+  <p><strong>Automated Data Ingestion</strong></p>
+  <p>Snowflake + PySpark pipeline</p>
+</div>
+
+<div id="hint">← Dice LEFT = Contact | Dice RIGHT = Projects →</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+
+<script>
+window.onload = () => {
+
+  const leftPanel = document.getElementById("leftPanel");
+  const rightPanel = document.getElementById("rightPanel");
+
+  // SCENE
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x020617);
+
+  // CAMERA
+  const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 100);
+  camera.position.set(0, 4, 10);
+  camera.lookAt(0, 1.2, 0);
+
+  // RENDERER
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(innerWidth, innerHeight);
+  document.body.appendChild(renderer.domElement);
+
+  // LIGHT
+  scene.add(new THREE.AmbientLight(0xffffff, 1.2));
+  const sun = new THREE.DirectionalLight(0xffffff, 1.5);
+  sun.position.set(5, 10, 5);
+  scene.add(sun);
+
+  // GRID (FORCED VISIBLE)
+  scene.add(new THREE.GridHelper(50, 50, 0x38bdf8, 0x1e40af));
+
+  // 🎲 DICE (FORCED VISIBLE)
+  const dice = new THREE.Mesh(
+    new THREE.BoxGeometry(2.5, 2.5, 2.5),
+    new THREE.MeshStandardMaterial({ color: 0x22c55e })
+  );
+  dice.position.y = 1.25;
+  scene.add(dice);
+
+  let velocity = 0.08; // auto move to prove it works
+
+  function animate() {
+    requestAnimationFrame(animate);
+
+    // MOVE DICE
+    dice.position.x += velocity;
+    dice.rotation.z -= velocity * 2;
+
+    // BOUNCE
+    if (dice.position.x > 4 || dice.position.x < -4) {
+      velocity *= -1;
+    }
+
+    // PANELS
+    if (dice.position.x > 2) {
+      rightPanel.classList.add("show");
+      leftPanel.classList.remove("show");
+    } else if (dice.position.x < -2) {
+      leftPanel.classList.add("show");
+      rightPanel.classList.remove("show");
+    } else {
+      leftPanel.classList.remove("show");
+      rightPanel.classList.remove("show");
+    }
+
+    renderer.render(scene, camera);
+  }
+
+  animate();
+};
+</script>
+
+</body>
+</html>
