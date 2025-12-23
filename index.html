@@ -128,11 +128,10 @@ canvas { display: block; }
 <div id="hint">← Swipe / A for Contact • Swipe / D for Projects →</div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
 
 <script>
 let scene, camera, renderer;
-let dice, model = null, path;
+let dice, path, glow;
 let t = 0.5, targetT = 0.5;
 let bounce = 0;
 
@@ -152,10 +151,10 @@ window.addEventListener("load", () => {
 function init() {
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0x020617);
+  scene.fog = new THREE.Fog(0x020617, 12, 28);
 
   camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 100);
   camera.position.set(0, 4, 10);
-  camera.lookAt(0, 1.2, 0);
 
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(innerWidth, innerHeight);
@@ -163,8 +162,8 @@ function init() {
   document.body.appendChild(renderer.domElement);
 
   // LIGHTS
-  scene.add(new THREE.AmbientLight(0xffffff, 1.2));
-  const dir = new THREE.DirectionalLight(0xffffff, 1.5);
+  scene.add(new THREE.AmbientLight(0xffffff, 1.1));
+  const dir = new THREE.DirectionalLight(0xffffff, 1.4);
   dir.position.set(5, 10, 5);
   scene.add(dir);
 
@@ -174,7 +173,7 @@ function init() {
   // PATH
   path = new THREE.CatmullRomCurve3([
     new THREE.Vector3(-6, 1.1, 0),
-    new THREE.Vector3(0, 1.5, -1.2),
+    new THREE.Vector3(0, 1.6, -1.4),
     new THREE.Vector3(6, 1.1, 0)
   ]);
   const pts = path.getPoints(80);
@@ -183,28 +182,28 @@ function init() {
     new THREE.LineBasicMaterial({ color: 0x38bdf8 })
   ));
 
-  // FALLBACK CUBE (ALWAYS RENDERS)
+  // DICE
   dice = new THREE.Mesh(
     new THREE.BoxGeometry(2.2, 2.2, 2.2),
-    new THREE.MeshStandardMaterial({ color: 0x22c55e })
+    new THREE.MeshStandardMaterial({
+      color: 0x22c55e,
+      roughness: 0.35,
+      metalness: 0.15
+    })
   );
   scene.add(dice);
 
-  // LOAD model.glb SAFELY
-  const loader = new THREE.GLTFLoader();
-  loader.load(
-    "model.glb",
-    gltf => {
-      model = gltf.scene;
-      model.scale.set(1.4, 1.4, 1.4);
-      scene.add(model);
-      scene.remove(dice); // remove cube ONLY after model exists
-    },
-    undefined,
-    err => {
-      console.warn("model.glb failed – using cube", err);
-    }
+  // GLOW
+  glow = new THREE.Mesh(
+    new THREE.CircleGeometry(2.4, 32),
+    new THREE.MeshBasicMaterial({
+      color: 0x38bdf8,
+      transparent: true,
+      opacity: 0.18
+    })
   );
+  glow.rotation.x = -Math.PI / 2;
+  scene.add(glow);
 
   // AUDIO
   listener = new THREE.AudioListener();
@@ -245,17 +244,14 @@ function init() {
 function animate() {
   requestAnimationFrame(animate);
 
-  // SNAP
   t += (targetT - t) * 0.08;
-
-  // BOUNCE
   bounce += Math.abs(targetT - t) * 0.15;
-  const y = Math.sin(bounce) * 0.15;
 
+  const y = Math.sin(bounce) * 0.15;
   const p = path.getPoint(t);
-  const active = model || dice;
-  active.position.set(p.x, p.y + y, p.z);
-  active.rotation.z -= (targetT - t) * 2;
+
+  dice.position.set(p.x, p.y + y, p.z);
+  glow.position.set(p.x, 0.01, p.z);
 
   // PANELS
   if (t < 0.25) {
@@ -285,6 +281,7 @@ function onResize() {
   renderer.setSize(innerWidth, innerHeight);
 }
 </script>
+
 
 
 </body>
