@@ -2,226 +2,104 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Sowmya Cherukupally | Interactive Portfolio</title>
+<title>3D Test</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 <style>
 html, body {
   margin: 0;
   padding: 0;
+  width: 100%;
   height: 100%;
   overflow: hidden;
-  font-family: Inter, sans-serif;
   background: #020617;
 }
 
-/* START SCREEN */
-#startScreen {
+/* Start Screen */
+#start {
   position: fixed;
   inset: 0;
-  background: radial-gradient(circle at center, #0f172a, #020617);
   display: flex;
   align-items: center;
   justify-content: center;
+  background: radial-gradient(circle, #0f172a, #020617);
   z-index: 10;
 }
 
-#startBtn {
-  padding: 18px 44px;
-  font-size: 18px;
+#start button {
+  padding: 16px 36px;
   border-radius: 40px;
   border: none;
+  font-size: 18px;
   cursor: pointer;
   background: linear-gradient(135deg, #38bdf8, #22c55e);
   font-weight: 700;
-}
-
-/* HUD */
-#hud {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  color: #e5e7eb;
-  font-size: 13px;
-  opacity: 0.7;
-  z-index: 5;
-}
-
-#soundToggle {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  cursor: pointer;
-  font-size: 18px;
-  z-index: 5;
-  color: #e5e7eb;
-}
-
-canvas {
-  display: block;
 }
 </style>
 </head>
 
 <body>
 
-<!-- START -->
-<div id="startScreen">
-  <button id="startBtn">Start Experience</button>
+<div id="start">
+  <button id="btn">Start Experience</button>
 </div>
 
-<div id="hud">Interactive 3D Portfolio • W A S D / Mouse / Touch</div>
-<div id="soundToggle">🔊</div>
-
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
 
 <script>
 let scene, camera, renderer;
-let model = null;
-let listener, sound;
-let soundEnabled = true;
-let mouseX = 0, mouseY = 0;
-let keys = {};
 
-document.getElementById("startBtn").onclick = () => {
-  document.getElementById("startScreen").style.display = "none";
-  initScene();
+document.getElementById("btn").onclick = () => {
+  document.getElementById("start").style.display = "none";
+  init();
 };
 
-/* ---------- MAIN SCENE ---------- */
-function initScene() {
+function init() {
 
-  /* SCENE */
+  // Scene
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0x0f172a);
 
-  /* CAMERA */
-  camera = new THREE.PerspectiveCamera(65, innerWidth / innerHeight, 0.1, 200);
-  camera.position.set(0, 4, 10);
+  // Camera
+  camera = new THREE.PerspectiveCamera(
+    60,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    100
+  );
+  camera.position.set(0, 3, 8);
 
-  /* RENDERER */
+  // Renderer
   renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setSize(innerWidth, innerHeight);
-  renderer.setPixelRatio(devicePixelRatio);
+  renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
-  /* LIGHTING (STRONG & VISIBLE) */
-  scene.add(new THREE.AmbientLight(0xffffff, 1.2));
-  const sun = new THREE.DirectionalLight(0xffffff, 2);
-  sun.position.set(10, 15, 10);
-  scene.add(sun);
+  // Light
+  scene.add(new THREE.AmbientLight(0xffffff, 1));
+  const light = new THREE.DirectionalLight(0xffffff, 1);
+  light.position.set(5, 10, 5);
+  scene.add(light);
 
-  /* GROUND GRID (GAME WORLD FEEL) */
-  const grid = new THREE.GridHelper(80, 80, 0x38bdf8, 0x1e40af);
+  // Grid (VERY VISIBLE)
+  const grid = new THREE.GridHelper(50, 50, 0x38bdf8, 0x1e40af);
   scene.add(grid);
 
-  /* FALLBACK OBJECT (ALWAYS VISIBLE) */
-  const fallbackCube = new THREE.Mesh(
+  // Cube (VERY VISIBLE)
+  const cube = new THREE.Mesh(
     new THREE.BoxGeometry(2, 2, 2),
-    new THREE.MeshStandardMaterial({
-      color: 0x22c55e,
-      metalness: 0.6,
-      roughness: 0.3
-    })
+    new THREE.MeshStandardMaterial({ color: 0x22c55e })
   );
-  fallbackCube.position.y = 1;
-  scene.add(fallbackCube);
+  cube.position.y = 1;
+  scene.add(cube);
 
-  /* FLOATING OBJECTS */
-  for (let i = 0; i < 25; i++) {
-    const c = new THREE.Mesh(
-      new THREE.BoxGeometry(0.6, 0.6, 0.6),
-      new THREE.MeshStandardMaterial({ color: 0x38bdf8 })
-    );
-    c.position.set(
-      (Math.random() - 0.5) * 25,
-      Math.random() * 5 + 1,
-      (Math.random() - 0.5) * 25
-    );
-    scene.add(c);
-  }
-
-  /* AUDIO (SAFE – WILL NOT BREAK SCENE) */
-  listener = new THREE.AudioListener();
-  camera.add(listener);
-  sound = new THREE.PositionalAudio(listener);
-
-  const audioLoader = new THREE.AudioLoader();
-  audioLoader.load(
-    "ambient.mp3",
-    buffer => {
-      sound.setBuffer(buffer);
-      sound.setLoop(true);
-      sound.setVolume(0.4);
-      sound.setRefDistance(6);
-      sound.play();
-    },
-    undefined,
-    () => console.warn("Audio not found (safe to ignore)")
-  );
-
-  /* LOAD MODEL SAFELY */
-  const loader = new THREE.GLTFLoader();
-  loader.load(
-    "model.glb",
-    gltf => {
-      model = gltf.scene;
-      model.scale.set(1.4, 1.4, 1.4);
-      model.position.y = 1;
-      model.add(sound);
-      scene.add(model);
-      scene.remove(fallbackCube);
-    },
-    undefined,
-    () => console.warn("Model not found – using fallback cube")
-  );
-
-  /* INPUT */
-  window.onkeydown = e => keys[e.key.toLowerCase()] = true;
-  window.onkeyup = e => keys[e.key.toLowerCase()] = false;
-
-  window.onmousemove = e => {
-    mouseX = (e.clientX / innerWidth - 0.5) * 2;
-    mouseY = (e.clientY / innerHeight - 0.5) * 2;
-  };
-
-  window.onresize = onResize;
-
-  animate(fallbackCube);
+  animate(cube);
 }
 
-/* ---------- ANIMATION LOOP ---------- */
-function animate(fallback) {
-  requestAnimationFrame(() => animate(fallback));
-
-  if (keys.w) camera.position.z -= 0.12;
-  if (keys.s) camera.position.z += 0.12;
-  if (keys.a) camera.position.x -= 0.12;
-  if (keys.d) camera.position.x += 0.12;
-
-  if (model) model.rotation.y += 0.01;
-  else fallback.rotation.y += 0.01;
-
-  camera.position.x += (mouseX - camera.position.x) * 0.05;
-  camera.lookAt(0, 1.2, 0);
-
+function animate(cube) {
+  requestAnimationFrame(() => animate(cube));
+  cube.rotation.y += 0.01;
   renderer.render(scene, camera);
 }
-
-/* ---------- RESIZE ---------- */
-function onResize() {
-  camera.aspect = innerWidth / innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth, innerHeight);
-}
-
-/* ---------- SOUND TOGGLE ---------- */
-document.getElementById("soundToggle").onclick = () => {
-  soundEnabled = !soundEnabled;
-  if (sound) sound.setVolume(soundEnabled ? 0.4 : 0);
-  document.getElementById("soundToggle").innerText = soundEnabled ? "🔊" : "🔇";
-};
 </script>
 
 </body>
