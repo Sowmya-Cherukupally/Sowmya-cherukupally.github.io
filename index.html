@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Sowmya Cherukupally | Game Portfolio</title>
+<title>Dice Path Test</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -11,140 +11,40 @@ html, body {
   height: 100%;
   overflow: hidden;
   background: #020617;
-  font-family: Arial, sans-serif;
-  color: #e5e7eb;
 }
-
 canvas { display: block; }
-
-/* PANELS */
-.panel {
-  position: fixed;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 360px;
-  padding: 18px;
-  background: rgba(2,6,23,0.95);
-  border-radius: 16px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.35s ease;
-}
-
-.panel.show {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-#leftPanel { left: 20px; }
-#rightPanel { right: 20px; }
-
-.panel img {
-  width: 100%;
-  border-radius: 12px;
-  margin-bottom: 10px;
-}
-
-.skills {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.skill {
-  background: #020617;
-  border: 1px solid #1e40af;
-  border-radius: 10px;
-  padding: 8px;
-  text-align: center;
-  font-size: 12px;
-  color: #38bdf8;
-}
-
 #hint {
   position: fixed;
-  bottom: 14px;
+  bottom: 16px;
   left: 50%;
   transform: translateX(-50%);
+  color: #94a3b8;
+  font-family: Arial;
   font-size: 13px;
-  opacity: 0.6;
-  text-align: center;
-}
-
-#soundToggle {
-  position: fixed;
-  top: 16px;
-  right: 16px;
-  cursor: pointer;
-  font-size: 18px;
 }
 </style>
 </head>
 
 <body>
-
-<div id="soundToggle">🔊</div>
-
-<!-- LEFT -->
-<div id="leftPanel" class="panel">
-  <h2>Contact</h2>
-  <p>📞 +917095338146</p>
-  <p>
-    <a href="https://www.linkedin.com/in/sowmya-cherukupally-a92911251" target="_blank">LinkedIn</a><br>
-    <a href="https://github.com/Sowmya-Cherukupally" target="_blank">GitHub</a><br>
-    <a href="SowmyaCherukupallyResume.pdf" target="_blank">Resume</a>
-  </p>
-</div>
-
-<!-- RIGHT -->
-<div id="rightPanel" class="panel">
-  <h2>Projects</h2>
-
-  <img src="data.jpg">
-  <strong>Automated Data Ingestion & Transformation</strong>
-  <p>Snowflake + PySpark pipeline with medallion architecture.</p>
-
-  <hr style="opacity:0.2;margin:12px 0">
-
-  <img src="realestate.jpg">
-  <strong>Real Estate Comparison Tool</strong>
-  <p>Vector-search based property comparison.</p>
-
-  <h3 style="margin-top:14px">Skills</h3>
-  <div class="skills">
-    <div class="skill">Python</div>
-    <div class="skill">Snowflake</div>
-    <div class="skill">PySpark</div>
-    <div class="skill">SQL</div>
-    <div class="skill">DBT</div>
-    <div class="skill">Vector DB</div>
-  </div>
-</div>
-
-<div id="hint">← Swipe / A for Contact • Swipe / D for Projects →</div>
+<div id="hint">Swipe / A / D to move dice on path</div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
 
 <script>
 let scene, camera, renderer;
-let dice, path, pathLine;
-let t = 0.5, targetT = 0.5;
-let bounce = 0, audioStarted = false;
-let sound, listener;
+let dice, path;
+let t = 0.5;
+let targetT = 0.5;
+let bounce = 0;
 
-// UI
-const leftPanel = document.getElementById("leftPanel");
-const rightPanel = document.getElementById("rightPanel");
-
-window.onload = init;
+init();
+animate();
 
 function init() {
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0x020617);
 
-  camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 100);
+  camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 100);
   camera.position.set(0, 4, 10);
   camera.lookAt(0, 1.2, 0);
 
@@ -153,60 +53,45 @@ function init() {
   renderer.setPixelRatio(devicePixelRatio);
   document.body.appendChild(renderer.domElement);
 
+  // LIGHT
   scene.add(new THREE.AmbientLight(0xffffff, 1.2));
-  const light = new THREE.DirectionalLight(0xffffff, 1.5);
-  light.position.set(5,10,5);
-  scene.add(light);
+  const dir = new THREE.DirectionalLight(0xffffff, 1.5);
+  dir.position.set(5, 10, 5);
+  scene.add(dir);
+
+  // GRID
+  scene.add(new THREE.GridHelper(50, 50, 0x38bdf8, 0x1e40af));
 
   // PATH
   path = new THREE.CatmullRomCurve3([
     new THREE.Vector3(-6, 1.1, 0),
-    new THREE.Vector3(0, 1.4, -1.2),
+    new THREE.Vector3(0, 1.5, -1.2),
     new THREE.Vector3(6, 1.1, 0)
   ]);
 
-  const points = path.getPoints(50);
+  const points = path.getPoints(80);
   const geo = new THREE.BufferGeometry().setFromPoints(points);
   const mat = new THREE.LineBasicMaterial({ color: 0x38bdf8 });
-  pathLine = new THREE.Line(geo, mat);
-  scene.add(pathLine);
+  const line = new THREE.Line(geo, mat);
+  scene.add(line);
 
   // DICE
   dice = new THREE.Mesh(
-    new THREE.BoxGeometry(2.2,2.2,2.2),
+    new THREE.BoxGeometry(2.2, 2.2, 2.2),
     new THREE.MeshStandardMaterial({ color: 0x22c55e })
   );
   scene.add(dice);
-
-  new THREE.GLTFLoader().load("model.glb", g => {
-    scene.remove(dice);
-    dice = g.scene;
-    dice.scale.set(1.4,1.4,1.4);
-    scene.add(dice);
-  });
-
-  // AUDIO
-  listener = new THREE.AudioListener();
-  camera.add(listener);
-  sound = new THREE.Audio(listener);
-  new THREE.AudioLoader().load("ambient.mp3", buffer => {
-    sound.setBuffer(buffer);
-    sound.setLoop(true);
-    sound.setVolume(0.3);
-  });
 
   // INPUT
   window.addEventListener("keydown", e => {
     if (e.key === "a" || e.key === "ArrowLeft") targetT = 0;
     if (e.key === "d" || e.key === "ArrowRight") targetT = 1;
     if (e.key === " ") targetT = 0.5;
-    startAudio();
   });
 
   let touchStartX = 0;
   window.addEventListener("touchstart", e => {
     touchStartX = e.touches[0].clientX;
-    startAudio();
   });
 
   window.addEventListener("touchend", e => {
@@ -215,50 +100,29 @@ function init() {
     else targetT = dx < 0 ? 0 : 1;
   });
 
-  document.getElementById("soundToggle").onclick = () => {
-    sound.setVolume(sound.getVolume() > 0 ? 0 : 0.3);
-  };
-
-  animate();
+  window.addEventListener("resize", () => {
+    camera.aspect = innerWidth / innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight);
+  });
 }
 
 function animate() {
   requestAnimationFrame(animate);
 
-  // SNAP easing
+  // SNAP
   t += (targetT - t) * 0.08;
 
-  // Bounce
-  bounce += Math.abs(targetT - t) * 0.1;
-  const yOffset = Math.sin(bounce) * 0.15;
+  // BOUNCE
+  bounce += Math.abs(targetT - t) * 0.15;
+  const y = Math.sin(bounce) * 0.15;
 
-  const pos = path.getPoint(t);
-  dice.position.set(pos.x, pos.y + yOffset, pos.z);
-
+  const p = path.getPoint(t);
+  dice.position.set(p.x, p.y + y, p.z);
   dice.rotation.z -= (targetT - t) * 2;
-
-  // PANELS
-  if (t < 0.25) {
-    leftPanel.classList.add("show");
-    rightPanel.classList.remove("show");
-  } else if (t > 0.75) {
-    rightPanel.classList.add("show");
-    leftPanel.classList.remove("show");
-  } else {
-    leftPanel.classList.remove("show");
-    rightPanel.classList.remove("show");
-  }
 
   renderer.render(scene, camera);
 }
-
-function startAudio() {
-  if (!audioStarted && sound.buffer) {
-    sound.play();
-    audioStarted = true;
-  }
-}
 </script>
-
 </body>
 </html>
