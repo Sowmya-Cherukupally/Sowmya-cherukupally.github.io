@@ -83,68 +83,20 @@ canvas{display:block}
 
 <body>
 
-<div id="hint">Swipe / A / D → move dice</div>
+<div id="hint">
+  Move dice → CONTACT → RESUME → SKILLS → PROJECTS
+</div>
 
 <!-- LEFT PANEL -->
 <div id="leftPanel" class="panel">
-  <h2>Contact</h2>
-  <p>📞 +917095338146</p>
-  <p>📧 cherukupally.sowmya19@gmail.com</p>
-  <p>
-    <a href="https://www.linkedin.com/in/sowmya-cherukupally-a92911251" target="_blank">LinkedIn</a><br>
-    <a href="https://github.com/Sowmya-Cherukupally" target="_blank">GitHub</a><br>
-    <a href="SowmyaCherukupallyResume.pdf" target="_blank">Resume</a>
-  </p>
+  <h2 id="leftTitle">CONTACT</h2>
+  <div id="leftContent"></div>
 </div>
 
 <!-- RIGHT PANEL -->
 <div id="rightPanel" class="panel">
-  <h2>Projects</h2>
-
-  <!-- SUMMARY -->
-  <p style="font-size:14px;line-height:1.6;opacity:0.85">
-    Data Engineer with hands-on experience in building automated data pipelines,
-    analytics-ready datasets, and scalable ingestion frameworks using
-    <strong>Python, PySpark, SQL, and Snowflake</strong>.
-  </p>
-
-  <hr style="opacity:0.2;margin:12px 0">
-
-  <!-- PROJECT 1 -->
-  <img src="data.jpg">
-  <strong>Automated Data Ingestion & Transformation</strong>
-  <p>
-    Designed and implemented a fully automated ingestion pipeline using Snowflake,
-    PySpark, and Python with medallion architecture and data quality checks.
-  </p>
-  <a href="https://github.com/sowmya-ch-19/Agentic" target="_blank">GitHub →</a>
-
-  <hr style="opacity:0.2;margin:14px 0">
-
-  <!-- PROJECT 2 -->
-  <img src="realestate.jpg">
-  <strong>Real Estate Comparison Tool</strong>
-  <p>
-    Built a real estate comparison tool using vector embeddings and similarity search,
-    enabling feature-based property comparison with a Streamlit UI.
-  </p>
-  <a href="https://github.com/sowmya-ch-19/PropelensRealestate" target="_blank">GitHub →</a>
-
-  <hr style="opacity:0.2;margin:14px 0">
-
-  <!-- SKILLS -->
-  <h3>Skills</h3>
-  <div class="skills">
-    <div class="skill">Python</div>
-    <div class="skill">Snowflake</div>
-    <div class="skill">PySpark</div>
-    <div class="skill">SQL</div>
-    <div class="skill">DBT</div>
-    <div class="skill">Data Pipelines</div>
-    <div class="skill">Vector Search</div>
-    <div class="skill">Streamlit</div>
-    <div class="skill">Git</div>
-  </div>
+  <h2 id="rightTitle">SKILLS</h2>
+  <div id="rightContent"></div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
@@ -155,13 +107,17 @@ let t=0.5,targetT=0.5,bounce=0;
 
 const leftPanel=document.getElementById("leftPanel");
 const rightPanel=document.getElementById("rightPanel");
+const leftTitle=document.getElementById("leftTitle");
+const leftContent=document.getElementById("leftContent");
+const rightTitle=document.getElementById("rightTitle");
+const rightContent=document.getElementById("rightContent");
 
 window.onload=()=>{
   scene=new THREE.Scene();
   scene.background=new THREE.Color(0x020617);
 
   camera=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,0.1,100);
-  camera.position.set(0,4,10);
+  camera.position.set(0,4,12); // ⬅️ dice feels further
 
   renderer=new THREE.WebGLRenderer({antialias:true});
   renderer.setSize(innerWidth,innerHeight);
@@ -173,15 +129,18 @@ window.onload=()=>{
   d.position.set(5,10,5);
   scene.add(d);
 
-  scene.add(new THREE.GridHelper(50,50,0x38bdf8,0x1e40af));
+  scene.add(new THREE.GridHelper(60,60,0x38bdf8,0x1e40af));
 
+  // LONGER PATH
   path=new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-6,1.1,0),
-    new THREE.Vector3(0,1.6,-1.2),
-    new THREE.Vector3(6,1.1,0)
+    new THREE.Vector3(-8,1.1,0),
+    new THREE.Vector3(-3,1.6,-1.2),
+    new THREE.Vector3(0,1.8,-1.8),
+    new THREE.Vector3(3,1.6,-1.2),
+    new THREE.Vector3(8,1.1,0)
   ]);
 
-  const pts=path.getPoints(80);
+  const pts=path.getPoints(100);
   scene.add(new THREE.Line(
     new THREE.BufferGeometry().setFromPoints(pts),
     new THREE.LineBasicMaterial({color:0x38bdf8})
@@ -194,17 +153,16 @@ window.onload=()=>{
   scene.add(dice);
 
   window.addEventListener("keydown",e=>{
-    if(e.key==="a"||e.key==="ArrowLeft")targetT=0;
-    if(e.key==="d"||e.key==="ArrowRight")targetT=1;
-    if(e.key===" ")targetT=0.5;
+    if(e.key==="a"||e.key==="ArrowLeft")targetT=Math.max(0,targetT-0.25);
+    if(e.key==="d"||e.key==="ArrowRight")targetT=Math.min(1,targetT+0.25);
   });
 
   let sx=0;
   window.addEventListener("touchstart",e=>sx=e.touches[0].clientX);
   window.addEventListener("touchend",e=>{
     const dx=e.changedTouches[0].clientX-sx;
-    if(Math.abs(dx)<40)targetT=0.5;
-    else targetT=dx<0?0:1;
+    if(dx>40) targetT=Math.min(1,targetT+0.25);
+    if(dx<-40) targetT=Math.max(0,targetT-0.25);
   });
 
   animate();
@@ -220,14 +178,57 @@ function animate(){
 
   dice.position.set(p.x,p.y+y,p.z);
 
-  // PANEL VISIBILITY
-  if(t<0.25){
+  // LEFT SIDE SECTIONS
+  if(t<0.20){
     leftPanel.classList.add("show");
     rightPanel.classList.remove("show");
-  }else if(t>0.75){
+    leftTitle.textContent="CONTACT";
+    leftContent.innerHTML=`
+      <p>📞 +917095338146</p>
+      <p>📧 cherukupally.sowmya19@gmail.com</p>
+      <p>
+        <a href="https://www.linkedin.com/in/sowmya-cherukupally-a92911251" target="_blank">LinkedIn</a><br>
+        <a href="https://github.com/Sowmya-Cherukupally" target="_blank">GitHub</a>
+      </p>`;
+  }
+  else if(t<0.40){
+    leftPanel.classList.add("show");
+    rightPanel.classList.remove("show");
+    leftTitle.textContent="RESUME";
+    leftContent.innerHTML=`
+      <p>
+        <a href="SowmyaCherukupallyResume.pdf" target="_blank">Download Resume →</a>
+      </p>`;
+  }
+  // RIGHT SIDE SECTIONS
+  else if(t>0.80){
     rightPanel.classList.add("show");
     leftPanel.classList.remove("show");
-  }else{
+    rightTitle.textContent="PROJECTS";
+    rightContent.innerHTML=`
+      <strong>Automated Data Ingestion</strong>
+      <p>Snowflake + PySpark pipeline with medallion architecture.</p>
+      <a href="https://github.com/sowmya-ch-19/Agentic" target="_blank">GitHub →</a>
+      <hr style="opacity:.2;margin:10px 0">
+      <strong>Real Estate Comparison Tool</strong>
+      <p>Vector similarity-based property comparison.</p>
+      <a href="https://github.com/sowmya-ch-19/PropelensRealestate" target="_blank">GitHub →</a>`;
+  }
+  else if(t>0.60){
+    rightPanel.classList.add("show");
+    leftPanel.classList.remove("show");
+    rightTitle.textContent="SKILLS";
+    rightContent.innerHTML=`
+      <div class="skills">
+        <div class="skill">Python</div>
+        <div class="skill">Snowflake</div>
+        <div class="skill">PySpark</div>
+        <div class="skill">SQL</div>
+        <div class="skill">DBT</div>
+        <div class="skill">Data Pipelines</div>
+      </div>`;
+  }
+  else{
     leftPanel.classList.remove("show");
     rightPanel.classList.remove("show");
   }
