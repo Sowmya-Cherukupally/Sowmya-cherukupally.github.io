@@ -7,6 +7,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
+/* 🔒 MOBILE STABILITY FIX */
+html, body {
+  height: 100%;
+  overscroll-behavior: none;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -21,7 +27,6 @@ body {
     #020617;
   color: #e5e7eb;
   overflow-x: hidden;
-  overflow-y: auto;
 }
 
 /* 3D canvas */
@@ -35,8 +40,10 @@ body {
 .track {
   display: flex;
   width: 600vw;
-  height: 100vh;
-  transition: transform 0.8s ease;
+  height: 100dvh; /* ✅ mobile safe viewport */
+  transition: transform 0.6s ease;
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
 /* Scene */
@@ -47,9 +54,10 @@ body {
   flex-direction: column;
   justify-content: flex-start;
   opacity: 0;
-  overflow-y: auto;
-  transform: translateY(60px);
-  transition: opacity 0.8s ease, transform 0.8s ease;
+  transform: translateY(40px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  overflow: hidden; /* 🔒 stop mobile bounce */
+  backface-visibility: hidden;
 }
 
 .scene.active {
@@ -148,11 +156,6 @@ p {
   border: 1px solid #1e293b;
 }
 
-.end-btn:hover {
-  color: #38bdf8;
-  border-color: #38bdf8;
-}
-
 /* Sidebar */
 .progress {
   position: fixed;
@@ -213,8 +216,8 @@ p {
   <div class="scene-number">START</div>
   <h1>Sowmya Cherukupally</h1>
   <h2>Data Engineer</h2>
-  <p>Experienced in Python with a strong focus on scalable data pipelines, automation, and AI-driven data solutions.</p>
-  <p style="font-size:14px;opacity:.6;margin-top:12px;">Swipe left or right to navigate →</p>
+  <p>Experienced in Python with scalable data pipelines and AI-driven solutions.</p>
+  <p style="font-size:14px;opacity:.6;margin-top:12px;">Swipe left or right →</p>
   <button class="start-btn">▶ Start Experience</button>
 </section>
 
@@ -223,23 +226,20 @@ p {
   <div class="badges">
     <span>Snowflake</span><span>Python</span><span>SQL</span>
     <span>PySpark</span><span>AWS</span><span>GenAI</span>
-    <span>Agentic AI (Cortex Search, Cortex Analyst)</span>
-    <span>Flask</span><span>Streamlit</span><span>REST APIs</span>
+    <span>Agentic AI</span><span>Flask</span><span>REST APIs</span>
   </div>
 </section>
 
 <section class="scene">
   <div class="scene-number">PROJECT</div>
-  <div class="project">Automated Data Ingestion & Transformation Pipeline</div>
-  <img src="data.jpg" style="width:100%;max-width:720px;border-radius:12px;margin:16px 0;">
-  <p>Fully automated Snowflake + PySpark ingestion pipeline following medallion architecture.</p>
+  <div class="project">Automated Data Ingestion Pipeline</div>
+  <p>Snowflake + PySpark pipeline using medallion architecture.</p>
 </section>
 
 <section class="scene">
   <div class="scene-number">PROJECT</div>
   <div class="project">Real Estate Vector Search Tool</div>
-  <img src="realestate.jpg" style="width:100%;max-width:720px;border-radius:12px;margin:16px 0;">
-  <p>Vector-based real estate comparison with Streamlit UI.</p>
+  <p>Vector similarity search with Streamlit UI.</p>
 </section>
 
 <section class="scene">
@@ -254,7 +254,7 @@ p {
 <section class="scene">
   <div class="scene-number">END</div>
   <p>Thanks for exploring my work.</p>
-  <button class="end-btn">↺ Restart Experience</button>
+  <button class="end-btn">↺ Restart</button>
 </section>
 
 </div>
@@ -280,27 +280,32 @@ window.addEventListener("keydown", e => {
   update();
 });
 
-/* Sidebar clicks */
+/* Sidebar click */
 steps.forEach((step, i) => step.onclick = () => { index=i; update(); });
 
 document.querySelector(".start-btn").onclick = () => { index=1; update(); };
 document.querySelector(".end-btn").onclick = () => { index=0; update(); };
 
-/* ✅ MOBILE SWIPE SUPPORT */
-let touchStartX = 0;
-let touchEndX = 0;
+/* ✅ STABLE MOBILE SWIPE */
+let startX = 0, startY = 0;
 
 document.addEventListener("touchstart", e => {
-  touchStartX = e.changedTouches[0].screenX;
-});
+  startX = e.touches[0].clientX;
+  startY = e.touches[0].clientY;
+}, { passive: true });
 
 document.addEventListener("touchend", e => {
-  touchEndX = e.changedTouches[0].screenX;
-  const diff = touchStartX - touchEndX;
+  const endX = e.changedTouches[0].clientX;
+  const endY = e.changedTouches[0].clientY;
 
-  if (diff > 50 && index < scenes.length - 1) index++;
-  if (diff < -50 && index > 0) index--;
-  update();
+  const diffX = startX - endX;
+  const diffY = Math.abs(startY - endY);
+
+  if (Math.abs(diffX) > 60 && diffY < 50) {
+    if (diffX > 0 && index < scenes.length - 1) index++;
+    if (diffX < 0 && index > 0) index--;
+    update();
+  }
 });
 
 /* 3D background */
@@ -315,6 +320,7 @@ const mesh = new THREE.Mesh(
   new THREE.IcosahedronGeometry(4,1),
   new THREE.MeshStandardMaterial({ wireframe:true, color:0x38bdf8 })
 );
+
 scene3D.add(mesh);
 scene3D.add(new THREE.AmbientLight(0xffffff, .6));
 
