@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Sowmya Cherukupally | Interactive Portfolio</title>
+<title>Sowmya Cherukupally | 3D Portfolio</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 <style>
@@ -11,115 +11,46 @@ html, body {
   padding: 0;
   height: 100%;
   overflow: hidden;
-  background: #020617;
   font-family: Inter, sans-serif;
-  color: #e5e7eb;
 }
 
 /* START SCREEN */
 #startScreen {
   position: fixed;
   inset: 0;
-  background: radial-gradient(circle at center, #020617, #000);
+  background: linear-gradient(180deg, #0f172a, #020617);
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  z-index: 20;
-}
-
-#startScreen h1 {
-  font-size: 32px;
-  margin-bottom: 20px;
+  z-index: 10;
 }
 
 #startScreen button {
-  padding: 16px 40px;
+  padding: 18px 42px;
+  font-size: 18px;
   border-radius: 40px;
   border: none;
-  font-size: 18px;
-  font-weight: 600;
   cursor: pointer;
   background: linear-gradient(135deg, #38bdf8, #22c55e);
-  color: #000;
+  font-weight: 700;
 }
 
-/* HUD */
-#hud {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  font-size: 14px;
-  opacity: 0.75;
-  z-index: 5;
-}
-
-#soundToggle {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  cursor: pointer;
-  z-index: 5;
-}
-
-/* FLOATING SECTIONS */
-.section {
-  position: fixed;
-  bottom: 40px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 20px;
-  z-index: 5;
-}
-
-.section div {
-  padding: 10px 18px;
-  background: rgba(255,255,255,0.08);
-  border-radius: 20px;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-.section div:hover {
-  background: rgba(255,255,255,0.18);
-}
-
-canvas {
-  display: block;
-}
+canvas { display: block; }
 </style>
 </head>
 
 <body>
 
-<!-- START -->
 <div id="startScreen">
-  <h1>Enter My World</h1>
   <button id="startBtn">Start Experience</button>
 </div>
 
-<!-- HUD -->
-<div id="hud">W A S D / Touch / Tilt</div>
-<div id="soundToggle">🔊</div>
-
-<!-- SECTIONS -->
-<div class="section">
-  <div onclick="alert('About Section')">About</div>
-  <div onclick="alert('Projects Section')">Projects</div>
-  <div onclick="alert('Contact Section')">Contact</div>
-</div>
-
-<!-- THREE.JS -->
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
 
 <script>
 let scene, camera, renderer, model;
 let listener, sound;
-let keys = {};
-let mouseX = 0, mouseY = 0;
-let soundEnabled = true;
 
 document.getElementById("startBtn").onclick = () => {
   document.getElementById("startScreen").style.display = "none";
@@ -127,110 +58,95 @@ document.getElementById("startBtn").onclick = () => {
 };
 
 function init() {
+
+  /* SCENE */
   scene = new THREE.Scene();
-  scene.fog = new THREE.Fog(0x020617, 5, 25);
 
-  camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 100);
-  camera.position.set(0, 1.6, 6);
+  /* SKY (VERY IMPORTANT) */
+  const skyGeo = new THREE.SphereGeometry(80, 32, 32);
+  const skyMat = new THREE.MeshBasicMaterial({
+    color: 0x1e293b,
+    side: THREE.BackSide
+  });
+  scene.add(new THREE.Mesh(skyGeo, skyMat));
 
+  /* CAMERA */
+  camera = new THREE.PerspectiveCamera(65, innerWidth/innerHeight, 0.1, 200);
+  camera.position.set(0, 2.5, 8);
+
+  /* RENDERER */
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(innerWidth, innerHeight);
   renderer.setPixelRatio(devicePixelRatio);
   document.body.appendChild(renderer.domElement);
 
-  scene.add(new THREE.AmbientLight(0xffffff, 0.9));
-  const dir = new THREE.DirectionalLight(0xffffff, 1);
-  dir.position.set(5,10,5);
-  scene.add(dir);
+  /* LIGHTING (STRONG) */
+  scene.add(new THREE.AmbientLight(0xffffff, 1.2));
 
-  // Ground
-  const ground = new THREE.Mesh(
-    new THREE.PlaneGeometry(100,100),
-    new THREE.MeshStandardMaterial({ color: 0x020617 })
-  );
-  ground.rotation.x = -Math.PI/2;
-  ground.position.y = -1;
-  scene.add(ground);
+  const sun = new THREE.DirectionalLight(0xffffff, 2);
+  sun.position.set(5, 10, 5);
+  scene.add(sun);
 
-  // Floating cubes
-  for (let i=0;i<50;i++){
-    const c = new THREE.Mesh(
-      new THREE.BoxGeometry(0.2,0.2,0.2),
-      new THREE.MeshStandardMaterial({ color: 0x38bdf8 })
+  /* GROUND GRID (VISIBLE) */
+  const grid = new THREE.GridHelper(50, 50, 0x38bdf8, 0x1e40af);
+  grid.position.y = 0;
+  scene.add(grid);
+
+  /* LARGE FLOATING OBJECTS */
+  for (let i = 0; i < 30; i++) {
+    const cube = new THREE.Mesh(
+      new THREE.BoxGeometry(0.8, 0.8, 0.8),
+      new THREE.MeshStandardMaterial({
+        color: 0x38bdf8,
+        metalness: 0.6,
+        roughness: 0.3
+      })
     );
-    c.position.set(
-      (Math.random()-0.5)*12,
-      Math.random()*3,
-      (Math.random()-0.5)*12
+    cube.position.set(
+      (Math.random() - 0.5) * 20,
+      Math.random() * 5 + 1,
+      (Math.random() - 0.5) * 20
     );
-    scene.add(c);
+    scene.add(cube);
   }
 
-  // Audio
+  /* AUDIO */
   listener = new THREE.AudioListener();
   camera.add(listener);
-  sound = new THREE.PositionalAudio(listener);
 
-  new THREE.AudioLoader().load("ambient.mp3", b=>{
-    sound.setBuffer(b);
+  sound = new THREE.PositionalAudio(listener);
+  new THREE.AudioLoader().load("ambient.mp3", buffer => {
+    sound.setBuffer(buffer);
     sound.setLoop(true);
-    sound.setVolume(0.6);
+    sound.setVolume(0.5);
     sound.setRefDistance(6);
     sound.play();
   });
 
-  // Model
-  new THREE.GLTFLoader().load("model.glb", g=>{
-    model = g.scene;
+  /* MAIN MODEL */
+  new THREE.GLTFLoader().load("model.glb", gltf => {
+    model = gltf.scene;
+    model.scale.set(1.5,1.5,1.5);
+    model.position.y = 1;
     model.add(sound);
     scene.add(model);
-    animate();
   });
 
-  // Controls
-  window.onkeydown = e => keys[e.key.toLowerCase()] = true;
-  window.onkeyup   = e => keys[e.key.toLowerCase()] = false;
-
-  window.onmousemove = e=>{
-    mouseX = (e.clientX/innerWidth - 0.5)*2;
-    mouseY = (e.clientY/innerHeight - 0.5)*2;
-  };
-
-  window.ondeviceorientation = e=>{
-    if(e.gamma) mouseX = e.gamma/30;
-    if(e.beta) mouseY = e.beta/60;
-  };
-
-  window.onresize = ()=>{
-    camera.aspect = innerWidth/innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(innerWidth, innerHeight);
-  };
+  window.addEventListener("resize", onResize);
+  animate();
 }
 
-function animate(){
+function animate() {
   requestAnimationFrame(animate);
-
-  if(keys.w) camera.position.z -= 0.05;
-  if(keys.s) camera.position.z += 0.05;
-  if(keys.a) camera.position.x -= 0.05;
-  if(keys.d) camera.position.x += 0.05;
-
-  if(model) model.rotation.y += 0.004;
-
-  camera.position.x += (mouseX - camera.position.x)*0.05;
-  camera.position.y += (-mouseY + 1.6 - camera.position.y)*0.05;
-  camera.lookAt(0,0.8,0);
-
+  if (model) model.rotation.y += 0.01;
   renderer.render(scene, camera);
 }
 
-// Sound toggle
-document.getElementById("soundToggle").onclick = ()=>{
-  soundEnabled = !soundEnabled;
-  sound.setVolume(soundEnabled ? 0.6 : 0);
-  document.getElementById("soundToggle").innerText = soundEnabled ? "🔊" : "🔇";
-};
+function onResize() {
+  camera.aspect = innerWidth/innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+}
 </script>
 
 </body>
