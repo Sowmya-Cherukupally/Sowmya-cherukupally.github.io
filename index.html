@@ -44,7 +44,7 @@ body {
   will-change: transform;
 }
 
-/* SCENE */
+/* SCENES */
 .scene {
   width: 100vw;
   padding: 80px;
@@ -67,7 +67,7 @@ body {
   margin-bottom: 12px;
 }
 
-h1 { font-size: 52px; margin-bottom: 16px; }
+h1 { font-size: 52px; }
 h2 { font-size: 36px; margin-bottom: 18px; }
 
 p {
@@ -77,51 +77,22 @@ p {
   line-height: 1.7;
 }
 
-.badges span {
-  display: inline-block;
-  margin: 6px;
-  padding: 8px 14px;
-  border-radius: 20px;
-  border: 1px solid #1e293b;
-}
-
-.project {
-  border: 1px solid #1e293b;
-  padding: 24px;
-  border-radius: 14px;
-  max-width: 720px;
-  margin-bottom: 20px;
-}
-
-.contact-links a {
-  display: inline-block;
-  margin: 12px 16px 0 0;
-  padding: 12px 22px;
-  border-radius: 999px;
-  border: 1px solid #1e293b;
-  color: #94a3b8;
-  text-decoration: none;
-}
-
-.contact-links a:hover {
-  color: #38bdf8;
-  border-color: #38bdf8;
-}
-
-.progress {
+/* INSTRUCTION OVERLAY */
+.hint {
   position: fixed;
-  left: 30px;
-  top: 50%;
-  transform: translateY(-50%);
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 13px;
+  opacity: 0.6;
+  letter-spacing: 1px;
+  animation: pulse 2s infinite;
 }
 
-.step {
-  margin: 18px 0;
-  color: #1e293b;
-}
-
-.step.active {
-  color: #38bdf8;
+@keyframes pulse {
+  0% { opacity: .4 }
+  50% { opacity: .9 }
+  100% { opacity: .4 }
 }
 </style>
 </head>
@@ -130,64 +101,42 @@ p {
 
 <canvas id="bg"></canvas>
 
-<div class="progress">
-  <div class="step active">◆</div>
-  <div class="step">⬡</div>
-  <div class="step">▣</div>
-  <div class="step">⬢</div>
-  <div class="step">☎</div>
-  <div class="step">✦</div>
-</div>
-
 <div class="track" id="track">
 
 <section class="scene active">
   <div class="scene-number">START</div>
   <h1>Sowmya Cherukupally</h1>
   <h2>Data Engineer</h2>
-  <p>Scroll, drag or swipe to explore →</p>
+  <p>Move like a game — scroll or drag →</p>
 </section>
 
 <section class="scene">
   <div class="scene-number">SKILLS</div>
-  <div class="badges">
-    <span>Snowflake</span><span>Python</span><span>SQL</span>
-    <span>PySpark</span><span>AWS</span><span>GenAI</span>
-  </div>
+  <p>Snowflake · Python · SQL · PySpark · AWS · GenAI</p>
 </section>
 
 <section class="scene">
   <div class="scene-number">PROJECT</div>
-  <div class="project">Automated Data Ingestion Pipeline</div>
-  <p>Snowflake + PySpark + Medallion Architecture</p>
-</section>
-
-<section class="scene">
-  <div class="scene-number">PROJECT</div>
-  <div class="project">Vector Search Tool</div>
-  <p>Similarity search using embeddings</p>
+  <p>Automated Data Ingestion Pipeline</p>
 </section>
 
 <section class="scene">
   <div class="scene-number">CONTACT</div>
-  <div class="contact-links">
-    <a href="mailto:cherukupally.sowmya19@gmail.com">Email</a>
-    <a href="https://github.com/sowmya-ch-19">GitHub</a>
-    <a href="https://linkedin.com">LinkedIn</a>
-  </div>
-</section>
-
-<section class="scene">
-  <div class="scene-number">END</div>
-  <p>Thanks for visiting.</p>
+  <p>cherukupally.sowmya19@gmail.com</p>
 </section>
 
 </div>
 
+<div class="hint">Scroll ↓ or Drag → to move forward</div>
+
+<!-- 🔊 Sounds -->
+<audio id="moveSound" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"></audio>
+<audio id="snapSound" src="https://assets.mixkit.co/active_storage/sfx/600/600-preview.mp3"></audio>
+
 <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
 
 <script>
-/* 🚫 BLOCK ARROWS */
+/* 🚫 Disable arrow keys */
 window.addEventListener("keydown", e => {
   if (e.key.includes("Arrow")) e.preventDefault();
 });
@@ -195,7 +144,8 @@ window.addEventListener("keydown", e => {
 /* WORLD PHYSICS */
 const track = document.getElementById("track");
 const scenes = document.querySelectorAll(".scene");
-const steps = document.querySelectorAll(".step");
+const moveSound = document.getElementById("moveSound");
+const snapSound = document.getElementById("snapSound");
 
 let position = 0;
 let velocity = 0;
@@ -206,12 +156,13 @@ let index = 0;
 const width = window.innerWidth;
 const max = -(width * (scenes.length - 1));
 
-function updateScene() {
+function updateActive() {
   const newIndex = Math.round(Math.abs(position) / width);
   if (newIndex !== index) {
     index = newIndex;
     scenes.forEach((s,i)=>s.classList.toggle("active", i===index));
-    steps.forEach((s,i)=>s.classList.toggle("active", i===index));
+    snapSound.currentTime = 0;
+    snapSound.play();
   }
 }
 
@@ -223,18 +174,20 @@ function animateWorld() {
   if (position < max) position = max;
 
   track.style.transform = `translateX(${position}px)`;
-  updateScene();
+  updateActive();
 
   requestAnimationFrame(animateWorld);
 }
 
-/* SCROLL PUSH */
+/* SCROLL = MOVE */
 window.addEventListener("wheel", e => {
   e.preventDefault();
-  velocity += -e.deltaY * 0.8;
+  velocity += -e.deltaY * 0.7;
+  moveSound.currentTime = 0;
+  moveSound.play();
 }, { passive:false });
 
-/* DRAG */
+/* DRAG / SWIPE */
 window.addEventListener("pointerdown", e => {
   isDragging = true;
   startX = e.clientX;
@@ -249,14 +202,6 @@ window.addEventListener("pointermove", e => {
 window.addEventListener("pointerup", () => {
   isDragging = false;
 });
-
-/* AUTO DEMO MODE */
-setTimeout(() => {
-  let demo = setInterval(() => {
-    velocity -= 40;
-    if (index === scenes.length - 1) clearInterval(demo);
-  }, 2000);
-}, 3000);
 
 /* 3D BACKGROUND */
 const scene3D = new THREE.Scene();
@@ -274,7 +219,6 @@ const mesh = new THREE.Mesh(
 scene3D.add(mesh);
 scene3D.add(new THREE.AmbientLight(0xffffff, 0.6));
 
-/* PARALLAX */
 window.addEventListener("mousemove", e => {
   mesh.rotation.x = e.clientY * 0.0005;
   mesh.rotation.y = e.clientX * 0.0005;
