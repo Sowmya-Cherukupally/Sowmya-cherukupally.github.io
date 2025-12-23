@@ -12,20 +12,21 @@ html, body {
   height: 100%;
   overflow: hidden;
   font-family: Inter, sans-serif;
+  background: #020617;
 }
 
 /* START SCREEN */
 #startScreen {
   position: fixed;
   inset: 0;
-  background: linear-gradient(180deg, #0f172a, #020617);
+  background: linear-gradient(180deg, #020617, #000);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 10;
 }
 
-#startScreen button {
+#startBtn {
   padding: 18px 42px;
   font-size: 18px;
   border-radius: 40px;
@@ -35,7 +36,9 @@ html, body {
   font-weight: 700;
 }
 
-canvas { display: block; }
+canvas {
+  display: block;
+}
 </style>
 </head>
 
@@ -46,61 +49,60 @@ canvas { display: block; }
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
 
 <script>
-let scene, camera, renderer, model;
-let listener, sound;
+let scene, camera, renderer;
 
 document.getElementById("startBtn").onclick = () => {
   document.getElementById("startScreen").style.display = "none";
-  init();
+  initScene();   // 🔥 ALWAYS RUNS
 };
 
-function init() {
+function initScene() {
 
-  /* SCENE */
+  // SCENE
   scene = new THREE.Scene();
 
-  /* SKY (VERY IMPORTANT) */
-  const skyGeo = new THREE.SphereGeometry(80, 32, 32);
-  const skyMat = new THREE.MeshBasicMaterial({
-    color: 0x1e293b,
-    side: THREE.BackSide
-  });
-  scene.add(new THREE.Mesh(skyGeo, skyMat));
+  // SKY
+  scene.background = new THREE.Color(0x0f172a);
 
-  /* CAMERA */
-  camera = new THREE.PerspectiveCamera(65, innerWidth/innerHeight, 0.1, 200);
-  camera.position.set(0, 2.5, 8);
+  // CAMERA
+  camera = new THREE.PerspectiveCamera(65, window.innerWidth/window.innerHeight, 0.1, 200);
+  camera.position.set(0, 4, 10);
 
-  /* RENDERER */
+  // RENDERER
   renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setSize(innerWidth, innerHeight);
-  renderer.setPixelRatio(devicePixelRatio);
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(window.devicePixelRatio);
   document.body.appendChild(renderer.domElement);
 
-  /* LIGHTING (STRONG) */
+  // LIGHTS (STRONG)
   scene.add(new THREE.AmbientLight(0xffffff, 1.2));
-
   const sun = new THREE.DirectionalLight(0xffffff, 2);
-  sun.position.set(5, 10, 5);
+  sun.position.set(10, 15, 10);
   scene.add(sun);
 
-  /* GROUND GRID (VISIBLE) */
-  const grid = new THREE.GridHelper(50, 50, 0x38bdf8, 0x1e40af);
-  grid.position.y = 0;
+  // GRID (VERY VISIBLE)
+  const grid = new THREE.GridHelper(60, 60, 0x38bdf8, 0x1e40af);
   scene.add(grid);
 
-  /* LARGE FLOATING OBJECTS */
-  for (let i = 0; i < 30; i++) {
+  // BIG OBJECT (fallback visual)
+  const box = new THREE.Mesh(
+    new THREE.BoxGeometry(2, 2, 2),
+    new THREE.MeshStandardMaterial({
+      color: 0x22c55e,
+      metalness: 0.6,
+      roughness: 0.2
+    })
+  );
+  box.position.y = 1;
+  scene.add(box);
+
+  // FLOATING OBJECTS
+  for (let i = 0; i < 20; i++) {
     const cube = new THREE.Mesh(
-      new THREE.BoxGeometry(0.8, 0.8, 0.8),
-      new THREE.MeshStandardMaterial({
-        color: 0x38bdf8,
-        metalness: 0.6,
-        roughness: 0.3
-      })
+      new THREE.BoxGeometry(0.6, 0.6, 0.6),
+      new THREE.MeshStandardMaterial({ color: 0x38bdf8 })
     );
     cube.position.set(
       (Math.random() - 0.5) * 20,
@@ -110,42 +112,20 @@ function init() {
     scene.add(cube);
   }
 
-  /* AUDIO */
-  listener = new THREE.AudioListener();
-  camera.add(listener);
-
-  sound = new THREE.PositionalAudio(listener);
-  new THREE.AudioLoader().load("ambient.mp3", buffer => {
-    sound.setBuffer(buffer);
-    sound.setLoop(true);
-    sound.setVolume(0.5);
-    sound.setRefDistance(6);
-    sound.play();
-  });
-
-  /* MAIN MODEL */
-  new THREE.GLTFLoader().load("model.glb", gltf => {
-    model = gltf.scene;
-    model.scale.set(1.5,1.5,1.5);
-    model.position.y = 1;
-    model.add(sound);
-    scene.add(model);
-  });
-
   window.addEventListener("resize", onResize);
-  animate();
+  animate(box);
 }
 
-function animate() {
-  requestAnimationFrame(animate);
-  if (model) model.rotation.y += 0.01;
+function animate(box) {
+  requestAnimationFrame(() => animate(box));
+  box.rotation.y += 0.01;
   renderer.render(scene, camera);
 }
 
 function onResize() {
-  camera.aspect = innerWidth/innerHeight;
+  camera.aspect = window.innerWidth/window.innerHeight;
   camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth, innerHeight);
+  renderer.setSize(window.innerWidth, window.innerHeight);
 }
 </script>
 
