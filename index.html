@@ -67,74 +67,121 @@ canvas { display: block; }
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 
 <script>
+let scene, camera, renderer;
+let dice;
+let velocity = 0;
+let isDragging = false;
+let lastX = 0;
+
+const leftPanel = document.getElementById("leftPanel");
+const rightPanel = document.getElementById("rightPanel");
+
 window.onload = () => {
+  init();
+};
 
-  const leftPanel = document.getElementById("leftPanel");
-  const rightPanel = document.getElementById("rightPanel");
-
-  // SCENE
-  const scene = new THREE.Scene();
+function init() {
+  // Scene
+  scene = new THREE.Scene();
   scene.background = new THREE.Color(0x020617);
 
-  // CAMERA
-  const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 100);
+  // Camera
+  camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 100);
   camera.position.set(0, 4, 10);
   camera.lookAt(0, 1.2, 0);
 
-  // RENDERER
-  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  // Renderer
+  renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(innerWidth, innerHeight);
+  renderer.setPixelRatio(devicePixelRatio);
   document.body.appendChild(renderer.domElement);
 
-  // LIGHT
+  // Lights
   scene.add(new THREE.AmbientLight(0xffffff, 1.2));
-  const sun = new THREE.DirectionalLight(0xffffff, 1.5);
-  sun.position.set(5, 10, 5);
-  scene.add(sun);
+  const light = new THREE.DirectionalLight(0xffffff, 1.5);
+  light.position.set(5, 10, 5);
+  scene.add(light);
 
-  // GRID (FORCED VISIBLE)
-  scene.add(new THREE.GridHelper(50, 50, 0x38bdf8, 0x1e40af));
+  // Grid
+  scene.add(new THREE.GridHelper(60, 60, 0x38bdf8, 0x1e40af));
 
-  // 🎲 DICE (FORCED VISIBLE)
-  const dice = new THREE.Mesh(
-    new THREE.BoxGeometry(2.5, 2.5, 2.5),
+  // Dice (fallback cube)
+  dice = new THREE.Mesh(
+    new THREE.BoxGeometry(2.2, 2.2, 2.2),
     new THREE.MeshStandardMaterial({ color: 0x22c55e })
   );
-  dice.position.y = 1.25;
+  dice.position.set(0, 1.1, 0);
   scene.add(dice);
 
-  let velocity = 0.08; // auto move to prove it works
+  // Keyboard controls
+  window.addEventListener("keydown", e => {
+    if (e.key === "ArrowRight" || e.key === "d") velocity = 0.15;
+    if (e.key === "ArrowLeft" || e.key === "a") velocity = -0.15;
+  });
 
-  function animate() {
-    requestAnimationFrame(animate);
+  window.addEventListener("keyup", () => {
+    velocity = 0;
+  });
 
-    // MOVE DICE
-    dice.position.x += velocity;
-    dice.rotation.z -= velocity * 2;
+  // Mouse drag controls
+  window.addEventListener("mousedown", e => {
+    isDragging = true;
+    lastX = e.clientX;
+  });
 
-    // BOUNCE
-    if (dice.position.x > 4 || dice.position.x < -4) {
-      velocity *= -1;
-    }
+  window.addEventListener("mouseup", () => {
+    isDragging = false;
+    velocity = 0;
+  });
 
-    // PANELS
-    if (dice.position.x > 2) {
-      rightPanel.classList.add("show");
-      leftPanel.classList.remove("show");
-    } else if (dice.position.x < -2) {
-      leftPanel.classList.add("show");
-      rightPanel.classList.remove("show");
-    } else {
-      leftPanel.classList.remove("show");
-      rightPanel.classList.remove("show");
-    }
+  window.addEventListener("mousemove", e => {
+    if (!isDragging) return;
+    const delta = e.clientX - lastX;
+    velocity = delta * 0.002;
+    lastX = e.clientX;
+  });
 
-    renderer.render(scene, camera);
-  }
+  window.addEventListener("resize", onResize);
 
   animate();
-};
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+
+  // Move dice manually
+  dice.position.x += velocity;
+
+  // Rotate ONLY while moving
+  if (Math.abs(velocity) > 0.001) {
+    dice.rotation.z -= velocity * 1.5;
+  }
+
+  // Clamp movement
+  dice.position.x = Math.max(-6, Math.min(6, dice.position.x));
+
+  // Zone logic
+  if (dice.position.x > 2.5) {
+    rightPanel.classList.add("show");
+    leftPanel.classList.remove("show");
+  } else if (dice.position.x < -2.5) {
+    leftPanel.classList.add("show");
+    rightPanel.classList.remove("show");
+  } else {
+    leftPanel.classList.remove("show");
+    rightPanel.classList.remove("show");
+  }
+
+  renderer.render(scene, camera);
+}
+
+function onResize() {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+}
 </script>
+
 
 </body>
 </html>
