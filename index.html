@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Dice Portfolio</title>
+<title>Sowmya Cherukupally | Interactive Portfolio</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -15,22 +15,41 @@ html, body {
   color: #e5e7eb;
 }
 
+canvas { display: block; }
+
+/* PANELS */
 .panel {
   position: fixed;
   top: 50%;
   transform: translateY(-50%);
-  width: 320px;
-  padding: 16px;
+  width: 340px;
+  padding: 18px;
   background: rgba(2,6,23,0.92);
-  border-radius: 14px;
+  border-radius: 16px;
   opacity: 0;
-  transition: opacity 0.4s ease;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+
+.panel.show {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 #leftPanel { left: 20px; }
 #rightPanel { right: 20px; }
 
-.panel.show { opacity: 1; }
+.panel img {
+  width: 100%;
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+
+.panel a {
+  color: #38bdf8;
+  text-decoration: none;
+  font-size: 14px;
+}
 
 #hint {
   position: fixed;
@@ -39,107 +58,151 @@ html, body {
   transform: translateX(-50%);
   font-size: 13px;
   opacity: 0.6;
+  text-align: center;
 }
 
-canvas { display: block; }
+/* SOUND */
+#soundToggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  font-size: 18px;
+  cursor: pointer;
+  z-index: 10;
+}
 </style>
 </head>
 
 <body>
 
+<div id="soundToggle">🔊</div>
+
+<!-- LEFT PANEL -->
 <div id="leftPanel" class="panel">
-  <h3>Contact</h3>
+  <h2>Contact</h2>
   <p>📞 +917095338146</p>
   <p>
-    <a href="SowmyaCherukupallyResume.pdf" target="_blank">Resume</a><br>
-    <a href="https://github.com/Sowmya-Cherukupally" target="_blank">GitHub</a>
+    <a href="https://www.linkedin.com/in/sowmya-cherukupally-a92911251" target="_blank">LinkedIn</a><br>
+    <a href="https://github.com/Sowmya-Cherukupally" target="_blank">GitHub</a><br>
+    <a href="SowmyaCherukupallyResume.pdf" target="_blank">Resume</a>
   </p>
 </div>
 
+<!-- RIGHT PANEL -->
 <div id="rightPanel" class="panel">
-  <h3>Projects</h3>
-  <p><strong>Automated Data Ingestion</strong></p>
-  <p>Snowflake + PySpark pipeline</p>
+  <h2>Projects</h2>
+
+  <img src="data.jpg">
+  <strong>Automated Data Ingestion & Transformation</strong>
+  <p>Snowflake + PySpark automated pipeline with medallion architecture.</p>
+  <a href="https://github.com/sowmya-ch-19/Agentic" target="_blank">GitHub →</a>
+
+  <hr style="margin:14px 0;opacity:0.2">
+
+  <img src="realestate.jpg">
+  <strong>Real Estate Comparison Tool</strong>
+  <p>Vector-search based real estate comparison using embeddings.</p>
+  <a href="https://github.com/sowmya-ch-19/PropelensRealestate" target="_blank">GitHub →</a>
 </div>
 
-<div id="hint">← Dice LEFT = Contact | Dice RIGHT = Projects →</div>
+<div id="hint">
+  ← Swipe / A / ← for Contact • Swipe / D / → for Projects →
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
 
 <script>
 let scene, camera, renderer;
 let dice;
 let velocity = 0;
-let isDragging = false;
-let lastX = 0;
 
+// UI
 const leftPanel = document.getElementById("leftPanel");
 const rightPanel = document.getElementById("rightPanel");
 
-window.onload = () => {
-  init();
-};
+// AUDIO
+let audioStarted = false;
+let sound, listener;
+let soundOn = true;
+
+// TOUCH
+let touchStartX = 0;
+
+window.onload = () => init();
 
 function init() {
-  // Scene
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0x020617);
 
-  // Camera
-  camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 100);
+  camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 100);
   camera.position.set(0, 4, 10);
   camera.lookAt(0, 1.2, 0);
 
-  // Renderer
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(innerWidth, innerHeight);
   renderer.setPixelRatio(devicePixelRatio);
   document.body.appendChild(renderer.domElement);
 
-  // Lights
   scene.add(new THREE.AmbientLight(0xffffff, 1.2));
   const light = new THREE.DirectionalLight(0xffffff, 1.5);
-  light.position.set(5, 10, 5);
+  light.position.set(5,10,5);
   scene.add(light);
 
-  // Grid
   scene.add(new THREE.GridHelper(60, 60, 0x38bdf8, 0x1e40af));
 
-  // Dice (fallback cube)
+  // Fallback dice
   dice = new THREE.Mesh(
-    new THREE.BoxGeometry(2.2, 2.2, 2.2),
+    new THREE.BoxGeometry(2.2,2.2,2.2),
     new THREE.MeshStandardMaterial({ color: 0x22c55e })
   );
-  dice.position.set(0, 1.1, 0);
+  dice.position.set(0,1.1,0);
   scene.add(dice);
 
-  // Keyboard controls
+  // Try model.glb
+  new THREE.GLTFLoader().load("model.glb", g => {
+    scene.remove(dice);
+    dice = g.scene;
+    dice.scale.set(1.4,1.4,1.4);
+    dice.position.set(0,1.1,0);
+    scene.add(dice);
+  });
+
+  // AUDIO (user gesture)
+  listener = new THREE.AudioListener();
+  camera.add(listener);
+  sound = new THREE.PositionalAudio(listener);
+
+  const audioLoader = new THREE.AudioLoader();
+  audioLoader.load("ambient.mp3", buffer => {
+    sound.setBuffer(buffer);
+    sound.setLoop(true);
+    sound.setVolume(0.3);
+  });
+
+  dice.add(sound);
+
+  // DESKTOP CONTROLS
   window.addEventListener("keydown", e => {
     if (e.key === "ArrowRight" || e.key === "d") velocity = 0.15;
     if (e.key === "ArrowLeft" || e.key === "a") velocity = -0.15;
+    startAudio();
   });
 
-  window.addEventListener("keyup", () => {
-    velocity = 0;
+  window.addEventListener("keyup", () => velocity = 0);
+
+  // MOBILE TOUCH
+  window.addEventListener("touchstart", e => {
+    touchStartX = e.touches[0].clientX;
+    startAudio();
   });
 
-  // Mouse drag controls
-  window.addEventListener("mousedown", e => {
-    isDragging = true;
-    lastX = e.clientX;
-  });
-
-  window.addEventListener("mouseup", () => {
-    isDragging = false;
-    velocity = 0;
-  });
-
-  window.addEventListener("mousemove", e => {
-    if (!isDragging) return;
-    const delta = e.clientX - lastX;
+  window.addEventListener("touchmove", e => {
+    const delta = e.touches[0].clientX - touchStartX;
     velocity = delta * 0.002;
-    lastX = e.clientX;
   });
+
+  window.addEventListener("touchend", () => velocity = 0);
 
   window.addEventListener("resize", onResize);
 
@@ -149,7 +212,6 @@ function init() {
 function animate() {
   requestAnimationFrame(animate);
 
-  // Move dice manually
   dice.position.x += velocity;
 
   // Rotate ONLY while moving
@@ -157,10 +219,9 @@ function animate() {
     dice.rotation.z -= velocity * 1.5;
   }
 
-  // Clamp movement
   dice.position.x = Math.max(-6, Math.min(6, dice.position.x));
 
-  // Zone logic
+  // ZONES
   if (dice.position.x > 2.5) {
     rightPanel.classList.add("show");
     leftPanel.classList.remove("show");
@@ -175,13 +236,26 @@ function animate() {
   renderer.render(scene, camera);
 }
 
+function startAudio() {
+  if (!audioStarted) {
+    sound.play();
+    audioStarted = true;
+  }
+}
+
+// SOUND TOGGLE
+document.getElementById("soundToggle").onclick = () => {
+  soundOn = !soundOn;
+  sound.setVolume(soundOn ? 0.3 : 0);
+  document.getElementById("soundToggle").textContent = soundOn ? "🔊" : "🔇";
+};
+
 function onResize() {
-  camera.aspect = innerWidth / innerHeight;
+  camera.aspect = innerWidth/innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(innerWidth, innerHeight);
 }
 </script>
-
 
 </body>
 </html>
