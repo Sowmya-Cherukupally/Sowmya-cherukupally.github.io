@@ -20,7 +20,8 @@ body {
     radial-gradient(600px circle at 85% 75%, rgba(34,197,94,0.30), transparent 55%),
     #020617;
   color: #e5e7eb;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 /* 3D canvas */
@@ -212,9 +213,8 @@ p {
   <div class="scene-number">START</div>
   <h1>Sowmya Cherukupally</h1>
   <h2>Data Engineer</h2>
-  <p>
-Experienced in Python with a strong focus on scalable data pipelines, automation, and AI-driven data solutions.
-</p>
+  <p>Experienced in Python with a strong focus on scalable data pipelines, automation, and AI-driven data solutions.</p>
+  <p style="font-size:14px;opacity:.6;margin-top:12px;">Swipe left or right to navigate →</p>
   <button class="start-btn">▶ Start Experience</button>
 </section>
 
@@ -222,64 +222,33 @@ Experienced in Python with a strong focus on scalable data pipelines, automation
   <div class="scene-number">SKILLS</div>
   <div class="badges">
     <span>Snowflake</span><span>Python</span><span>SQL</span>
-    <span>PySpark</span><span>AWS</span><span>GenAI</span><span>Agentic AI(Cortex Search,Cortex Analyst)</span>
+    <span>PySpark</span><span>AWS</span><span>GenAI</span>
+    <span>Agentic AI (Cortex Search, Cortex Analyst)</span>
     <span>Flask</span><span>Streamlit</span><span>REST APIs</span>
-    <span>AWS(S3, Lambda, EC2)</span><span>Dialogflow</span>
   </div>
 </section>
 
 <section class="scene">
   <div class="scene-number">PROJECT</div>
-  <div class="project">Automated Data Ingestion & Transformation Pipeline (Snowflake + PySpark)</div>
-  <img 
-  src="data.jpg"
-  alt="Data Pipeline Project"
-  style="width:100%; max-width:720px; border-radius:12px; margin:16px 0;"
->
-
-    <p>
-Designed and implemented a fully automated data ingestion pipeline using Snowflake, PySpark, and Python.
-The system ingests raw files from cloud storage, applies transformation logic, enforces data quality checks,
-and loads curated datasets into analytics-ready tables following medallion architecture.
-    </p>
-    <a href="https://github.com/sowmya-ch-19/Agentic" target="_blank">View on GitHub</a>
+  <div class="project">Automated Data Ingestion & Transformation Pipeline</div>
+  <img src="data.jpg" style="width:100%;max-width:720px;border-radius:12px;margin:16px 0;">
+  <p>Fully automated Snowflake + PySpark ingestion pipeline following medallion architecture.</p>
 </section>
 
 <section class="scene">
   <div class="scene-number">PROJECT</div>
-  <div class="project">Real Estate Comparison Tool using Vector Search</div>
-  <img 
-  src="realestate.jpg"
-  alt="Real Estate Comparison Tool"
-  style="width:100%; max-width:720px; border-radius:12px; margin:16px 0;"
->
-
-
-    <p>
-Developed a real estate comparison tool using vector search capabilities.
-The application allows users to compare properties based on features like price, location, and amenities.
-It leverages vector embeddings for similarity matching and provides an streamlit UI for property browsing.
-    </p>
-    <a href="https://github.com/sowmya-ch-19/PropelensRealestate" target="_blank">View on GitHub</a>
+  <div class="project">Real Estate Vector Search Tool</div>
+  <img src="realestate.jpg" style="width:100%;max-width:720px;border-radius:12px;margin:16px 0;">
+  <p>Vector-based real estate comparison with Streamlit UI.</p>
 </section>
 
 <section class="scene">
   <div class="scene-number">CONTACT</div>
-  <p>Let’s connect and discuss data engineering or AI opportunities.</p>
-
   <div class="contact-links">
     <a href="mailto:cherukupally.sowmya19@gmail.com">📧 Email</a>
-    <a href="tel:+917095338146">📞 Call</a>
-    <a href="https://www.linkedin.com/in/sowmya-cherukupally-a92911251" target="_blank">💼 LinkedIn</a>
-    <a href="https://github.com/Sowmya-Cherukupally" target="_blank">🐙 GitHub</a>
+    <a href="https://www.linkedin.com/in/sowmya-cherukupally-a92911251">💼 LinkedIn</a>
+    <a href="https://github.com/sowmya-ch-19">🐙 GitHub</a>
   </div>
-
-  <a class="resume-btn"
-   href="SowmyaCherukupallyResume.pdf"
-   download>
-   ⬇ Download Resume
-</a>
-
 </section>
 
 <section class="scene">
@@ -291,6 +260,7 @@ It leverages vector embeddings for similarity matching and provides an streamlit
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
+
 <script>
 let index = 0;
 const track = document.getElementById("track");
@@ -303,17 +273,37 @@ function update() {
   steps.forEach((s,i)=>s.classList.toggle("active", i===index));
 }
 
+/* Desktop keyboard */
 window.addEventListener("keydown", e => {
-  if (e.key === "ArrowRight" && index < 5) index++;
+  if (e.key === "ArrowRight" && index < scenes.length - 1) index++;
   if (e.key === "ArrowLeft" && index > 0) index--;
   update();
 });
 
+/* Sidebar clicks */
 steps.forEach((step, i) => step.onclick = () => { index=i; update(); });
 
 document.querySelector(".start-btn").onclick = () => { index=1; update(); };
 document.querySelector(".end-btn").onclick = () => { index=0; update(); };
 
+/* ✅ MOBILE SWIPE SUPPORT */
+let touchStartX = 0;
+let touchEndX = 0;
+
+document.addEventListener("touchstart", e => {
+  touchStartX = e.changedTouches[0].screenX;
+});
+
+document.addEventListener("touchend", e => {
+  touchEndX = e.changedTouches[0].screenX;
+  const diff = touchStartX - touchEndX;
+
+  if (diff > 50 && index < scenes.length - 1) index++;
+  if (diff < -50 && index > 0) index--;
+  update();
+});
+
+/* 3D background */
 const scene3D = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, .1, 1000);
 camera.position.z = 30;
