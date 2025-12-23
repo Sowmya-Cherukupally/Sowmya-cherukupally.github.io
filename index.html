@@ -1,106 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>3D Test</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<title>JS TEST</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-html, body {
+body {
   margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background: #020617;
-}
-
-/* Start Screen */
-#start {
-  position: fixed;
-  inset: 0;
+  height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle, #0f172a, #020617);
-  z-index: 10;
-}
-
-#start button {
-  padding: 16px 36px;
-  border-radius: 40px;
-  border: none;
-  font-size: 18px;
-  cursor: pointer;
-  background: linear-gradient(135deg, #38bdf8, #22c55e);
-  font-weight: 700;
+  background: limegreen;
+  font-size: 32px;
+  font-family: Arial, sans-serif;
 }
 </style>
 </head>
 
 <body>
-
-<div id="start">
-  <button id="btn">Start Experience</button>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-
-<script>
-let scene, camera, renderer;
-
-document.getElementById("btn").onclick = () => {
-  document.getElementById("start").style.display = "none";
-  init();
-};
-
-function init() {
-
-  // Scene
-  scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x0f172a);
-
-  // Camera
-  camera = new THREE.PerspectiveCamera(
-    60,
-    window.innerWidth / window.innerHeight,
-    0.1,
-    100
-  );
-  camera.position.set(0, 3, 8);
-
-  // Renderer
-  renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  document.body.appendChild(renderer.domElement);
-
-  // Light
-  scene.add(new THREE.AmbientLight(0xffffff, 1));
-  const light = new THREE.DirectionalLight(0xffffff, 1);
-  light.position.set(5, 10, 5);
-  scene.add(light);
-
-  // Grid (VERY VISIBLE)
-  const grid = new THREE.GridHelper(50, 50, 0x38bdf8, 0x1e40af);
-  scene.add(grid);
-
-  // Cube (VERY VISIBLE)
-  const cube = new THREE.Mesh(
-    new THREE.BoxGeometry(2, 2, 2),
-    new THREE.MeshStandardMaterial({ color: 0x22c55e })
-  );
-  cube.position.y = 1;
-  scene.add(cube);
-
-  animate(cube);
-}
-
-function animate(cube) {
-  requestAnimationFrame(() => animate(cube));
-  cube.rotation.y += 0.01;
-  renderer.render(scene, camera);
-}
-</script>
-
+JS IS WORKING
 </body>
 </html>
