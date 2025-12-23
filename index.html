@@ -43,6 +43,7 @@ body {
   height: 100vh;
   width: 100vw;
   transition: transform 0.9s cubic-bezier(.22,1,.36,1);
+  will-change: transform;
 }
 
 /* ===== SCENE ===== */
@@ -154,37 +155,68 @@ p {
 <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
 
 <script>
-/* ===== NAVIGATION (SMOOTH & STABLE) ===== */
-const track = document.getElementById("track");
-const scenes = document.querySelectorAll(".scene");
+/* ===============================
+   AUDIO (MOBILE SAFE)
+================================ */
 const sound = document.getElementById("navSound");
+let audioUnlocked = false;
 
-let index = 0;
-let locked = false;
-
-function updateScene() {
-  track.style.transform = `translateX(-${index * 100}vw)`;
-  scenes.forEach((s,i)=>s.classList.toggle("active", i===index));
-
-  sound.currentTime = 0;
-  sound.play().catch(()=>{});
+function unlockAudio() {
+  if (audioUnlocked) return;
+  sound.volume = 0.12; // subtle
+  sound.play().then(() => {
+    sound.pause();
+    sound.currentTime = 0;
+    audioUnlocked = true;
+  }).catch(()=>{});
 }
 
-/* SCROLL */
+window.addEventListener("touchstart", unlockAudio, { once: true });
+window.addEventListener("click", unlockAudio, { once: true });
+
+/* ===============================
+   NAVIGATION (NO LAG)
+================================ */
+const track = document.getElementById("track");
+const scenes = document.querySelectorAll(".scene");
+
+let index = 0;
+let isAnimating = false;
+
+function goTo(i) {
+  if (i < 0 || i >= scenes.length) return;
+  if (isAnimating) return;
+
+  isAnimating = true;
+  index = i;
+
+  track.style.transform = `translateX(-${index * 100}vw)`;
+  scenes.forEach((s, idx) =>
+    s.classList.toggle("active", idx === index)
+  );
+
+  if (audioUnlocked) {
+    sound.currentTime = 0;
+    sound.play().catch(()=>{});
+  }
+
+  setTimeout(() => isAnimating = false, 900);
+}
+
+/* SCROLL (DEBOUNCED) */
+let scrollCooldown = false;
 window.addEventListener("wheel", e => {
-  if (locked) return;
-  locked = true;
+  if (scrollCooldown) return;
+  scrollCooldown = true;
 
-  if (e.deltaY > 0 && index < scenes.length - 1) index++;
-  if (e.deltaY < 0 && index > 0) index--;
+  if (e.deltaY > 0) goTo(index + 1);
+  if (e.deltaY < 0) goTo(index - 1);
 
-  updateScene();
-  setTimeout(()=>locked=false, 900);
-}, { passive:true });
+  setTimeout(() => scrollCooldown = false, 600);
+}, { passive: true });
 
 /* SWIPE */
 let startX = 0;
-
 window.addEventListener("touchstart", e => {
   startX = e.touches[0].clientX;
 });
@@ -193,10 +225,8 @@ window.addEventListener("touchend", e => {
   const diff = startX - e.changedTouches[0].clientX;
   if (Math.abs(diff) < 60) return;
 
-  if (diff > 0 && index < scenes.length - 1) index++;
-  if (diff < 0 && index > 0) index--;
-
-  updateScene();
+  if (diff > 0) goTo(index + 1);
+  if (diff < 0) goTo(index - 1);
 });
 
 /* BLOCK ARROWS */
@@ -204,33 +234,42 @@ window.addEventListener("keydown", e => {
   if (e.key.includes("Arrow")) e.preventDefault();
 });
 
-/* ===== 3D BACKGROUND (SUBTLE & SMOOTH) ===== */
+/* ===============================
+   3D BACKGROUND (SMOOTH)
+================================ */
 const scene3D = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 1000);
 camera.position.z = 25;
 
-const renderer = new THREE.WebGLRenderer({ canvas: bg, alpha:true, antialias:true });
+const renderer = new THREE.WebGLRenderer({
+  canvas: bg,
+  alpha: true,
+  antialias: true
+});
 renderer.setSize(innerWidth, innerHeight);
 
-const geometry = new THREE.IcosahedronGeometry(4, 1);
-const material = new THREE.MeshStandardMaterial({
-  color: 0x38bdf8,
-  wireframe: true
-});
+const mesh = new THREE.Mesh(
+  new THREE.IcosahedronGeometry(4, 1),
+  new THREE.MeshStandardMaterial({
+    color: 0x38bdf8,
+    wireframe: true
+  })
+);
 
-const mesh = new THREE.Mesh(geometry, material);
 scene3D.add(mesh);
-
 scene3D.add(new THREE.AmbientLight(0xffffff, 0.8));
 
+let targetX = 0, targetY = 0;
 window.addEventListener("mousemove", e => {
-  mesh.rotation.y = e.clientX * 0.0004;
-  mesh.rotation.x = e.clientY * 0.0004;
+  targetX = (e.clientX / innerWidth - 0.5) * 0.6;
+  targetY = (e.clientY / innerHeight - 0.5) * 0.6;
 });
 
 function animate() {
   requestAnimationFrame(animate);
   mesh.rotation.y += 0.002;
+  mesh.rotation.x += (targetY - mesh.rotation.x) * 0.05;
+  mesh.rotation.y += (targetX - mesh.rotation.y) * 0.05;
   renderer.render(scene3D, camera);
 }
 animate();
