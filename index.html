@@ -128,10 +128,11 @@ canvas { display: block; }
 <div id="hint">← Swipe / A for Contact • Swipe / D for Projects →</div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
 
 <script>
 let scene, camera, renderer;
-let dice, path;
+let dice, model = null, path;
 let t = 0.5, targetT = 0.5;
 let bounce = 0;
 
@@ -177,18 +178,33 @@ function init() {
     new THREE.Vector3(6, 1.1, 0)
   ]);
   const pts = path.getPoints(80);
-  const geo = new THREE.BufferGeometry().setFromPoints(pts);
   scene.add(new THREE.Line(
-    geo,
+    new THREE.BufferGeometry().setFromPoints(pts),
     new THREE.LineBasicMaterial({ color: 0x38bdf8 })
   ));
 
-  // DICE
+  // FALLBACK CUBE (ALWAYS RENDERS)
   dice = new THREE.Mesh(
     new THREE.BoxGeometry(2.2, 2.2, 2.2),
     new THREE.MeshStandardMaterial({ color: 0x22c55e })
   );
   scene.add(dice);
+
+  // LOAD model.glb SAFELY
+  const loader = new THREE.GLTFLoader();
+  loader.load(
+    "model.glb",
+    gltf => {
+      model = gltf.scene;
+      model.scale.set(1.4, 1.4, 1.4);
+      scene.add(model);
+      scene.remove(dice); // remove cube ONLY after model exists
+    },
+    undefined,
+    err => {
+      console.warn("model.glb failed – using cube", err);
+    }
+  );
 
   // AUDIO
   listener = new THREE.AudioListener();
@@ -237,8 +253,9 @@ function animate() {
   const y = Math.sin(bounce) * 0.15;
 
   const p = path.getPoint(t);
-  dice.position.set(p.x, p.y + y, p.z);
-  dice.rotation.z -= (targetT - t) * 2;
+  const active = model || dice;
+  active.position.set(p.x, p.y + y, p.z);
+  active.rotation.z -= (targetT - t) * 2;
 
   // PANELS
   if (t < 0.25) {
@@ -268,6 +285,7 @@ function onResize() {
   renderer.setSize(innerWidth, innerHeight);
 }
 </script>
+
 
 </body>
 </html>
