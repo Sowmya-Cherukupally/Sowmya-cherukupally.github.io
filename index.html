@@ -2,264 +2,196 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Sowmya Cherukupally | Interactive Portfolio</title>
+<title>Sowmya Cherukupally | Data Engineer</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 <style>
+* {
+  box-sizing: border-box;
+}
+
 html, body {
   margin: 0;
-  padding: 0;
-  width: 100%;
   height: 100%;
-  overflow: hidden;
-  background: #020617;
   font-family: Inter, Arial, sans-serif;
   color: #e5e7eb;
+  background: #020617;
+  overflow-x: hidden;
 }
 
-/* START SCREEN */
-#start {
+/* 3D BACKGROUND */
+#bg {
   position: fixed;
   inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: radial-gradient(circle, #0f172a, #020617);
-  z-index: 10;
+  z-index: -1;
 }
 
-#start button {
-  padding: 18px 44px;
-  border-radius: 40px;
-  border: none;
-  font-size: 18px;
-  font-weight: 700;
-  cursor: pointer;
-  background: linear-gradient(135deg, #38bdf8, #22c55e);
+/* CONTENT */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 80px 24px;
 }
 
-/* HUD */
-#hud {
-  position: fixed;
-  bottom: 15px;
-  left: 15px;
-  font-size: 13px;
-  opacity: 0.7;
-  z-index: 5;
+h1 {
+  font-size: 42px;
+  margin-bottom: 10px;
 }
 
-/* SOUND TOGGLE */
-#soundToggle {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  cursor: pointer;
-  font-size: 18px;
-  z-index: 6;
+.subtitle {
+  opacity: 0.75;
+  margin-bottom: 50px;
 }
 
-/* PROJECT PANEL */
-#projects {
-  position: fixed;
-  top: 50%;
-  right: 20px;
-  transform: translateY(-50%);
-  width: 360px;
-  max-height: 80vh;
-  overflow-y: auto;
-  background: rgba(2,6,23,0.9);
-  border-radius: 14px;
-  padding: 16px;
-  z-index: 6;
+.section-title {
+  font-size: 26px;
+  margin: 60px 0 24px;
 }
 
-.project {
-  margin-bottom: 20px;
+/* PROJECTS */
+.projects {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
 }
 
-.project img {
+.card {
+  background: rgba(255,255,255,0.06);
+  border-radius: 16px;
+  padding: 18px;
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  background: rgba(255,255,255,0.1);
+}
+
+.card img {
   width: 100%;
-  border-radius: 10px;
-  margin-bottom: 8px;
+  border-radius: 12px;
+  margin-bottom: 14px;
 }
 
-.project h3 {
-  margin: 6px 0;
+.card h3 {
+  margin: 8px 0;
 }
 
-.project p {
-  font-size: 13px;
-  line-height: 1.5;
+.card p {
+  font-size: 14px;
+  line-height: 1.6;
   opacity: 0.85;
 }
 
-.project a {
+.card a {
   color: #38bdf8;
   text-decoration: none;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 /* CONTACT */
-#contact {
-  position: fixed;
-  bottom: 15px;
-  right: 20px;
-  font-size: 13px;
-  opacity: 0.8;
-  z-index: 6;
+.footer {
+  margin-top: 80px;
+  font-size: 14px;
+  opacity: 0.85;
 }
 
-#contact a {
+.footer a {
   color: #22c55e;
   text-decoration: none;
-  margin-left: 6px;
+  margin-right: 12px;
 }
-
-canvas { display: block; }
 </style>
 </head>
 
 <body>
 
-<!-- START -->
-<div id="start">
-  <button id="startBtn">Start Experience</button>
-</div>
+<!-- 3D BACKGROUND -->
+<canvas id="bg"></canvas>
 
-<div id="hud">Interactive 3D Portfolio • Mouse to look</div>
-<div id="soundToggle">🔊</div>
-
-<!-- PROJECTS -->
-<div id="projects">
-  <div class="project">
-    <img src="data.jpg" alt="Automated Data Ingestion">
-    <h3>Automated Data Ingestion & Transformation</h3>
-    <p>
-      Designed and implemented a fully automated data ingestion pipeline using Snowflake,
-      PySpark, and Python. The system ingests raw files from cloud storage, applies transformation
-      logic, enforces data quality checks, and loads curated datasets into analytics-ready tables
-      following medallion architecture.
-    </p>
-    <a href="https://github.com/sowmya-ch-19/Agentic" target="_blank">GitHub →</a>
+<div class="container">
+  <h1>Sowmya Cherukupally</h1>
+  <div class="subtitle">
+    Data Engineer • Python • Snowflake • PySpark • AI-driven Data Pipelines
   </div>
 
-  <div class="project">
-    <img src="realestate.jpg" alt="Real Estate Tool">
-    <h3>Real Estate Comparison Tool</h3>
-    <p>
-      Developed a real estate comparison tool using vector search capabilities.
-      The application allows users to compare properties based on price, location,
-      and amenities, leveraging vector embeddings and a Streamlit UI.
-    </p>
-    <a href="https://github.com/sowmya-ch-19/PropelensRealestate" target="_blank">GitHub →</a>
-  </div>
-</div>
+  <div class="section-title">Projects</div>
 
-<!-- CONTACT -->
-<div id="contact">
-  📞 +917095338146 |
-  <a href="https://www.linkedin.com/in/sowmya-cherukupally-a92911251" target="_blank">LinkedIn</a> |
-  <a href="https://github.com/Sowmya-Cherukupally" target="_blank">GitHub</a> |
-  <a href="SowmyaCherukupallyResume.pdf" target="_blank">Resume</a>
+  <div class="projects">
+    <div class="card">
+      <img src="data.jpg" alt="Data Ingestion">
+      <h3>Automated Data Ingestion & Transformation</h3>
+      <p>
+        Designed and implemented a fully automated data ingestion pipeline using
+        Snowflake, PySpark, and Python. The system ingests raw files from cloud storage,
+        applies transformations, enforces data quality checks, and follows medallion architecture.
+      </p>
+      <a href="https://github.com/sowmya-ch-19/Agentic" target="_blank">View on GitHub →</a>
+    </div>
+
+    <div class="card">
+      <img src="realestate.jpg" alt="Real Estate Tool">
+      <h3>Real Estate Comparison Tool</h3>
+      <p>
+        Built a real estate comparison tool using vector search and embeddings.
+        Enables similarity-based property comparison with a Streamlit interface.
+      </p>
+      <a href="https://github.com/sowmya-ch-19/PropelensRealestate" target="_blank">View on GitHub →</a>
+    </div>
+  </div>
+
+  <div class="footer">
+    📞 +917095338146 <br><br>
+    <a href="https://www.linkedin.com/in/sowmya-cherukupally-a92911251" target="_blank">LinkedIn</a>
+    <a href="https://github.com/Sowmya-Cherukupally" target="_blank">GitHub</a>
+    <a href="SowmyaCherukupallyResume.pdf" target="_blank">Resume</a>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
 
 <script>
-let scene, camera, renderer;
-let model = null, fallback;
-let listener, sound;
-let mouseX = 0;
-let soundOn = true;
+/* SUBTLE 3D BACKGROUND (NOT A GAME) */
+const canvas = document.getElementById("bg");
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x020617);
 
-document.getElementById("startBtn").onclick = () => {
-  document.getElementById("start").style.display = "none";
-  init();
-};
+const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 100);
+camera.position.set(0, 2, 6);
 
-function init() {
-  scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x0f172a);
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(devicePixelRatio);
 
-  camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 100);
-  camera.position.set(0, 4, 10);
+scene.add(new THREE.AmbientLight(0xffffff, 1));
+const light = new THREE.DirectionalLight(0xffffff, 1.2);
+light.position.set(5,10,5);
+scene.add(light);
 
-  renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setSize(innerWidth, innerHeight);
-  renderer.setPixelRatio(devicePixelRatio);
-  document.body.appendChild(renderer.domElement);
+const grid = new THREE.GridHelper(30, 30, 0x1e40af, 0x1e40af);
+scene.add(grid);
 
-  scene.add(new THREE.AmbientLight(0xffffff, 1.2));
-  const light = new THREE.DirectionalLight(0xffffff, 1.5);
-  light.position.set(5, 10, 5);
-  scene.add(light);
+const loader = new THREE.GLTFLoader();
+loader.load("model.glb", g => {
+  const m = g.scene;
+  m.scale.set(1.2,1.2,1.2);
+  m.position.y = 1;
+  scene.add(m);
+  animate(m);
+});
 
-  scene.add(new THREE.GridHelper(60, 60, 0x38bdf8, 0x1e40af));
-
-  fallback = new THREE.Mesh(
-    new THREE.BoxGeometry(2.5,2.5,2.5),
-    new THREE.MeshStandardMaterial({ color: 0x22c55e })
-  );
-  fallback.position.y = 1.25;
-  scene.add(fallback);
-
-  listener = new THREE.AudioListener();
-  camera.add(listener);
-  sound = new THREE.PositionalAudio(listener);
-
-  new THREE.AudioLoader().load(
-    "ambient.mp3",
-    buffer => {
-      sound.setBuffer(buffer);
-      sound.setLoop(true);
-      sound.setVolume(0.35);
-      sound.play();
-    }
-  );
-
-  new THREE.GLTFLoader().load(
-    "model.glb",
-    g => {
-      model = g.scene;
-      model.scale.set(1.4,1.4,1.4);
-      model.position.y = 1.25;
-      model.add(sound);
-      scene.add(model);
-      scene.remove(fallback);
-    }
-  );
-
-  window.addEventListener("mousemove", e => {
-    mouseX = (e.clientX / innerWidth - 0.5) * 2;
-  });
-
-  window.addEventListener("resize", () => {
-    camera.aspect = innerWidth/innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(innerWidth, innerHeight);
-  });
-
-  animate();
-}
-
-function animate() {
-  requestAnimationFrame(animate);
-
-  if (model) model.rotation.y += 0.01;
-  else fallback.rotation.y += 0.01;
-
-  camera.position.x += (mouseX*4 - camera.position.x) * 0.05;
-  camera.lookAt(0,1.2,0);
-
+function animate(model) {
+  requestAnimationFrame(() => animate(model));
+  model.rotation.y += 0.002;
   renderer.render(scene, camera);
 }
 
-document.getElementById("soundToggle").onclick = () => {
-  soundOn = !soundOn;
-  sound.setVolume(soundOn ? 0.35 : 0);
-  document.getElementById("soundToggle").textContent = soundOn ? "🔊" : "🔇";
-};
+window.addEventListener("resize", () => {
+  camera.aspect = innerWidth/innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
 </script>
 
 </body>
