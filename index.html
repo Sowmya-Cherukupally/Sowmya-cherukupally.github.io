@@ -16,26 +16,23 @@ html,body{
 }
 canvas{display:block}
 
-/* WORLD BOARDS */
+/* SIGN BOARDS */
 .board{
   position:fixed;
-  padding:10px 14px;
-  font-size:12px;
+  padding:8px 12px;
+  font-size:11px;
   letter-spacing:1px;
-  background:rgba(2,6,23,0.8);
+  background:rgba(2,6,23,0.85);
   border:1px solid rgba(56,189,248,0.25);
   border-radius:6px;
   color:#94a3b8;
   text-transform:uppercase;
-  pointer-events:none; /* 👈 not clickable */
-  backdrop-filter: blur(6px);
+  pointer-events:none;
 }
-
-/* Board positions */
-#board-contact{left:20px; top:55%;}
-#board-resume{left:120px; top:40%;}
-#board-skills{right:120px; top:40%;}
-#board-projects{right:20px; top:55%;}
+#board-contact{left:60px; top:58%;}
+#board-resume{left:120px; top:42%;}
+#board-skills{right:120px; top:42%;}
+#board-projects{right:60px; top:58%;}
 
 /* PANELS */
 .panel{
@@ -73,11 +70,11 @@ canvas{display:block}
 
 <body>
 
-<!-- WORLD BOARDS -->
-<div id="board-contact" class="board">← LET’S TALK</div>
-<div id="board-resume" class="board">RESUME THIS WAY</div>
-<div id="board-skills" class="board">SKILLS AHEAD →</div>
-<div id="board-projects" class="board">PROJECTS BEYOND →</div>
+<!-- SIGN BOARDS (WORLD HINTS) -->
+<div id="board-contact" class="board">CONTACT ←</div>
+<div id="board-resume" class="board">RESUME</div>
+<div id="board-skills" class="board">SKILLS</div>
+<div id="board-projects" class="board">→ PROJECTS</div>
 
 <!-- PANELS -->
 <div id="leftPanel" class="panel">
@@ -93,9 +90,14 @@ canvas{display:block}
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 
 <script>
-let scene,camera,renderer,dice,path;
+let scene,camera,renderer,dice;
 let t=0.5,targetT=0.5,bounce=0;
+let activePath;
 
+// PATHS
+let mainPath,leftPath,rightPath;
+
+// UI
 const leftPanel=document.getElementById("leftPanel");
 const rightPanel=document.getElementById("rightPanel");
 const leftTitle=document.getElementById("leftTitle");
@@ -108,7 +110,7 @@ window.onload=()=>{
   scene.background=new THREE.Color(0x020617);
 
   camera=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,0.1,100);
-  camera.position.set(0,4,12);
+  camera.position.set(0,4,14);
 
   renderer=new THREE.WebGLRenderer({antialias:true});
   renderer.setSize(innerWidth,innerHeight);
@@ -120,21 +122,34 @@ window.onload=()=>{
   d.position.set(5,10,5);
   scene.add(d);
 
-  scene.add(new THREE.GridHelper(60,60,0x38bdf8,0x1e40af));
+  scene.add(new THREE.GridHelper(80,80,0x38bdf8,0x1e40af));
 
-  path=new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-8,1.1,0),
-    new THREE.Vector3(-3,1.6,-1.2),
-    new THREE.Vector3(0,1.8,-1.8),
-    new THREE.Vector3(3,1.6,-1.2),
-    new THREE.Vector3(8,1.1,0)
+  // MAIN PATH
+  mainPath=new THREE.CatmullRomCurve3([
+    new THREE.Vector3(-2,1.1,0),
+    new THREE.Vector3(0,1.4,-1.2),
+    new THREE.Vector3(2,1.1,0)
   ]);
 
-  const pts=path.getPoints(100);
-  scene.add(new THREE.Line(
-    new THREE.BufferGeometry().setFromPoints(pts),
-    new THREE.LineBasicMaterial({color:0x38bdf8})
-  ));
+  // LEFT BRANCH
+  leftPath=new THREE.CatmullRomCurve3([
+    new THREE.Vector3(0,1.1,0),
+    new THREE.Vector3(-3,1.5,-1.2),
+    new THREE.Vector3(-6,1.1,0)
+  ]);
+
+  // RIGHT BRANCH
+  rightPath=new THREE.CatmullRomCurve3([
+    new THREE.Vector3(0,1.1,0),
+    new THREE.Vector3(3,1.5,-1.2),
+    new THREE.Vector3(6,1.1,0)
+  ]);
+
+  drawPath(mainPath);
+  drawPath(leftPath);
+  drawPath(rightPath);
+
+  activePath=mainPath;
 
   dice=new THREE.Mesh(
     new THREE.BoxGeometry(2.2,2.2,2.2),
@@ -143,20 +158,27 @@ window.onload=()=>{
   scene.add(dice);
 
   window.addEventListener("keydown",e=>{
-    if(e.key==="a"||e.key==="ArrowLeft")targetT=Math.max(0,targetT-0.25);
-    if(e.key==="d"||e.key==="ArrowRight")targetT=Math.min(1,targetT+0.25);
-  });
-
-  let sx=0;
-  window.addEventListener("touchstart",e=>sx=e.touches[0].clientX);
-  window.addEventListener("touchend",e=>{
-    const dx=e.changedTouches[0].clientX-sx;
-    if(dx>40) targetT=Math.min(1,targetT+0.25);
-    if(dx<-40) targetT=Math.max(0,targetT-0.25);
+    if(e.key==="ArrowLeft"){
+      activePath=leftPath; targetT=1;
+    }
+    if(e.key==="ArrowRight"){
+      activePath=rightPath; targetT=1;
+    }
+    if(e.key==="ArrowDown"){
+      activePath=mainPath; targetT=1;
+    }
   });
 
   animate();
 };
+
+function drawPath(curve){
+  const pts=curve.getPoints(40);
+  scene.add(new THREE.Line(
+    new THREE.BufferGeometry().setFromPoints(pts),
+    new THREE.LineBasicMaterial({color:0x38bdf8})
+  ));
+}
 
 function animate(){
   requestAnimationFrame(animate);
@@ -165,46 +187,25 @@ function animate(){
   bounce+=Math.abs(targetT-t)*0.15;
 
   const y=Math.sin(bounce)*0.15;
-  const p=path.getPoint(t);
+  const p=activePath.getPoint(Math.min(t,1));
+
   dice.position.set(p.x,p.y+y,p.z);
 
-  // CONTENT REVEAL (DISCOVERY)
-  if(t<0.2){
+  // LEFT PATH CONTENT
+  if(activePath===leftPath && t>0.9){
     leftPanel.classList.add("show");
     rightPanel.classList.remove("show");
-    leftTitle.textContent="CONTACT";
+    leftTitle.textContent="CONTACT & RESUME";
     leftContent.innerHTML=`
       <p>📞 +917095338146</p>
       <p>📧 cherukupally.sowmya19@gmail.com</p>
-      <p>
-        <a href="https://www.linkedin.com/in/sowmya-cherukupally-a92911251" target="_blank">LinkedIn</a><br>
-        <a href="https://github.com/Sowmya-Cherukupally" target="_blank">GitHub</a>
-      </p>`;
+      <a href="SowmyaCherukupallyResume.pdf" target="_blank">Resume →</a>`;
   }
-  else if(t<0.4){
-    leftPanel.classList.add("show");
-    rightPanel.classList.remove("show");
-    leftTitle.textContent="RESUME";
-    leftContent.innerHTML=`
-      <a href="SowmyaCherukupallyResume.pdf" target="_blank">Download Resume →</a>`;
-  }
-  else if(t>0.8){
+  // RIGHT PATH CONTENT
+  else if(activePath===rightPath && t>0.9){
     rightPanel.classList.add("show");
     leftPanel.classList.remove("show");
-    rightTitle.textContent="PROJECTS";
-    rightContent.innerHTML=`
-      <strong>Automated Data Ingestion</strong>
-      <p>Snowflake + PySpark pipeline.</p>
-      <a href="https://github.com/sowmya-ch-19/Agentic" target="_blank">GitHub →</a>
-      <hr style="opacity:.2">
-      <strong>Real Estate Comparison Tool</strong>
-      <p>Vector-based property comparison.</p>
-      <a href="https://github.com/sowmya-ch-19/PropelensRealestate" target="_blank">GitHub →</a>`;
-  }
-  else if(t>0.6){
-    rightPanel.classList.add("show");
-    leftPanel.classList.remove("show");
-    rightTitle.textContent="SKILLS";
+    rightTitle.textContent="SKILLS & PROJECTS";
     rightContent.innerHTML=`
       <div class="skills">
         <div class="skill">Python</div>
@@ -212,8 +213,11 @@ function animate(){
         <div class="skill">PySpark</div>
         <div class="skill">SQL</div>
         <div class="skill">DBT</div>
-        <div class="skill">Data Pipelines</div>
-      </div>`;
+        <div class="skill">Pipelines</div>
+      </div>
+      <hr style="opacity:.2">
+      <strong>Automated Data Ingestion</strong>
+      <p>Snowflake + PySpark pipeline.</p>`;
   }
   else{
     leftPanel.classList.remove("show");
