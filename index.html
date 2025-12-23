@@ -10,250 +10,120 @@
 <style>
 html, body {
   margin: 0;
-  padding: 0;
   height: 100%;
   overflow: hidden;
-}
-
-* {
-  box-sizing: border-box;
-  font-family: 'Inter', sans-serif;
-}
-
-body {
-  background:
-    radial-gradient(800px circle at 15% 25%, rgba(56,189,248,0.35), transparent 55%),
-    radial-gradient(600px circle at 85% 75%, rgba(34,197,94,0.30), transparent 55%),
-    #020617;
+  background: #020617;
   color: #e5e7eb;
+  font-family: Inter, sans-serif;
 }
 
-/* ===== START EXPERIENCE ===== */
-.start-overlay {
+/* START OVERLAY */
+.start {
   position: fixed;
   inset: 0;
-  z-index: 10;
+  background: radial-gradient(circle at center, #020617, #000);
   display: flex;
-  align-items: center;
-  justify-content: center;
   flex-direction: column;
-  background: rgba(2,6,23,0.92);
-  backdrop-filter: blur(12px);
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
   cursor: pointer;
-  transition: opacity 0.8s ease, visibility 0.8s ease;
 }
 
-.start-overlay.hidden {
-  opacity: 0;
-  visibility: hidden;
-}
-
-.start-title {
-  font-size: 48px;
-  letter-spacing: 2px;
-  margin-bottom: 12px;
-}
-
-.start-sub {
-  font-size: 14px;
-  opacity: 0.6;
-  margin-bottom: 40px;
-}
-
-.start-ring {
-  width: 110px;
-  height: 110px;
+.ring {
+  width: 120px;
+  height: 120px;
+  border: 3px solid #38bdf8;
   border-radius: 50%;
-  border: 2px solid #38bdf8;
   display: flex;
   align-items: center;
   justify-content: center;
+  animation: pulse 2s infinite;
   color: #38bdf8;
-  font-size: 14px;
-  letter-spacing: 2px;
-  animation: ringPulse 2.5s infinite;
+  letter-spacing: 3px;
 }
 
-@keyframes ringPulse {
-  0% { box-shadow: 0 0 0 0 rgba(56,189,248,0.5); }
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(56,189,248,.6); }
   70% { box-shadow: 0 0 0 40px rgba(56,189,248,0); }
-  100% { box-shadow: 0 0 0 0 rgba(56,189,248,0); }
 }
 
-/* ===== TRACK ===== */
 .track {
   display: flex;
   height: 100vh;
-  width: 100vw;
-  transition: transform 0.8s cubic-bezier(.22,1,.36,1);
+  transition: transform .8s cubic-bezier(.22,1,.36,1);
 }
 
 .scene {
   min-width: 100vw;
   padding: 80px;
   opacity: 0;
-  transform: translateY(40px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
+  transform: translateY(30px);
+  transition: .6s;
 }
 
 .scene.active {
   opacity: 1;
   transform: translateY(0);
 }
-
-.scene-number {
-  font-size: 12px;
-  letter-spacing: 4px;
-  color: #38bdf8;
-  margin-bottom: 14px;
-}
-
-h2 { font-size: 36px; margin-bottom: 18px; }
-
-p {
-  max-width: 640px;
-  font-size: 18px;
-  line-height: 1.7;
-  color: #94a3b8;
-}
-
-.badges span {
-  display: inline-block;
-  margin: 6px;
-  padding: 8px 14px;
-  border-radius: 20px;
-  border: 1px solid #1e293b;
-}
 </style>
 </head>
 
 <body>
 
-<div class="start-overlay" id="startOverlay">
-  <div class="start-title">Sowmya Cherukupally</div>
-  <div class="start-sub">Tap or click to begin</div>
-  <div class="start-ring">START</div>
+<div class="start" id="start">
+  <h1>Sowmya Cherukupally</h1>
+  <p>Click to start experience</p>
+  <div class="ring">START</div>
 </div>
 
 <div class="track" id="track">
-
-<section class="scene active">
-  <div class="scene-number">INTRO</div>
-  <h2>Data Engineer</h2>
-  <p>Scroll or swipe to explore my work.</p>
-</section>
-
-<section class="scene">
-  <div class="scene-number">SKILLS</div>
-  <div class="badges">
-    <span>Snowflake</span><span>Python</span><span>SQL</span>
-    <span>PySpark</span><span>AWS</span><span>GenAI</span>
-  </div>
-</section>
-
-<section class="scene">
-  <div class="scene-number">PROJECT</div>
-  <p>Automated data ingestion pipeline using Snowflake and PySpark.</p>
-</section>
-
-<section class="scene">
-  <div class="scene-number">CONTACT</div>
-  <p>Email: cherukupally.sowmya19@gmail.com</p>
-</section>
-
+  <div class="scene active">INTRO</div>
+  <div class="scene">SKILLS</div>
+  <div class="scene">PROJECTS</div>
+  <div class="scene">CONTACT</div>
 </div>
 
 <script>
-/* ===============================
-   WEB AUDIO (GUARANTEED SOUND)
-================================ */
-let audioCtx = null;
-
-function playClickSound() {
-  if (!audioCtx) return;
-
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-
-  osc.type = "sine";
-  osc.frequency.value = 800;
-  gain.gain.value = 0.08;
-
-  osc.connect(gain);
-  gain.connect(audioCtx.destination);
-
-  osc.start();
-  gain.gain.exponentialRampToValueAtTime(
-    0.001,
-    audioCtx.currentTime + 0.15
-  );
-  osc.stop(audioCtx.currentTime + 0.15);
-}
-
-/* ===============================
-   STATE
-================================ */
+let ctx;
 let started = false;
 let index = 0;
 
-const startOverlay = document.getElementById("startOverlay");
+const start = document.getElementById("start");
 const track = document.getElementById("track");
 const scenes = document.querySelectorAll(".scene");
 
-/* ===============================
-   START EXPERIENCE
-================================ */
-startOverlay.addEventListener("click", () => {
-  if (started) return;
-
-  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  audioCtx.resume();
-
-  started = true;
-  startOverlay.classList.add("hidden");
-
-  playClickSound(); // 🔊 CONFIRMATION SOUND
-});
-
-/* ===============================
-   NAVIGATION
-================================ */
-function goTo(i) {
-  if (!started) return;
-  if (i < 0 || i >= scenes.length) return;
-
-  index = i;
-  track.style.transform = `translateX(-${index * 100}vw)`;
-  scenes.forEach((s,idx)=>s.classList.toggle("active", idx===index));
-
-  playClickSound(); // 🔊 NAV SOUND
+function beep() {
+  if (!ctx) return;
+  const o = ctx.createOscillator();
+  const g = ctx.createGain();
+  o.frequency.value = 500;
+  g.gain.value = 0.25;
+  o.connect(g);
+  g.connect(ctx.destination);
+  o.start();
+  o.stop(ctx.currentTime + 0.15);
 }
 
-/* SCROLL */
+start.onclick = () => {
+  ctx = new (window.AudioContext || window.webkitAudioContext)();
+  ctx.resume();
+  started = true;
+  start.remove();
+  beep();
+};
+
+function go(dir) {
+  if (!started) return;
+  index = Math.max(0, Math.min(scenes.length - 1, index + dir));
+  track.style.transform = `translateX(-${index * 100}vw)`;
+  scenes.forEach((s,i)=>s.classList.toggle("active", i===index));
+  beep();
+}
+
 window.addEventListener("wheel", e => {
-  if (!started) return;
-  if (e.deltaY > 0) goTo(index + 1);
-  if (e.deltaY < 0) goTo(index - 1);
-});
-
-/* SWIPE */
-let startX = 0;
-window.addEventListener("touchstart", e => {
-  if (!started) return;
-  startX = e.touches[0].clientX;
-});
-
-window.addEventListener("touchend", e => {
-  if (!started) return;
-  const diff = startX - e.changedTouches[0].clientX;
-  if (Math.abs(diff) < 60) return;
-  if (diff > 0) goTo(index + 1);
-  if (diff < 0) goTo(index - 1);
-});
-
-/* BLOCK ARROWS */
-window.addEventListener("keydown", e => {
-  if (e.key.includes("Arrow")) e.preventDefault();
+  if (e.deltaY > 0) go(1);
+  if (e.deltaY < 0) go(-1);
 });
 </script>
 
