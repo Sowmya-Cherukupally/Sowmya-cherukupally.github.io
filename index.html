@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Sowmya Cherukupally | Interactive Portfolio</title>
+<title>Sowmya Cherukupally | Interactive 3D Portfolio</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -132,10 +132,12 @@ canvas { display: block; }
 <div id="hint">← Swipe / A for Contact • Swipe / D for Projects →</div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
 
 <script>
 let scene, camera, renderer;
-let dice, path;
+let dice;              // will be cube OR model
+let path;
 let t = 0.5, targetT = 0.5;
 let bounce = 0;
 
@@ -183,12 +185,28 @@ function init() {
   const mat = new THREE.LineBasicMaterial({ color: 0x38bdf8 });
   scene.add(new THREE.Line(geo, mat));
 
-  // DICE (stable cube)
+  // 🔹 FALLBACK CUBE (ALWAYS CREATED)
   dice = new THREE.Mesh(
     new THREE.BoxGeometry(2.2, 2.2, 2.2),
     new THREE.MeshStandardMaterial({ color: 0x22c55e })
   );
   scene.add(dice);
+
+  // 🔹 TRY LOAD MODEL (SAFE)
+  const loader = new THREE.GLTFLoader();
+  loader.load(
+    "model.glb",
+    gltf => {
+      scene.remove(dice);          // remove cube
+      dice = gltf.scene;           // replace with model
+      dice.scale.set(1.4, 1.4, 1.4);
+      scene.add(dice);
+    },
+    undefined,
+    err => {
+      console.warn("model.glb failed, using cube", err);
+    }
+  );
 
   // AUDIO
   listener = new THREE.AudioListener();
