@@ -17,6 +17,32 @@ html,body{
 
 canvas{display:block}
 
+/* TOP NAV (BRUNO-STYLE) */
+#nav{
+  position:fixed;
+  top:14px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  gap:18px;
+  z-index:10;
+}
+
+.nav-item{
+  font-size:13px;
+  letter-spacing:1px;
+  color:#94a3b8;
+  cursor:pointer;
+  padding:6px 10px;
+  border-radius:8px;
+  transition:all 0.2s ease;
+}
+
+.nav-item:hover{
+  color:#38bdf8;
+  background:rgba(56,189,248,0.1);
+}
+
 /* HINT */
 #hint{
   position:fixed;
@@ -49,12 +75,6 @@ canvas{display:block}
 #leftPanel{left:20px;}
 #rightPanel{right:20px;}
 
-.panel img{
-  width:100%;
-  border-radius:12px;
-  margin-bottom:10px;
-}
-
 .panel a{
   color:#38bdf8;
   text-decoration:none;
@@ -83,19 +103,25 @@ canvas{display:block}
 
 <body>
 
-<div id="hint">
-  Move dice → CONTACT → RESUME → SKILLS → PROJECTS
+<!-- TOP NAV -->
+<div id="nav">
+  <div class="nav-item" onclick="goTo('contact')">CONTACT</div>
+  <div class="nav-item" onclick="goTo('resume')">RESUME</div>
+  <div class="nav-item" onclick="goTo('skills')">SKILLS</div>
+  <div class="nav-item" onclick="goTo('projects')">PROJECTS</div>
 </div>
+
+<div id="hint">Tap a heading or swipe / A / D to move</div>
 
 <!-- LEFT PANEL -->
 <div id="leftPanel" class="panel">
-  <h2 id="leftTitle">CONTACT</h2>
+  <h2 id="leftTitle"></h2>
   <div id="leftContent"></div>
 </div>
 
 <!-- RIGHT PANEL -->
 <div id="rightPanel" class="panel">
-  <h2 id="rightTitle">SKILLS</h2>
+  <h2 id="rightTitle"></h2>
   <div id="rightContent"></div>
 </div>
 
@@ -112,12 +138,20 @@ const leftContent=document.getElementById("leftContent");
 const rightTitle=document.getElementById("rightTitle");
 const rightContent=document.getElementById("rightContent");
 
+/* NAV TARGETS */
+function goTo(section){
+  if(section==="contact") targetT=0.1;
+  if(section==="resume") targetT=0.3;
+  if(section==="skills") targetT=0.7;
+  if(section==="projects") targetT=0.9;
+}
+
 window.onload=()=>{
   scene=new THREE.Scene();
   scene.background=new THREE.Color(0x020617);
 
   camera=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,0.1,100);
-  camera.position.set(0,4,12); // ⬅️ dice feels further
+  camera.position.set(0,4,12);
 
   renderer=new THREE.WebGLRenderer({antialias:true});
   renderer.setSize(innerWidth,innerHeight);
@@ -131,7 +165,6 @@ window.onload=()=>{
 
   scene.add(new THREE.GridHelper(60,60,0x38bdf8,0x1e40af));
 
-  // LONGER PATH
   path=new THREE.CatmullRomCurve3([
     new THREE.Vector3(-8,1.1,0),
     new THREE.Vector3(-3,1.6,-1.2),
@@ -178,43 +211,37 @@ function animate(){
 
   dice.position.set(p.x,p.y+y,p.z);
 
-  // LEFT SIDE SECTIONS
-  if(t<0.20){
+  if(t<0.2){
     leftPanel.classList.add("show");
     rightPanel.classList.remove("show");
     leftTitle.textContent="CONTACT";
     leftContent.innerHTML=`
       <p>📞 +917095338146</p>
       <p>📧 cherukupally.sowmya19@gmail.com</p>
-      <p>
-        <a href="https://www.linkedin.com/in/sowmya-cherukupally-a92911251" target="_blank">LinkedIn</a><br>
-        <a href="https://github.com/Sowmya-Cherukupally" target="_blank">GitHub</a>
-      </p>`;
+      <a href="https://www.linkedin.com/in/sowmya-cherukupally-a92911251" target="_blank">LinkedIn</a><br>
+      <a href="https://github.com/Sowmya-Cherukupally" target="_blank">GitHub</a>`;
   }
-  else if(t<0.40){
+  else if(t<0.4){
     leftPanel.classList.add("show");
     rightPanel.classList.remove("show");
     leftTitle.textContent="RESUME";
     leftContent.innerHTML=`
-      <p>
-        <a href="SowmyaCherukupallyResume.pdf" target="_blank">Download Resume →</a>
-      </p>`;
+      <a href="SowmyaCherukupallyResume.pdf" target="_blank">Download Resume →</a>`;
   }
-  // RIGHT SIDE SECTIONS
-  else if(t>0.80){
+  else if(t>0.8){
     rightPanel.classList.add("show");
     leftPanel.classList.remove("show");
     rightTitle.textContent="PROJECTS";
     rightContent.innerHTML=`
       <strong>Automated Data Ingestion</strong>
-      <p>Snowflake + PySpark pipeline with medallion architecture.</p>
+      <p>Snowflake + PySpark pipeline.</p>
       <a href="https://github.com/sowmya-ch-19/Agentic" target="_blank">GitHub →</a>
-      <hr style="opacity:.2;margin:10px 0">
+      <hr style="opacity:.2">
       <strong>Real Estate Comparison Tool</strong>
-      <p>Vector similarity-based property comparison.</p>
+      <p>Vector-based property comparison.</p>
       <a href="https://github.com/sowmya-ch-19/PropelensRealestate" target="_blank">GitHub →</a>`;
   }
-  else if(t>0.60){
+  else if(t>0.6){
     rightPanel.classList.add("show");
     leftPanel.classList.remove("show");
     rightTitle.textContent="SKILLS";
