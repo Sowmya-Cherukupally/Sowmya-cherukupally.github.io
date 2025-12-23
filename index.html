@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Dice Navigation Portfolio</title>
+<title>Dice World Portfolio</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -14,44 +14,34 @@ html,body{
   font-family:Arial, sans-serif;
   color:#e5e7eb;
 }
-
 canvas{display:block}
 
-/* TOP NAV (BRUNO-STYLE) */
-#nav{
+/* WORLD LABELS (Bruno-style) */
+.world-label{
   position:fixed;
-  top:14px;
-  left:50%;
-  transform:translateX(-50%);
-  display:flex;
-  gap:18px;
-  z-index:10;
-}
-
-.nav-item{
-  font-size:13px;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:12px;
   letter-spacing:1px;
   color:#94a3b8;
   cursor:pointer;
   padding:6px 10px;
   border-radius:8px;
+  background:rgba(2,6,23,0.7);
+  border:1px solid rgba(56,189,248,0.15);
   transition:all 0.2s ease;
 }
 
-.nav-item:hover{
+.world-label:hover{
   color:#38bdf8;
-  background:rgba(56,189,248,0.1);
+  border-color:#38bdf8;
 }
 
-/* HINT */
-#hint{
-  position:fixed;
-  bottom:12px;
-  left:50%;
-  transform:translateX(-50%);
-  color:#94a3b8;
-  font-size:13px;
-}
+/* Label positions */
+#label-contact{left:30px; top:55%;}
+#label-resume{left:120px; top:42%;}
+#label-skills{right:120px; top:42%;}
+#label-projects{right:30px; top:55%;}
 
 /* PANELS */
 .panel{
@@ -66,36 +56,25 @@ canvas{display:block}
   pointer-events:none;
   transition:opacity 0.35s ease;
 }
-
 .panel.show{
   opacity:1;
   pointer-events:auto;
 }
-
 #leftPanel{left:20px;}
 #rightPanel{right:20px;}
 
-.panel a{
-  color:#38bdf8;
-  text-decoration:none;
-  font-size:14px;
-}
-
-/* SKILLS */
 .skills{
   display:grid;
   grid-template-columns:repeat(3,1fr);
   gap:10px;
-  margin-top:10px;
 }
-
 .skill{
   background:#020617;
   border:1px solid #1e40af;
   border-radius:10px;
   padding:8px;
-  text-align:center;
   font-size:12px;
+  text-align:center;
   color:#38bdf8;
 }
 </style>
@@ -103,15 +82,11 @@ canvas{display:block}
 
 <body>
 
-<!-- TOP NAV -->
-<div id="nav">
-  <div class="nav-item" onclick="goTo('contact')">CONTACT</div>
-  <div class="nav-item" onclick="goTo('resume')">RESUME</div>
-  <div class="nav-item" onclick="goTo('skills')">SKILLS</div>
-  <div class="nav-item" onclick="goTo('projects')">PROJECTS</div>
-</div>
-
-<div id="hint">Tap a heading or swipe / A / D to move</div>
+<!-- WORLD LABELS -->
+<div id="label-contact" class="world-label" onclick="goTo(0.1)">CONTACT</div>
+<div id="label-resume" class="world-label" onclick="goTo(0.3)">RESUME</div>
+<div id="label-skills" class="world-label" onclick="goTo(0.7)">SKILLS</div>
+<div id="label-projects" class="world-label" onclick="goTo(0.9)">PROJECTS</div>
 
 <!-- LEFT PANEL -->
 <div id="leftPanel" class="panel">
@@ -138,13 +113,8 @@ const leftContent=document.getElementById("leftContent");
 const rightTitle=document.getElementById("rightTitle");
 const rightContent=document.getElementById("rightContent");
 
-/* NAV TARGETS */
-function goTo(section){
-  if(section==="contact") targetT=0.1;
-  if(section==="resume") targetT=0.3;
-  if(section==="skills") targetT=0.7;
-  if(section==="projects") targetT=0.9;
-}
+// Bruno-style navigation
+function goTo(value){ targetT=value; }
 
 window.onload=()=>{
   scene=new THREE.Scene();
@@ -185,19 +155,6 @@ window.onload=()=>{
   );
   scene.add(dice);
 
-  window.addEventListener("keydown",e=>{
-    if(e.key==="a"||e.key==="ArrowLeft")targetT=Math.max(0,targetT-0.25);
-    if(e.key==="d"||e.key==="ArrowRight")targetT=Math.min(1,targetT+0.25);
-  });
-
-  let sx=0;
-  window.addEventListener("touchstart",e=>sx=e.touches[0].clientX);
-  window.addEventListener("touchend",e=>{
-    const dx=e.changedTouches[0].clientX-sx;
-    if(dx>40) targetT=Math.min(1,targetT+0.25);
-    if(dx<-40) targetT=Math.max(0,targetT-0.25);
-  });
-
   animate();
 };
 
@@ -206,11 +163,12 @@ function animate(){
 
   t+=(targetT-t)*0.08;
   bounce+=Math.abs(targetT-t)*0.15;
+
   const y=Math.sin(bounce)*0.15;
   const p=path.getPoint(t);
-
   dice.position.set(p.x,p.y+y,p.z);
 
+  // LEFT
   if(t<0.2){
     leftPanel.classList.add("show");
     rightPanel.classList.remove("show");
@@ -218,8 +176,10 @@ function animate(){
     leftContent.innerHTML=`
       <p>📞 +917095338146</p>
       <p>📧 cherukupally.sowmya19@gmail.com</p>
-      <a href="https://www.linkedin.com/in/sowmya-cherukupally-a92911251" target="_blank">LinkedIn</a><br>
-      <a href="https://github.com/Sowmya-Cherukupally" target="_blank">GitHub</a>`;
+      <p>
+        <a href="https://www.linkedin.com/in/sowmya-cherukupally-a92911251" target="_blank">LinkedIn</a><br>
+        <a href="https://github.com/Sowmya-Cherukupally" target="_blank">GitHub</a>
+      </p>`;
   }
   else if(t<0.4){
     leftPanel.classList.add("show");
@@ -228,6 +188,7 @@ function animate(){
     leftContent.innerHTML=`
       <a href="SowmyaCherukupallyResume.pdf" target="_blank">Download Resume →</a>`;
   }
+  // RIGHT
   else if(t>0.8){
     rightPanel.classList.add("show");
     leftPanel.classList.remove("show");
