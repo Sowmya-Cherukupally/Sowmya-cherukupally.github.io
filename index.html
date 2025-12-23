@@ -16,32 +16,26 @@ html,body{
 }
 canvas{display:block}
 
-/* WORLD LABELS (Bruno-style) */
-.world-label{
+/* WORLD BOARDS */
+.board{
   position:fixed;
-  top:50%;
-  transform:translateY(-50%);
+  padding:10px 14px;
   font-size:12px;
   letter-spacing:1px;
+  background:rgba(2,6,23,0.8);
+  border:1px solid rgba(56,189,248,0.25);
+  border-radius:6px;
   color:#94a3b8;
-  cursor:pointer;
-  padding:6px 10px;
-  border-radius:8px;
-  background:rgba(2,6,23,0.7);
-  border:1px solid rgba(56,189,248,0.15);
-  transition:all 0.2s ease;
+  text-transform:uppercase;
+  pointer-events:none; /* 👈 not clickable */
+  backdrop-filter: blur(6px);
 }
 
-.world-label:hover{
-  color:#38bdf8;
-  border-color:#38bdf8;
-}
-
-/* Label positions */
-#label-contact{left:30px; top:55%;}
-#label-resume{left:120px; top:42%;}
-#label-skills{right:120px; top:42%;}
-#label-projects{right:30px; top:55%;}
+/* Board positions */
+#board-contact{left:20px; top:55%;}
+#board-resume{left:120px; top:40%;}
+#board-skills{right:120px; top:40%;}
+#board-projects{right:20px; top:55%;}
 
 /* PANELS */
 .panel{
@@ -56,10 +50,7 @@ canvas{display:block}
   pointer-events:none;
   transition:opacity 0.35s ease;
 }
-.panel.show{
-  opacity:1;
-  pointer-events:auto;
-}
+.panel.show{opacity:1;}
 #leftPanel{left:20px;}
 #rightPanel{right:20px;}
 
@@ -82,19 +73,18 @@ canvas{display:block}
 
 <body>
 
-<!-- WORLD LABELS -->
-<div id="label-contact" class="world-label" onclick="goTo(0.1)">CONTACT</div>
-<div id="label-resume" class="world-label" onclick="goTo(0.3)">RESUME</div>
-<div id="label-skills" class="world-label" onclick="goTo(0.7)">SKILLS</div>
-<div id="label-projects" class="world-label" onclick="goTo(0.9)">PROJECTS</div>
+<!-- WORLD BOARDS -->
+<div id="board-contact" class="board">← LET’S TALK</div>
+<div id="board-resume" class="board">RESUME THIS WAY</div>
+<div id="board-skills" class="board">SKILLS AHEAD →</div>
+<div id="board-projects" class="board">PROJECTS BEYOND →</div>
 
-<!-- LEFT PANEL -->
+<!-- PANELS -->
 <div id="leftPanel" class="panel">
   <h2 id="leftTitle"></h2>
   <div id="leftContent"></div>
 </div>
 
-<!-- RIGHT PANEL -->
 <div id="rightPanel" class="panel">
   <h2 id="rightTitle"></h2>
   <div id="rightContent"></div>
@@ -112,9 +102,6 @@ const leftTitle=document.getElementById("leftTitle");
 const leftContent=document.getElementById("leftContent");
 const rightTitle=document.getElementById("rightTitle");
 const rightContent=document.getElementById("rightContent");
-
-// Bruno-style navigation
-function goTo(value){ targetT=value; }
 
 window.onload=()=>{
   scene=new THREE.Scene();
@@ -155,6 +142,19 @@ window.onload=()=>{
   );
   scene.add(dice);
 
+  window.addEventListener("keydown",e=>{
+    if(e.key==="a"||e.key==="ArrowLeft")targetT=Math.max(0,targetT-0.25);
+    if(e.key==="d"||e.key==="ArrowRight")targetT=Math.min(1,targetT+0.25);
+  });
+
+  let sx=0;
+  window.addEventListener("touchstart",e=>sx=e.touches[0].clientX);
+  window.addEventListener("touchend",e=>{
+    const dx=e.changedTouches[0].clientX-sx;
+    if(dx>40) targetT=Math.min(1,targetT+0.25);
+    if(dx<-40) targetT=Math.max(0,targetT-0.25);
+  });
+
   animate();
 };
 
@@ -168,7 +168,7 @@ function animate(){
   const p=path.getPoint(t);
   dice.position.set(p.x,p.y+y,p.z);
 
-  // LEFT
+  // CONTENT REVEAL (DISCOVERY)
   if(t<0.2){
     leftPanel.classList.add("show");
     rightPanel.classList.remove("show");
@@ -188,7 +188,6 @@ function animate(){
     leftContent.innerHTML=`
       <a href="SowmyaCherukupallyResume.pdf" target="_blank">Download Resume →</a>`;
   }
-  // RIGHT
   else if(t>0.8){
     rightPanel.classList.add("show");
     leftPanel.classList.remove("show");
