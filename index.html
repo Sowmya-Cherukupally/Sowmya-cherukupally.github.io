@@ -1,197 +1,227 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>Sowmya Cherukupally | Data Engineer</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<title>Sowmya Cherukupally | Interactive 3D Portfolio</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-* {
-  box-sizing: border-box;
-}
-
 html, body {
   margin: 0;
   height: 100%;
+  overflow: hidden;
+  background: #020617;
   font-family: Inter, Arial, sans-serif;
   color: #e5e7eb;
-  background: #020617;
-  overflow-x: hidden;
 }
 
-/* 3D BACKGROUND */
-#bg {
+/* PANELS */
+.panel {
   position: fixed;
-  inset: 0;
-  z-index: -1;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 360px;
+  background: rgba(2,6,23,0.92);
+  border-radius: 16px;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
 }
 
-/* CONTENT */
-.container {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 80px 24px;
+#leftPanel {
+  left: 20px;
 }
 
-h1 {
-  font-size: 42px;
+#rightPanel {
+  right: 20px;
+}
+
+.panel.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.panel h2 {
+  margin-top: 0;
+}
+
+.panel img {
+  width: 100%;
+  border-radius: 12px;
   margin-bottom: 10px;
 }
 
-.subtitle {
-  opacity: 0.75;
-  margin-bottom: 50px;
-}
-
-.section-title {
-  font-size: 26px;
-  margin: 60px 0 24px;
-}
-
-/* PROJECTS */
-.projects {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 24px;
-}
-
-.card {
-  background: rgba(255,255,255,0.06);
-  border-radius: 16px;
-  padding: 18px;
-  transition: transform 0.3s ease, background 0.3s ease;
-}
-
-.card:hover {
-  transform: translateY(-6px);
-  background: rgba(255,255,255,0.1);
-}
-
-.card img {
-  width: 100%;
-  border-radius: 12px;
-  margin-bottom: 14px;
-}
-
-.card h3 {
-  margin: 8px 0;
-}
-
-.card p {
+.panel p {
   font-size: 14px;
   line-height: 1.6;
   opacity: 0.85;
 }
 
-.card a {
+.panel a {
   color: #38bdf8;
   text-decoration: none;
   font-size: 14px;
+  display: inline-block;
+  margin-top: 6px;
 }
 
-/* CONTACT */
-.footer {
-  margin-top: 80px;
-  font-size: 14px;
-  opacity: 0.85;
+#hint {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 13px;
+  opacity: 0.6;
 }
 
-.footer a {
-  color: #22c55e;
-  text-decoration: none;
-  margin-right: 12px;
+/* SOUND ICON */
+#soundToggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  font-size: 18px;
+  cursor: pointer;
+  z-index: 5;
 }
+
+canvas { display: block; }
 </style>
 </head>
 
 <body>
 
-<!-- 3D BACKGROUND -->
-<canvas id="bg"></canvas>
+<div id="soundToggle">🔊</div>
 
-<div class="container">
-  <h1>Sowmya Cherukupally</h1>
-  <div class="subtitle">
-    Data Engineer • Python • Snowflake • PySpark • AI-driven Data Pipelines
-  </div>
-
-  <div class="section-title">Projects</div>
-
-  <div class="projects">
-    <div class="card">
-      <img src="data.jpg" alt="Data Ingestion">
-      <h3>Automated Data Ingestion & Transformation</h3>
-      <p>
-        Designed and implemented a fully automated data ingestion pipeline using
-        Snowflake, PySpark, and Python. The system ingests raw files from cloud storage,
-        applies transformations, enforces data quality checks, and follows medallion architecture.
-      </p>
-      <a href="https://github.com/sowmya-ch-19/Agentic" target="_blank">View on GitHub →</a>
-    </div>
-
-    <div class="card">
-      <img src="realestate.jpg" alt="Real Estate Tool">
-      <h3>Real Estate Comparison Tool</h3>
-      <p>
-        Built a real estate comparison tool using vector search and embeddings.
-        Enables similarity-based property comparison with a Streamlit interface.
-      </p>
-      <a href="https://github.com/sowmya-ch-19/PropelensRealestate" target="_blank">View on GitHub →</a>
-    </div>
-  </div>
-
-  <div class="footer">
-    📞 +917095338146 <br><br>
-    <a href="https://www.linkedin.com/in/sowmya-cherukupally-a92911251" target="_blank">LinkedIn</a>
-    <a href="https://github.com/Sowmya-Cherukupally" target="_blank">GitHub</a>
+<div id="leftPanel" class="panel">
+  <h2>Contact</h2>
+  <p>📞 +917095338146</p>
+  <p>
+    <a href="https://www.linkedin.com/in/sowmya-cherukupally-a92911251" target="_blank">LinkedIn</a><br>
+    <a href="https://github.com/Sowmya-Cherukupally" target="_blank">GitHub</a><br>
     <a href="SowmyaCherukupallyResume.pdf" target="_blank">Resume</a>
-  </div>
+  </p>
 </div>
+
+<div id="rightPanel" class="panel">
+  <h2>Projects</h2>
+
+  <img src="data.jpg">
+  <strong>Automated Data Ingestion & Transformation</strong>
+  <p>
+    Built a fully automated Snowflake + PySpark pipeline enforcing data quality
+    and medallion architecture.
+  </p>
+  <a href="https://github.com/sowmya-ch-19/Agentic" target="_blank">GitHub →</a>
+
+  <hr style="margin:16px 0;opacity:0.2">
+
+  <img src="realestate.jpg">
+  <strong>Real Estate Comparison Tool</strong>
+  <p>
+    Vector search based real estate comparison using embeddings and Streamlit UI.
+  </p>
+  <a href="https://github.com/sowmya-ch-19/PropelensRealestate" target="_blank">GitHub →</a>
+</div>
+
+<div id="hint">← Move left for Contact • Move right for Projects →</div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
 
 <script>
-/* SUBTLE 3D BACKGROUND (NOT A GAME) */
-const canvas = document.getElementById("bg");
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x020617);
+let scene, camera, renderer, model;
+let mouseX = 0;
+let listener, sound;
+let soundOn = true;
 
-const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 100);
-camera.position.set(0, 2, 6);
+const leftPanel = document.getElementById("leftPanel");
+const rightPanel = document.getElementById("rightPanel");
 
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-renderer.setSize(innerWidth, innerHeight);
-renderer.setPixelRatio(devicePixelRatio);
+init();
 
-scene.add(new THREE.AmbientLight(0xffffff, 1));
-const light = new THREE.DirectionalLight(0xffffff, 1.2);
-light.position.set(5,10,5);
-scene.add(light);
+function init() {
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x020617);
 
-const grid = new THREE.GridHelper(30, 30, 0x1e40af, 0x1e40af);
-scene.add(grid);
+  camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 100);
+  camera.position.set(0, 3, 10);
 
-const loader = new THREE.GLTFLoader();
-loader.load("model.glb", g => {
-  const m = g.scene;
-  m.scale.set(1.2,1.2,1.2);
-  m.position.y = 1;
-  scene.add(m);
-  animate(m);
-});
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(innerWidth, innerHeight);
+  renderer.setPixelRatio(devicePixelRatio);
+  document.body.appendChild(renderer.domElement);
 
-function animate(model) {
-  requestAnimationFrame(() => animate(model));
-  model.rotation.y += 0.002;
+  scene.add(new THREE.AmbientLight(0xffffff, 1.2));
+  const light = new THREE.DirectionalLight(0xffffff, 1.5);
+  light.position.set(5, 10, 5);
+  scene.add(light);
+
+  scene.add(new THREE.GridHelper(60, 60, 0x38bdf8, 0x1e40af));
+
+  // AUDIO
+  listener = new THREE.AudioListener();
+  camera.add(listener);
+  sound = new THREE.PositionalAudio(listener);
+
+  new THREE.AudioLoader().load("ambient.mp3", buffer => {
+    sound.setBuffer(buffer);
+    sound.setLoop(true);
+    sound.setVolume(0.3);
+    sound.play();
+  });
+
+  // MODEL
+  new THREE.GLTFLoader().load("model.glb", g => {
+    model = g.scene;
+    model.scale.set(1.4,1.4,1.4);
+    model.position.y = 1.2;
+    model.add(sound);
+    scene.add(model);
+  });
+
+  window.addEventListener("mousemove", e => {
+    mouseX = (e.clientX / innerWidth - 0.5) * 2;
+  });
+
+  window.addEventListener("resize", () => {
+    camera.aspect = innerWidth/innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight);
+  });
+
+  animate();
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+
+  if (model) model.rotation.y += 0.008;
+
+  camera.position.x += (mouseX * 6 - camera.position.x) * 0.05;
+  camera.lookAt(0,1.2,0);
+
+  // ZONE LOGIC
+  if (camera.position.x > 2.5) {
+    rightPanel.classList.add("show");
+    leftPanel.classList.remove("show");
+  } else if (camera.position.x < -2.5) {
+    leftPanel.classList.add("show");
+    rightPanel.classList.remove("show");
+  } else {
+    leftPanel.classList.remove("show");
+    rightPanel.classList.remove("show");
+  }
+
   renderer.render(scene, camera);
 }
 
-window.addEventListener("resize", () => {
-  camera.aspect = innerWidth/innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth, innerHeight);
-});
+// SOUND TOGGLE
+document.getElementById("soundToggle").onclick = () => {
+  soundOn = !soundOn;
+  sound.setVolume(soundOn ? 0.3 : 0);
+  document.getElementById("soundToggle").textContent = soundOn ? "🔊" : "🔇";
+};
 </script>
 
 </body>
