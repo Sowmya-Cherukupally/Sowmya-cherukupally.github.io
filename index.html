@@ -7,10 +7,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
-/* 🔒 MOBILE STABILITY FIX */
 html, body {
   height: 100%;
+  overflow: hidden;
   overscroll-behavior: none;
+  touch-action: pan-y;
 }
 
 * {
@@ -26,7 +27,6 @@ body {
     radial-gradient(600px circle at 85% 75%, rgba(34,197,94,0.30), transparent 55%),
     #020617;
   color: #e5e7eb;
-  overflow-x: hidden;
 }
 
 /* 3D canvas */
@@ -36,63 +36,47 @@ body {
   z-index: -2;
 }
 
-/* Track */
+/* WORLD */
 .track {
   display: flex;
-  width: 600vw;
   height: 100dvh;
-  transition: transform 0.8s cubic-bezier(.19,1,.22,1);
+  width: max-content;
   will-change: transform;
 }
 
-/* Scene */
+/* SCENE */
 .scene {
   width: 100vw;
   padding: 80px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  opacity: 0;
-  transform: translateY(40px);
-  filter: blur(6px) scale(0.92);
-  transition:
-    opacity 0.6s ease,
-    transform 0.7s cubic-bezier(.19,1,.22,1),
-    filter 0.6s ease;
+  opacity: 0.35;
+  transform: scale(0.92);
+  filter: blur(6px);
+  transition: opacity .6s, transform .6s, filter .6s;
 }
 
 .scene.active {
   opacity: 1;
-  transform: translateY(0) scale(1);
+  transform: scale(1);
   filter: blur(0);
 }
 
-/* Titles */
 .scene-number {
-  letter-spacing: 4px;
   font-size: 13px;
+  letter-spacing: 4px;
   color: #38bdf8;
   margin-bottom: 12px;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% { opacity: .6 }
-  50% { opacity: 1 }
-  100% { opacity: .6 }
 }
 
 h1 { font-size: 52px; margin-bottom: 16px; }
 h2 { font-size: 36px; margin-bottom: 18px; }
 
 p {
-  font-size: 18px;
   max-width: 650px;
-  line-height: 1.7;
+  font-size: 18px;
   color: #94a3b8;
+  line-height: 1.7;
 }
 
-/* Badges */
 .badges span {
   display: inline-block;
   margin: 6px;
@@ -101,7 +85,6 @@ p {
   border: 1px solid #1e293b;
 }
 
-/* Cards */
 .project {
   border: 1px solid #1e293b;
   padding: 24px;
@@ -110,7 +93,6 @@ p {
   margin-bottom: 20px;
 }
 
-/* Contact links */
 .contact-links a {
   display: inline-block;
   margin: 12px 16px 0 0;
@@ -119,107 +101,42 @@ p {
   border: 1px solid #1e293b;
   color: #94a3b8;
   text-decoration: none;
-  transition: all .35s ease;
 }
 
 .contact-links a:hover {
   color: #38bdf8;
   border-color: #38bdf8;
-  box-shadow: 0 0 25px rgba(56,189,248,.4);
 }
 
-/* Buttons */
-.start-btn, .end-btn {
-  margin-top: 40px;
-  width: fit-content;
-  padding: 14px 28px;
-  font-size: 14px;
-  letter-spacing: 1px;
-  border-radius: 999px;
-  cursor: pointer;
-  transition: all 0.35s ease;
-  background: transparent;
-}
-
-.start-btn {
-  color: #38bdf8;
-  border: 1px solid #38bdf8;
-}
-
-.start-btn:hover {
-  background: #38bdf8;
-  color: #020617;
-  box-shadow: 0 0 30px rgba(56,189,248,0.6);
-}
-
-.end-btn {
-  color: #94a3b8;
-  border: 1px solid #1e293b;
-}
-
-/* Sidebar */
 .progress {
   position: fixed;
   left: 30px;
   top: 50%;
   transform: translateY(-50%);
-  display: flex;
-  flex-direction: column;
-}
-
-.progress::before {
-  content: "";
-  position: absolute;
-  width: 2px;
-  height: 280px;
-  background: linear-gradient(#1e293b, #38bdf8, #1e293b);
-  left: 50%;
-  z-index: -1;
 }
 
 .step {
-  width: 26px;
-  height: 26px;
   margin: 18px 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
   color: #1e293b;
-  transition: all .3s ease;
 }
-
-.step::before { content: attr(data-icon); }
 
 .step.active {
   color: #38bdf8;
-  transform: scale(1.4);
-  text-shadow: 0 0 12px #38bdf8;
-}
-
-/* Progress indicator */
-.progress-indicator {
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  font-size: 14px;
-  color: #38bdf8;
-  letter-spacing: 2px;
-  opacity: 0.85;
 }
 </style>
 </head>
 
 <body>
+
 <canvas id="bg"></canvas>
 
 <div class="progress">
-  <div class="step active" data-icon="◆"></div>
-  <div class="step" data-icon="⬡"></div>
-  <div class="step" data-icon="▣"></div>
-  <div class="step" data-icon="⬢"></div>
-  <div class="step" data-icon="☎"></div>
-  <div class="step" data-icon="✦"></div>
+  <div class="step active">◆</div>
+  <div class="step">⬡</div>
+  <div class="step">▣</div>
+  <div class="step">⬢</div>
+  <div class="step">☎</div>
+  <div class="step">✦</div>
 </div>
 
 <div class="track" id="track">
@@ -228,9 +145,7 @@ p {
   <div class="scene-number">START</div>
   <h1>Sowmya Cherukupally</h1>
   <h2>Data Engineer</h2>
-  <p>Experienced in Python with scalable data pipelines and AI-driven solutions.</p>
-  <p style="font-size:14px;opacity:.6;margin-top:12px;">Scroll or swipe →</p>
-  <button class="start-btn">▶ Start Experience</button>
+  <p>Scroll, drag or swipe to explore →</p>
 </section>
 
 <section class="scene">
@@ -238,99 +153,117 @@ p {
   <div class="badges">
     <span>Snowflake</span><span>Python</span><span>SQL</span>
     <span>PySpark</span><span>AWS</span><span>GenAI</span>
-    <span>Agentic AI</span><span>Flask</span><span>REST APIs</span>
   </div>
 </section>
 
 <section class="scene">
   <div class="scene-number">PROJECT</div>
   <div class="project">Automated Data Ingestion Pipeline</div>
-  <p>Snowflake + PySpark pipeline using medallion architecture.</p>
+  <p>Snowflake + PySpark + Medallion Architecture</p>
 </section>
 
 <section class="scene">
   <div class="scene-number">PROJECT</div>
-  <div class="project">Real Estate Vector Search Tool</div>
-  <p>Vector similarity search with Streamlit UI.</p>
+  <div class="project">Vector Search Tool</div>
+  <p>Similarity search using embeddings</p>
 </section>
 
 <section class="scene">
   <div class="scene-number">CONTACT</div>
   <div class="contact-links">
-    <a href="mailto:cherukupally.sowmya19@gmail.com">📧 Email</a>
-    <a href="https://www.linkedin.com/in/sowmya-cherukupally-a92911251">💼 LinkedIn</a>
-    <a href="https://github.com/sowmya-ch-19">🐙 GitHub</a>
+    <a href="mailto:cherukupally.sowmya19@gmail.com">Email</a>
+    <a href="https://github.com/sowmya-ch-19">GitHub</a>
+    <a href="https://linkedin.com">LinkedIn</a>
   </div>
 </section>
 
 <section class="scene">
   <div class="scene-number">END</div>
-  <p>Thanks for exploring my work.</p>
-  <button class="end-btn">↺ Restart</button>
+  <p>Thanks for visiting.</p>
 </section>
 
 </div>
 
-<div class="progress-indicator" id="progressIndicator">01 / 06</div>
-
 <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
 
 <script>
-let index = 0;
-let locked = false;
+/* 🚫 BLOCK ARROWS */
+window.addEventListener("keydown", e => {
+  if (e.key.includes("Arrow")) e.preventDefault();
+});
 
+/* WORLD PHYSICS */
 const track = document.getElementById("track");
 const scenes = document.querySelectorAll(".scene");
 const steps = document.querySelectorAll(".step");
-const progressText = document.getElementById("progressIndicator");
 
-function vibrate() {
-  if (navigator.vibrate) navigator.vibrate(20);
+let position = 0;
+let velocity = 0;
+let isDragging = false;
+let startX = 0;
+let index = 0;
+
+const width = window.innerWidth;
+const max = -(width * (scenes.length - 1));
+
+function updateScene() {
+  const newIndex = Math.round(Math.abs(position) / width);
+  if (newIndex !== index) {
+    index = newIndex;
+    scenes.forEach((s,i)=>s.classList.toggle("active", i===index));
+    steps.forEach((s,i)=>s.classList.toggle("active", i===index));
+  }
 }
 
-function update() {
-  track.style.transform = `translateX(-${index * 100}vw)`;
-  scenes.forEach((s,i)=>s.classList.toggle("active", i===index));
-  steps.forEach((s,i)=>s.classList.toggle("active", i===index));
-  progressText.textContent =
-    `${String(index + 1).padStart(2,"0")} / ${String(scenes.length).padStart(2,"0")}`;
-  vibrate();
+function animateWorld() {
+  position += velocity;
+  velocity *= 0.88;
+
+  if (position > 0) position = 0;
+  if (position < max) position = max;
+
+  track.style.transform = `translateX(${position}px)`;
+  updateScene();
+
+  requestAnimationFrame(animateWorld);
 }
 
-/* Scroll navigation */
+/* SCROLL PUSH */
 window.addEventListener("wheel", e => {
-  if (locked) return;
-  locked = true;
-
-  if (e.deltaY > 0 && index < scenes.length - 1) index++;
-  if (e.deltaY < 0 && index > 0) index--;
-
-  update();
-  setTimeout(()=>locked=false, 750);
+  e.preventDefault();
+  velocity += -e.deltaY * 0.8;
 }, { passive:false });
 
-/* Drag / swipe */
-let startX = 0;
-document.addEventListener("pointerdown", e => startX = e.clientX);
-document.addEventListener("pointerup", e => {
-  const diff = startX - e.clientX;
-  if (Math.abs(diff) < 90) return;
-  if (diff > 0 && index < scenes.length - 1) index++;
-  if (diff < 0 && index > 0) index--;
-  update();
+/* DRAG */
+window.addEventListener("pointerdown", e => {
+  isDragging = true;
+  startX = e.clientX;
 });
 
-/* Sidebar + buttons */
-steps.forEach((step,i)=>step.onclick=()=>{ index=i; update(); });
-document.querySelector(".start-btn").onclick=()=>{ index=1; update(); };
-document.querySelector(".end-btn").onclick=()=>{ index=0; update(); };
+window.addEventListener("pointermove", e => {
+  if (!isDragging) return;
+  velocity += (e.clientX - startX) * 0.6;
+  startX = e.clientX;
+});
 
-/* 3D background */
+window.addEventListener("pointerup", () => {
+  isDragging = false;
+});
+
+/* AUTO DEMO MODE */
+setTimeout(() => {
+  let demo = setInterval(() => {
+    velocity -= 40;
+    if (index === scenes.length - 1) clearInterval(demo);
+  }, 2000);
+}, 3000);
+
+/* 3D BACKGROUND */
 const scene3D = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, .1, 1000);
+const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 1000);
 camera.position.z = 30;
 
-const renderer = new THREE.WebGLRenderer({ canvas: bg, alpha: true });
+const renderer = new THREE.WebGLRenderer({ canvas: bg, alpha:true });
 renderer.setSize(innerWidth, innerHeight);
 
 const mesh = new THREE.Mesh(
@@ -339,14 +272,22 @@ const mesh = new THREE.Mesh(
 );
 
 scene3D.add(mesh);
-scene3D.add(new THREE.AmbientLight(0xffffff, .6));
+scene3D.add(new THREE.AmbientLight(0xffffff, 0.6));
 
-function animate(){
-  requestAnimationFrame(animate);
-  mesh.rotation.y += .003;
+/* PARALLAX */
+window.addEventListener("mousemove", e => {
+  mesh.rotation.x = e.clientY * 0.0005;
+  mesh.rotation.y = e.clientX * 0.0005;
+});
+
+function animate3D() {
+  requestAnimationFrame(animate3D);
+  mesh.rotation.y += 0.003;
   renderer.render(scene3D, camera);
 }
-animate();
+
+animateWorld();
+animate3D();
 </script>
 
 </body>
