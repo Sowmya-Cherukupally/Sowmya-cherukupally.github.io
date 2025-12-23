@@ -2,29 +2,159 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Dice Navigation</title>
+<title>Dice Navigation Portfolio</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
-html,body{margin:0;height:100%;overflow:hidden;background:#020617}
+html,body{
+  margin:0;
+  height:100%;
+  overflow:hidden;
+  background:#020617;
+  font-family:Arial, sans-serif;
+  color:#e5e7eb;
+}
+
+canvas{display:block}
+
+/* HINT */
 #hint{
   position:fixed;
   bottom:12px;
   left:50%;
   transform:translateX(-50%);
   color:#94a3b8;
-  font-family:Arial;
   font-size:13px;
+}
+
+/* PANELS */
+.panel{
+  position:fixed;
+  top:50%;
+  transform:translateY(-50%);
+  width:360px;
+  padding:18px;
+  background:rgba(2,6,23,0.95);
+  border-radius:16px;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 0.35s ease;
+}
+
+.panel.show{
+  opacity:1;
+  pointer-events:auto;
+}
+
+#leftPanel{left:20px;}
+#rightPanel{right:20px;}
+
+.panel img{
+  width:100%;
+  border-radius:12px;
+  margin-bottom:10px;
+}
+
+.panel a{
+  color:#38bdf8;
+  text-decoration:none;
+  font-size:14px;
+}
+
+/* SKILLS */
+.skills{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-top:10px;
+}
+
+.skill{
+  background:#020617;
+  border:1px solid #1e40af;
+  border-radius:10px;
+  padding:8px;
+  text-align:center;
+  font-size:12px;
+  color:#38bdf8;
 }
 </style>
 </head>
+
 <body>
 
-<div id="hint">Swipe / A / D to move dice</div>
+<div id="hint">Swipe / A / D → move dice</div>
+
+<!-- LEFT PANEL -->
+<div id="leftPanel" class="panel">
+  <h2>Contact</h2>
+  <p>📞 +917095338146</p>
+  <p>📧 cherukupally.sowmya19@gmail.com</p>
+  <p>
+    <a href="https://www.linkedin.com/in/sowmya-cherukupally-a92911251" target="_blank">LinkedIn</a><br>
+    <a href="https://github.com/Sowmya-Cherukupally" target="_blank">GitHub</a><br>
+    <a href="SowmyaCherukupallyResume.pdf" target="_blank">Resume</a>
+  </p>
+</div>
+
+<!-- RIGHT PANEL -->
+<div id="rightPanel" class="panel">
+  <h2>Projects</h2>
+
+  <!-- SUMMARY -->
+  <p style="font-size:14px;line-height:1.6;opacity:0.85">
+    Data Engineer with hands-on experience in building automated data pipelines,
+    analytics-ready datasets, and scalable ingestion frameworks using
+    <strong>Python, PySpark, SQL, and Snowflake</strong>.
+  </p>
+
+  <hr style="opacity:0.2;margin:12px 0">
+
+  <!-- PROJECT 1 -->
+  <img src="data.jpg">
+  <strong>Automated Data Ingestion & Transformation</strong>
+  <p>
+    Designed and implemented a fully automated ingestion pipeline using Snowflake,
+    PySpark, and Python with medallion architecture and data quality checks.
+  </p>
+  <a href="https://github.com/sowmya-ch-19/Agentic" target="_blank">GitHub →</a>
+
+  <hr style="opacity:0.2;margin:14px 0">
+
+  <!-- PROJECT 2 -->
+  <img src="realestate.jpg">
+  <strong>Real Estate Comparison Tool</strong>
+  <p>
+    Built a real estate comparison tool using vector embeddings and similarity search,
+    enabling feature-based property comparison with a Streamlit UI.
+  </p>
+  <a href="https://github.com/sowmya-ch-19/PropelensRealestate" target="_blank">GitHub →</a>
+
+  <hr style="opacity:0.2;margin:14px 0">
+
+  <!-- SKILLS -->
+  <h3>Skills</h3>
+  <div class="skills">
+    <div class="skill">Python</div>
+    <div class="skill">Snowflake</div>
+    <div class="skill">PySpark</div>
+    <div class="skill">SQL</div>
+    <div class="skill">DBT</div>
+    <div class="skill">Data Pipelines</div>
+    <div class="skill">Vector Search</div>
+    <div class="skill">Streamlit</div>
+    <div class="skill">Git</div>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+
 <script>
 let scene,camera,renderer,dice,path;
 let t=0.5,targetT=0.5,bounce=0;
+
+const leftPanel=document.getElementById("leftPanel");
+const rightPanel=document.getElementById("rightPanel");
 
 window.onload=()=>{
   scene=new THREE.Scene();
@@ -35,6 +165,7 @@ window.onload=()=>{
 
   renderer=new THREE.WebGLRenderer({antialias:true});
   renderer.setSize(innerWidth,innerHeight);
+  renderer.setPixelRatio(devicePixelRatio);
   document.body.appendChild(renderer.domElement);
 
   scene.add(new THREE.AmbientLight(0xffffff,1.2));
@@ -49,6 +180,7 @@ window.onload=()=>{
     new THREE.Vector3(0,1.6,-1.2),
     new THREE.Vector3(6,1.1,0)
   ]);
+
   const pts=path.getPoints(80);
   scene.add(new THREE.Line(
     new THREE.BufferGeometry().setFromPoints(pts),
@@ -80,13 +212,29 @@ window.onload=()=>{
 
 function animate(){
   requestAnimationFrame(animate);
+
   t+=(targetT-t)*0.08;
   bounce+=Math.abs(targetT-t)*0.15;
   const y=Math.sin(bounce)*0.15;
   const p=path.getPoint(t);
+
   dice.position.set(p.x,p.y+y,p.z);
+
+  // PANEL VISIBILITY
+  if(t<0.25){
+    leftPanel.classList.add("show");
+    rightPanel.classList.remove("show");
+  }else if(t>0.75){
+    rightPanel.classList.add("show");
+    leftPanel.classList.remove("show");
+  }else{
+    leftPanel.classList.remove("show");
+    rightPanel.classList.remove("show");
+  }
+
   renderer.render(scene,camera);
 }
 </script>
+
 </body>
 </html>
