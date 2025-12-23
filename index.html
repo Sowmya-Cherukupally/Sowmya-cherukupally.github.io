@@ -1,130 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
 <title>Sowmya Cherukupally | Data Engineer</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 <style>
 html, body {
   margin: 0;
+  padding: 0;
   height: 100%;
   overflow: hidden;
   background: #020617;
-  color: #e5e7eb;
   font-family: Inter, sans-serif;
 }
 
-/* START OVERLAY */
-.start {
+/* START BUTTON */
+#start {
   position: fixed;
   inset: 0;
-  background: radial-gradient(circle at center, #020617, #000);
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
+  background: radial-gradient(circle, #020617, #000);
   z-index: 10;
+}
+
+#start button {
+  padding: 18px 40px;
+  font-size: 18px;
+  border-radius: 40px;
+  border: none;
   cursor: pointer;
+  background: linear-gradient(135deg, #38bdf8, #22c55e);
+  color: #000;
+  font-weight: 600;
 }
 
-.ring {
-  width: 120px;
-  height: 120px;
-  border: 3px solid #38bdf8;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: pulse 2s infinite;
-  color: #38bdf8;
-  letter-spacing: 3px;
-}
-
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(56,189,248,.6); }
-  70% { box-shadow: 0 0 0 40px rgba(56,189,248,0); }
-}
-
-.track {
-  display: flex;
-  height: 100vh;
-  transition: transform .8s cubic-bezier(.22,1,.36,1);
-}
-
-.scene {
-  min-width: 100vw;
-  padding: 80px;
-  opacity: 0;
-  transform: translateY(30px);
-  transition: .6s;
-}
-
-.scene.active {
-  opacity: 1;
-  transform: translateY(0);
+/* CANVAS */
+canvas {
+  display: block;
 }
 </style>
 </head>
 
 <body>
 
-<div class="start" id="start">
-  <h1>Sowmya Cherukupally</h1>
-  <p>Click to start experience</p>
-  <div class="ring">START</div>
+<!-- USER INTERACTION OVERLAY -->
+<div id="start">
+  <button>Start Experience</button>
 </div>
 
-<div class="track" id="track">
-  <div class="scene active">INTRO</div>
-  <div class="scene">SKILLS</div>
-  <div class="scene">PROJECTS</div>
-  <div class="scene">CONTACT</div>
-</div>
+<!-- THREE.JS -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
 
 <script>
-let ctx;
-let started = false;
-let index = 0;
+let scene, camera, renderer, model, sound;
 
-const start = document.getElementById("start");
-const track = document.getElementById("track");
-const scenes = document.querySelectorAll(".scene");
+const startBtn = document.querySelector("#start button");
 
-function beep() {
-  if (!ctx) return;
-  const o = ctx.createOscillator();
-  const g = ctx.createGain();
-  o.frequency.value = 500;
-  g.gain.value = 0.25;
-  o.connect(g);
-  g.connect(ctx.destination);
-  o.start();
-  o.stop(ctx.currentTime + 0.15);
-}
-
-start.onclick = () => {
-  ctx = new (window.AudioContext || window.webkitAudioContext)();
-  ctx.resume();
-  started = true;
-  start.remove();
-  beep();
-};
-
-function go(dir) {
-  if (!started) return;
-  index = Math.max(0, Math.min(scenes.length - 1, index + dir));
-  track.style.transform = `translateX(-${index * 100}vw)`;
-  scenes.forEach((s,i)=>s.classList.toggle("active", i===index));
-  beep();
-}
-
-window.addEventListener("wheel", e => {
-  if (e.deltaY > 0) go(1);
-  if (e.deltaY < 0) go(-1);
+startBtn.addEventListener("click", () => {
+  document.getElementById("start").style.display = "none";
+  init3D();
+  playSound();
 });
+
+function init3D() {
+  scene = new THREE.Scene();
+
+  camera = new THREE.PerspectiveCamera(
+    60,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    100
+  );
+  camera.position.set(0, 1.5, 4);
+
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(window.devicePixelRatio);
+  document.body.appendChild(renderer.domElement);
+
+  // Lights
+  const ambient = new THREE.AmbientLight(0xffffff, 1.2);
+  scene.add(ambient);
+
+  const dir = new THREE.DirectionalLight(0xffffff, 1);
+  dir.position.set(5, 5, 5);
+  scene.add(dir);
+
+  // Load 3D Model
+  const loader = new THREE.GLTFLoader();
+  loader.load(
+    "model.glb",
+    (gltf) => {
+      model = gltf.scene;
+      model.scale.set(1.2, 1.2, 1.2);
+      scene.add(model);
+      animate();
+    },
+    undefined,
+    (err) => console.error(err)
+  );
+
+  window.addEventListener("resize", onResize);
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  if (model) model.rotation.y += 0.003;
+  renderer.render(scene, camera);
+}
+
+function onResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+/* AUDIO */
+function playSound() {
+  sound = new Audio("ambient.mp3");
+  sound.loop = true;
+  sound.volume = 0.4;
+  sound.play().catch(err => console.log("Sound blocked:", err));
+}
 </script>
 
 </body>
