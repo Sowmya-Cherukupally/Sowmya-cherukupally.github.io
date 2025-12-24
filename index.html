@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Sowmya Cherukupally | 3D Portfolio</title>
+<title>Sowmya Cherukupally | 3D Track Portfolio</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -30,8 +30,15 @@ html, body {
   cursor: pointer;
 }
 
-.start h1 { font-size: 48px; margin-bottom: 10px; }
-.start p { opacity: .6; margin-bottom: 30px; }
+.start h1 {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.start p {
+  opacity: .6;
+  margin-bottom: 30px;
+}
 
 .start .ring {
   width: 120px;
@@ -57,7 +64,7 @@ html, body {
   left: 30px;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(2,6,23,0.85);
+  background: rgba(2,6,23,0.9);
   border: 1px solid #1e293b;
   border-radius: 14px;
   padding: 24px;
@@ -66,7 +73,9 @@ html, body {
   transition: opacity .3s ease;
 }
 
-.panel.active { opacity: 1; }
+.panel.active {
+  opacity: 1;
+}
 
 .panel h3 {
   margin-top: 0;
@@ -80,11 +89,11 @@ html, body {
 <!-- START -->
 <div class="start" id="start">
   <h1>Sowmya Cherukupally</h1>
-  <p>Move through the path</p>
+  <p>Move along the track</p>
   <div class="ring">START</div>
 </div>
 
-<!-- INFO -->
+<!-- INFO PANEL -->
 <div class="panel" id="panel"></div>
 
 <canvas id="bg"></canvas>
@@ -92,73 +101,80 @@ html, body {
 <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
 
 <script>
-/* ===== BASIC THREE SETUP ===== */
+/* ================= BASIC THREE ================= */
 const scene = new THREE.Scene();
-scene.add(new THREE.AmbientLight(0xffffff, 1));
+scene.fog = new THREE.Fog(0x020617, 10, 80);
 
-const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 100);
-camera.position.set(0, 6, 10);
-camera.lookAt(0,0,0);
+const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 200);
+camera.position.set(0, 8, 14);
 
-const renderer = new THREE.WebGLRenderer({ canvas: bg, antialias:true });
+const renderer = new THREE.WebGLRenderer({ canvas: bg, antialias: true });
 renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 
-/* ===== GROUND ===== */
-const ground = new THREE.Mesh(
-  new THREE.PlaneGeometry(100, 20),
-  new THREE.MeshStandardMaterial({ color: 0x020617 })
-);
-ground.rotation.x = -Math.PI/2;
-scene.add(ground);
+scene.add(new THREE.AmbientLight(0xffffff, 0.8));
 
-/* ===== PATH CUBES ===== */
+/* ================= GRID FLOOR ================= */
+const grid = new THREE.GridHelper(200, 80, 0x2563eb, 0x1e40af);
+grid.position.y = 0;
+scene.add(grid);
+
+/* ================= TRACK ================= */
+const track = [];
+const trackPositions = [];
+
+for (let i = 0; i < 5; i++) {
+  const tile = new THREE.Mesh(
+    new THREE.BoxGeometry(3, 0.5, 3),
+    new THREE.MeshStandardMaterial({
+      color: 0x020617,
+      emissive: 0x2563eb,
+      emissiveIntensity: 0.8
+    })
+  );
+  tile.position.set(i * 6, 0.25, 0);
+  scene.add(tile);
+  track.push(tile);
+  trackPositions.push(tile.position.x);
+}
+
+/* ================= TRACK LABELS ================= */
 const sections = [
-  { title:"Start", color:0x1e293b, text:"Welcome" },
-  { title:"Skills", color:0x38bdf8, text:"Snowflake, Python, SQL, PySpark, AWS" },
-  { title:"Projects", color:0x22c55e, text:"Automated Pipelines, Vector Search" },
-  { title:"Contact", color:0xfacc15, text:"Email: cherukupally.sowmya19@gmail.com" },
-  { title:"Resume", color:0xef4444, text:"Download resume from GitHub" }
+  { title: "Start", text: "Welcome to my portfolio" },
+  { title: "Skills", text: "Snowflake, Python, SQL, PySpark, AWS, GenAI" },
+  { title: "Projects", text: "Automated Pipelines, Vector Search, Data Apps" },
+  { title: "Contact", text: "cherukupally.sowmya19@gmail.com" },
+  { title: "Resume", text: "Download resume from GitHub" }
 ];
 
-const pathCubes = [];
-sections.forEach((s, i) => {
-  const cube = new THREE.Mesh(
-    new THREE.BoxGeometry(2,1,2),
-    new THREE.MeshStandardMaterial({ color: s.color })
-  );
-  cube.position.set(i*5, 0.5, 0);
-  scene.add(cube);
-  pathCubes.push(cube);
-});
-
-/* ===== PLAYER CUBE ===== */
+/* ================= PLAYER ================= */
 const player = new THREE.Mesh(
-  new THREE.BoxGeometry(1,1,1),
-  new THREE.MeshStandardMaterial({ color: 0xffffff })
+  new THREE.BoxGeometry(1.5, 1.5, 1.5),
+  new THREE.MeshStandardMaterial({ color: 0x22c55e })
 );
-player.position.set(0,1.2,0);
+player.position.set(0, 1.2, 0);
 scene.add(player);
 
-/* ===== STATE ===== */
+/* ================= STATE ================= */
 let index = 0;
 let started = false;
 const panel = document.getElementById("panel");
 
-/* ===== UPDATE PANEL ===== */
+/* ================= UPDATE PANEL ================= */
 function updatePanel() {
   const s = sections[index];
   panel.innerHTML = `<h3>${s.title}</h3><p>${s.text}</p>`;
   panel.classList.add("active");
 }
 
-/* ===== MOVE PLAYER ===== */
+/* ================= MOVE ================= */
 function move(dir) {
   if (!started) return;
-  index = Math.max(0, Math.min(sections.length-1, index + dir));
+  index = Math.max(0, Math.min(track.length - 1, index + dir));
   updatePanel();
 }
 
-/* ===== INPUT ===== */
+/* ================= INPUT ================= */
 window.addEventListener("wheel", e => {
   if (e.deltaY > 0) move(1);
   else move(-1);
@@ -169,25 +185,26 @@ window.addEventListener("keydown", e => {
   if (e.key === "ArrowLeft") move(-1);
 });
 
-let touchX=0;
-window.addEventListener("touchstart", e=>touchX=e.touches[0].clientX);
-window.addEventListener("touchend", e=>{
+let touchX = 0;
+window.addEventListener("touchstart", e => touchX = e.touches[0].clientX);
+window.addEventListener("touchend", e => {
   const diff = touchX - e.changedTouches[0].clientX;
-  if (Math.abs(diff)>40) move(diff>0?1:-1);
+  if (Math.abs(diff) > 40) move(diff > 0 ? 1 : -1);
 });
 
-/* ===== START ===== */
+/* ================= START ================= */
 document.getElementById("start").onclick = () => {
   started = true;
   document.getElementById("start").remove();
   updatePanel();
 };
 
-/* ===== ANIMATION LOOP ===== */
-function animate(){
+/* ================= LOOP ================= */
+function animate() {
   requestAnimationFrame(animate);
 
-  const targetX = index * 5;
+  const targetX = trackPositions[index];
+
   player.position.x += (targetX - player.position.x) * 0.15;
   camera.position.x += (targetX - camera.position.x) * 0.08;
   camera.lookAt(player.position.x, 0, 0);
@@ -196,8 +213,9 @@ function animate(){
 }
 animate();
 
-window.addEventListener("resize", ()=>{
-  camera.aspect = innerWidth/innerHeight;
+/* ================= RESIZE ================= */
+window.addEventListener("resize", () => {
+  camera.aspect = innerWidth / innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(innerWidth, innerHeight);
 });
