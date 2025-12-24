@@ -1,231 +1,267 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Dice World Portfolio</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<title>Sowmya Cherukupally | Data Engineer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
-html,body{
-  margin:0;
-  height:100%;
-  overflow:hidden;
-  background:#020617;
-  font-family:Arial, sans-serif;
-  color:#e5e7eb;
+/* ================= RESET ================= */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
+  background: #020617;
+  color: #e5e7eb;
 }
-canvas{display:block}
 
-/* SIGN BOARDS */
-.board{
-  position:fixed;
-  padding:8px 12px;
-  font-size:11px;
-  letter-spacing:1px;
-  background:rgba(2,6,23,0.85);
-  border:1px solid rgba(56,189,248,0.25);
-  border-radius:6px;
-  color:#94a3b8;
-  text-transform:uppercase;
-  pointer-events:none;
+/* ================= START OVERLAY ================= */
+.start-overlay {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at center, #020617, #000);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  cursor: pointer;
+  transition: opacity .8s ease, visibility .8s ease;
 }
-#board-contact{left:60px; top:58%;}
-#board-resume{left:120px; top:42%;}
-#board-skills{right:120px; top:42%;}
-#board-projects{right:60px; top:58%;}
 
-/* PANELS */
-.panel{
-  position:fixed;
-  top:50%;
-  transform:translateY(-50%);
-  width:360px;
-  padding:18px;
-  background:rgba(2,6,23,0.95);
-  border-radius:16px;
-  opacity:0;
-  pointer-events:none;
-  transition:opacity 0.35s ease;
+.start-overlay.hidden {
+  opacity: 0;
+  visibility: hidden;
 }
-.panel.show{opacity:1;}
-#leftPanel{left:20px;}
-#rightPanel{right:20px;}
 
-.skills{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:10px;
+.start-title {
+  font-size: 48px;
+  margin-bottom: 10px;
 }
-.skill{
-  background:#020617;
-  border:1px solid #1e40af;
-  border-radius:10px;
-  padding:8px;
-  font-size:12px;
-  text-align:center;
-  color:#38bdf8;
+
+.start-sub {
+  opacity: .6;
+  margin-bottom: 30px;
+}
+
+.start-ring {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 2px solid #38bdf8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #38bdf8;
+  letter-spacing: 3px;
+  animation: pulse 2.5s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(56,189,248,.6); }
+  70% { box-shadow: 0 0 0 40px rgba(56,189,248,0); }
+}
+
+/* ================= PANELS ================= */
+.panel {
+  position: fixed;
+  top: 50%;
+  left: 60px;
+  transform: translateY(-50%);
+  max-width: 420px;
+  padding: 28px;
+  background: rgba(2,6,23,0.75);
+  border: 1px solid #1e293b;
+  border-radius: 14px;
+  backdrop-filter: blur(12px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .4s ease, transform .4s ease;
+}
+
+.panel.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.panel h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #38bdf8;
+}
+
+/* ================= CANVAS ================= */
+#bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+}
+
+/* ================= HINT ================= */
+.hint {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 13px;
+  opacity: .6;
+  letter-spacing: 1px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- SIGN BOARDS (WORLD HINTS) -->
-<div id="board-contact" class="board">CONTACT ←</div>
-<div id="board-resume" class="board">RESUME</div>
-<div id="board-skills" class="board">SKILLS</div>
-<div id="board-projects" class="board">→ PROJECTS</div>
-
-<!-- PANELS -->
-<div id="leftPanel" class="panel">
-  <h2 id="leftTitle"></h2>
-  <div id="leftContent"></div>
+<!-- ============ START ============ -->
+<div class="start-overlay" id="startOverlay">
+  <div class="start-title">Sowmya Cherukupally</div>
+  <div class="start-sub">Scroll or swipe to explore</div>
+  <div class="start-ring">START</div>
 </div>
 
-<div id="rightPanel" class="panel">
-  <h2 id="rightTitle"></h2>
-  <div id="rightContent"></div>
+<!-- ============ PANELS ============ -->
+<div class="panel skills">
+  <h3>Skills</h3>
+  <p>Snowflake, Python, SQL, PySpark, AWS, GenAI</p>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<div class="panel projects">
+  <h3>Projects</h3>
+  <p>Automated Data Ingestion Pipeline<br/>Vector Search Application</p>
+</div>
+
+<div class="panel contact">
+  <h3>Contact</h3>
+  <p>
+    Email: cherukupally.sowmya19@gmail.com<br/>
+    GitHub: github.com/sowmya-ch-19
+  </p>
+</div>
+
+<div class="panel resume">
+  <h3>Resume</h3>
+  <a href="resume.pdf" download style="color:#38bdf8">Download Resume</a>
+</div>
+
+<div class="hint">Scroll ↓ or Swipe ←</div>
+
+<canvas id="bg"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
 
 <script>
-let scene,camera,renderer,dice;
-let t=0.5,targetT=0.5,bounce=0;
-let activePath;
+/* ================= STATE ================= */
+let started = false;
+let progress = 0;
 
-// PATHS
-let mainPath,leftPath,rightPath;
-
-// UI
-const leftPanel=document.getElementById("leftPanel");
-const rightPanel=document.getElementById("rightPanel");
-const leftTitle=document.getElementById("leftTitle");
-const leftContent=document.getElementById("leftContent");
-const rightTitle=document.getElementById("rightTitle");
-const rightContent=document.getElementById("rightContent");
-
-window.onload=()=>{
-  scene=new THREE.Scene();
-  scene.background=new THREE.Color(0x020617);
-
-  camera=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,0.1,100);
-  camera.position.set(0,4,14);
-
-  renderer=new THREE.WebGLRenderer({antialias:true});
-  renderer.setSize(innerWidth,innerHeight);
-  renderer.setPixelRatio(devicePixelRatio);
-  document.body.appendChild(renderer.domElement);
-
-  scene.add(new THREE.AmbientLight(0xffffff,1.2));
-  const d=new THREE.DirectionalLight(0xffffff,1.5);
-  d.position.set(5,10,5);
-  scene.add(d);
-
-  scene.add(new THREE.GridHelper(80,80,0x38bdf8,0x1e40af));
-
-  // MAIN PATH
-  mainPath=new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-2,1.1,0),
-    new THREE.Vector3(0,1.4,-1.2),
-    new THREE.Vector3(2,1.1,0)
-  ]);
-
-  // LEFT BRANCH
-  leftPath=new THREE.CatmullRomCurve3([
-    new THREE.Vector3(0,1.1,0),
-    new THREE.Vector3(-3,1.5,-1.2),
-    new THREE.Vector3(-6,1.1,0)
-  ]);
-
-  // RIGHT BRANCH
-  rightPath=new THREE.CatmullRomCurve3([
-    new THREE.Vector3(0,1.1,0),
-    new THREE.Vector3(3,1.5,-1.2),
-    new THREE.Vector3(6,1.1,0)
-  ]);
-
-  drawPath(mainPath);
-  drawPath(leftPath);
-  drawPath(rightPath);
-
-  activePath=mainPath;
-
-  dice=new THREE.Mesh(
-    new THREE.BoxGeometry(2.2,2.2,2.2),
-    new THREE.MeshStandardMaterial({color:0x22c55e})
-  );
-  scene.add(dice);
-
-  window.addEventListener("keydown",e=>{
-    if(e.key==="ArrowLeft"){
-      activePath=leftPath; targetT=1;
-    }
-    if(e.key==="ArrowRight"){
-      activePath=rightPath; targetT=1;
-    }
-    if(e.key==="ArrowDown"){
-      activePath=mainPath; targetT=1;
-    }
-  });
-
-  animate();
+/* ================= START ================= */
+const startOverlay = document.getElementById("startOverlay");
+startOverlay.onclick = () => {
+  started = true;
+  startOverlay.classList.add("hidden");
 };
 
-function drawPath(curve){
-  const pts=curve.getPoints(40);
-  scene.add(new THREE.Line(
-    new THREE.BufferGeometry().setFromPoints(pts),
-    new THREE.LineBasicMaterial({color:0x38bdf8})
-  ));
+/* ================= THREE.JS ================= */
+const scene = new THREE.Scene();
+scene.add(new THREE.AmbientLight(0xffffff, 1));
+
+const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 200);
+
+const renderer = new THREE.WebGLRenderer({ canvas: bg, alpha: true, antialias: true });
+renderer.setSize(innerWidth, innerHeight);
+
+/* ===== Ground ===== */
+const ground = new THREE.Mesh(
+  new THREE.PlaneGeometry(200, 30),
+  new THREE.MeshStandardMaterial({ color: 0x020617 })
+);
+ground.rotation.x = -Math.PI / 2;
+scene.add(ground);
+
+/* ===== Decorative markers ===== */
+for (let i = 0; i < 40; i += 4) {
+  const box = new THREE.Mesh(
+    new THREE.BoxGeometry(1, 2, 1),
+    new THREE.MeshStandardMaterial({ color: 0x1e293b })
+  );
+  box.position.set(i, 1, Math.sin(i * 0.3) * 5);
+  scene.add(box);
 }
 
-function animate(){
+/* ================= CURVED PATH ================= */
+const path = new THREE.CatmullRomCurve3([
+  new THREE.Vector3(0, 2, 6),
+  new THREE.Vector3(10, 2, 4),
+  new THREE.Vector3(20, 2, 0),
+  new THREE.Vector3(30, 2, -4),
+  new THREE.Vector3(40, 2, -6)
+]);
+
+/* ================= PANELS ================= */
+const panels = {
+  skills: document.querySelector(".skills"),
+  projects: document.querySelector(".projects"),
+  contact: document.querySelector(".contact"),
+  resume: document.querySelector(".resume")
+};
+
+function showPanel(name) {
+  Object.values(panels).forEach(p => p.classList.remove("active"));
+  if (name) panels[name].classList.add("active");
+}
+
+function updatePanels() {
+  if (progress < 0.2) showPanel(null);
+  else if (progress < 0.4) showPanel("skills");
+  else if (progress < 0.6) showPanel("projects");
+  else if (progress < 0.8) showPanel("contact");
+  else showPanel("resume");
+}
+
+/* ================= INPUT ================= */
+window.addEventListener("wheel", e => {
+  if (!started) return;
+  progress += e.deltaY * 0.0005;
+  progress = Math.max(0, Math.min(1, progress));
+}, { passive: true });
+
+let touchX = 0;
+window.addEventListener("touchstart", e => {
+  touchX = e.touches[0].clientX;
+});
+
+window.addEventListener("touchend", e => {
+  const diff = touchX - e.changedTouches[0].clientX;
+  if (Math.abs(diff) > 40) {
+    progress += diff * 0.0008;
+    progress = Math.max(0, Math.min(1, progress));
+  }
+});
+
+/* ================= LOOP ================= */
+function animate() {
+  const point = path.getPoint(progress);
+  const look = path.getPoint(Math.min(progress + 0.01, 1));
+
+  camera.position.lerp(point, 0.08);
+  camera.lookAt(look);
+
+  updatePanels();
+  renderer.render(scene, camera);
   requestAnimationFrame(animate);
-
-  t+=(targetT-t)*0.08;
-  bounce+=Math.abs(targetT-t)*0.15;
-
-  const y=Math.sin(bounce)*0.15;
-  const p=activePath.getPoint(Math.min(t,1));
-
-  dice.position.set(p.x,p.y+y,p.z);
-
-  // LEFT PATH CONTENT
-  if(activePath===leftPath && t>0.9){
-    leftPanel.classList.add("show");
-    rightPanel.classList.remove("show");
-    leftTitle.textContent="CONTACT & RESUME";
-    leftContent.innerHTML=`
-      <p>📞 +917095338146</p>
-      <p>📧 cherukupally.sowmya19@gmail.com</p>
-      <a href="SowmyaCherukupallyResume.pdf" target="_blank">Resume →</a>`;
-  }
-  // RIGHT PATH CONTENT
-  else if(activePath===rightPath && t>0.9){
-    rightPanel.classList.add("show");
-    leftPanel.classList.remove("show");
-    rightTitle.textContent="SKILLS & PROJECTS";
-    rightContent.innerHTML=`
-      <div class="skills">
-        <div class="skill">Python</div>
-        <div class="skill">Snowflake</div>
-        <div class="skill">PySpark</div>
-        <div class="skill">SQL</div>
-        <div class="skill">DBT</div>
-        <div class="skill">Pipelines</div>
-      </div>
-      <hr style="opacity:.2">
-      <strong>Automated Data Ingestion</strong>
-      <p>Snowflake + PySpark pipeline.</p>`;
-  }
-  else{
-    leftPanel.classList.remove("show");
-    rightPanel.classList.remove("show");
-  }
-
-  renderer.render(scene,camera);
 }
+animate();
+
+/* ================= RESIZE ================= */
+window.addEventListener("resize", () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
 </script>
 
 </body>
