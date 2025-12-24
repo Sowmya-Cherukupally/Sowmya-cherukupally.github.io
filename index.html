@@ -159,11 +159,14 @@ let started = false;
 let progress = 0;
 
 /* ================= START ================= */
-const startOverlay = document.getElementById("startOverlay");
 startOverlay.onclick = () => {
   started = true;
   startOverlay.classList.add("hidden");
+
+  // 🔹 AUTO MOVE CAMERA A BIT
+  progress = 0.02;
 };
+
 
 /* ================= THREE.JS ================= */
 const scene = new THREE.Scene();
@@ -223,24 +226,20 @@ function updatePanels() {
 }
 
 /* ================= INPUT ================= */
-window.addEventListener("wheel", e => {
+window.addEventListener("keydown", e => {
   if (!started) return;
-  progress += e.deltaY * 0.0005;
-  progress = Math.max(0, Math.min(1, progress));
-}, { passive: true });
 
-let touchX = 0;
-window.addEventListener("touchstart", e => {
-  touchX = e.touches[0].clientX;
-});
-
-window.addEventListener("touchend", e => {
-  const diff = touchX - e.changedTouches[0].clientX;
-  if (Math.abs(diff) > 40) {
-    progress += diff * 0.0008;
-    progress = Math.max(0, Math.min(1, progress));
+  if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+    progress += 0.03;
   }
+
+  if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+    progress -= 0.03;
+  }
+
+  progress = Math.max(0, Math.min(1, progress));
 });
+
 
 /* ================= LOOP ================= */
 function animate() {
