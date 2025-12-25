@@ -1,107 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Sowmya Cherukupally | Data Engineer</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<title>Sowmya Cherukupally | 3D World Portfolio</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
-* {
+html, body {
   margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Inter', sans-serif;
-}
-
-body {
+  height: 100%;
+  overflow: hidden;
   background: #020617;
+  font-family: Inter, sans-serif;
   color: #e5e7eb;
-  overflow-x: hidden;
 }
 
-/* 3D BACKGROUND */
+/* CANVAS */
 #bg {
   position: fixed;
   inset: 0;
-  z-index: -1;
 }
 
-/* SECTIONS */
-section {
-  min-height: 100vh;
-  padding: 80px 24px;
-  display: flex;
-  align-items: center;
+/* FLOATING UI */
+.ui {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
 }
 
-.container {
-  max-width: 900px;
-  margin: auto;
-}
-
-/* HEADINGS */
-.small {
-  letter-spacing: 4px;
-  color: #38bdf8;
-  font-size: 13px;
-  margin-bottom: 12px;
-}
-
-h1 {
-  font-size: clamp(36px, 6vw, 64px);
-  margin-bottom: 16px;
-}
-
-h2 {
-  font-size: clamp(26px, 4vw, 42px);
-  margin-bottom: 16px;
-}
-
-p {
-  font-size: 18px;
-  line-height: 1.7;
-  color: #94a3b8;
-  max-width: 700px;
-}
-
-/* BADGES */
-.badges span {
-  display: inline-block;
-  margin: 6px;
-  padding: 10px 16px;
-  border-radius: 999px;
-  border: 1px solid #1e293b;
-}
-
-/* PROJECT */
-.project {
-  border: 1px solid #1e293b;
-  padding: 24px;
-  border-radius: 16px;
-  margin-top: 20px;
-}
-
-/* LINKS */
-a {
-  color: #38bdf8;
-  text-decoration: none;
-}
-
-.btn {
-  display: inline-block;
-  margin-top: 32px;
-  padding: 14px 30px;
-  border-radius: 999px;
-  border: 1px solid #38bdf8;
-  color: #38bdf8;
+.ui button {
+  pointer-events: auto;
+  position: absolute;
+  padding: 10px 18px;
+  border-radius: 10px;
+  background: rgba(2,6,23,.7);
+  border: 1px solid #2563eb;
+  color: #93c5fd;
+  cursor: pointer;
   transition: .3s;
 }
 
-.btn:hover {
-  background: #38bdf8;
+.ui button:hover {
+  background: #2563eb;
   color: #020617;
+}
+
+/* Positions */
+.btn-skills { right: 30px; top: 40%; }
+.btn-projects { right: 30px; top: 50%; }
+.btn-resume { left: 30px; top: 40%; }
+.btn-contact { left: 30px; top: 50%; }
+
+/* INFO PANEL */
+.panel {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(2,6,23,.85);
+  border: 1px solid #1e293b;
+  border-radius: 16px;
+  padding: 20px 28px;
+  max-width: 520px;
+  text-align: center;
+  opacity: 0;
+  transition: .3s;
+}
+
+.panel.active { opacity: 1; }
+
+.panel h3 {
+  margin-top: 0;
+  color: #60a5fa;
+}
+
+.panel p {
+  color: #94a3b8;
+  line-height: 1.6;
 }
 </style>
 </head>
@@ -110,122 +87,113 @@ a {
 
 <canvas id="bg"></canvas>
 
-<section>
-  <div class="container">
-    <div class="small">HELLO</div>
-    <h1>Sowmya Cherukupally</h1>
-    <h2>Data Engineer</h2>
-    <p>
-      I design scalable data pipelines, automate ingestion systems,
-      and build AI-powered data applications using Snowflake, Python and PySpark.
-    </p>
-  </div>
-</section>
+<div class="ui">
+  <button class="btn-skills">SKILLS</button>
+  <button class="btn-projects">PROJECTS</button>
+  <button class="btn-resume">RESUME</button>
+  <button class="btn-contact">CONTACT</button>
+</div>
 
-<section>
-  <div class="container">
-    <div class="small">SKILLS</div>
-    <div class="badges">
-      <span>Snowflake</span>
-      <span>Python</span>
-      <span>SQL</span>
-      <span>PySpark</span>
-      <span>AWS</span>
-      <span>GenAI</span>
-      <span>Flask</span>
-      <span>Streamlit</span>
-    </div>
-  </div>
-</section>
-
-<section>
-  <div class="container">
-    <div class="small">PROJECT</div>
-    <div class="project">
-      <h3>Automated Data Ingestion & Transformation</h3>
-      <p>
-        Built an end-to-end automated pipeline using Snowflake and PySpark
-        following Medallion Architecture with data quality enforcement.
-      </p>
-    </div>
-  </div>
-</section>
-
-<section>
-  <div class="container">
-    <div class="small">PROJECT</div>
-    <div class="project">
-      <h3>Real Estate Vector Search Tool</h3>
-      <p>
-        Implemented semantic property search using vector embeddings
-        with Streamlit UI.
-      </p>
-      <a href="https://github.com/sowmya-ch-19/PropelensRealestate" target="_blank">
-        View on GitHub →
-      </a>
-    </div>
-  </div>
-</section>
-
-<section>
-  <div class="container">
-    <div class="small">CONTACT</div>
-    <p>
-      📧 cherukupally.sowmya19@gmail.com <br>
-      💼 <a href="https://www.linkedin.com/in/sowmya-cherukupally-a92911251" target="_blank">LinkedIn</a> <br>
-      🐙 <a href="https://github.com/sowmya-ch-19" target="_blank">GitHub</a>
-    </p>
-
-    <a class="btn" href="SowmyaCherukupallyResume.pdf" target="_blank">
-      Download Resume
-    </a>
-  </div>
-</section>
+<div class="panel" id="panel"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
 
 <script>
-/* SIMPLE BRUNO-STYLE 3D */
+/* SCENE */
 const scene = new THREE.Scene();
+scene.fog = new THREE.Fog(0x020617, 10, 80);
 
-const camera = new THREE.PerspectiveCamera(
-  50,
-  innerWidth / innerHeight,
-  0.1,
-  100
-);
-camera.position.z = 6;
+const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 200);
+camera.position.set(0, 6, 14);
 
-const renderer = new THREE.WebGLRenderer({
-  canvas: bg,
-  alpha: true,
-  antialias: true
-});
+const renderer = new THREE.WebGLRenderer({ canvas: bg, antialias: true });
 renderer.setSize(innerWidth, innerHeight);
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 
-scene.add(new THREE.AmbientLight(0xffffff, 1));
+scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+const light = new THREE.DirectionalLight(0x60a5fa, 1);
+light.position.set(5, 10, 5);
+scene.add(light);
 
-const shape = new THREE.Mesh(
-  new THREE.TorusKnotGeometry(1.2, 0.35, 100, 16),
-  new THREE.MeshStandardMaterial({
-    color: 0x38bdf8,
-    wireframe: true
-  })
+/* GRID FLOOR */
+const grid = new THREE.GridHelper(200, 80, 0x2563eb, 0x1e40af);
+scene.add(grid);
+
+/* PLAYER */
+const player = new THREE.Mesh(
+  new THREE.BoxGeometry(1.5,1.5,1.5),
+  new THREE.MeshStandardMaterial({ color: 0x22c55e })
 );
-scene.add(shape);
+player.position.set(0, 0.75, 0);
+scene.add(player);
 
-window.addEventListener("scroll", () => {
-  shape.rotation.y = window.scrollY * 0.001;
-  shape.rotation.x = window.scrollY * 0.0007;
-});
+/* BOARDS (SECTIONS) */
+function createBoard(x, z, label) {
+  const board = new THREE.Mesh(
+    new THREE.BoxGeometry(4,2,0.3),
+    new THREE.MeshStandardMaterial({ color: 0x020617, emissive: 0x2563eb })
+  );
+  board.position.set(x, 1.5, z);
+  scene.add(board);
+  return board;
+}
 
+const boards = {
+  skills: createBoard(10, 0),
+  projects: createBoard(-10, 0),
+  resume: createBoard(0, -10),
+  contact: createBoard(0, 10)
+};
+
+/* PANEL CONTENT */
+const panel = document.getElementById("panel");
+
+function showPanel(title, text) {
+  panel.innerHTML = `<h3>${title}</h3><p>${text}</p>`;
+  panel.classList.add("active");
+}
+
+/* NAVIGATION */
+let target = new THREE.Vector3(0, player.position.y, 0);
+
+function goTo(x, z, title, text) {
+  target.set(x, player.position.y, z);
+  showPanel(title, text);
+}
+
+/* BUTTON EVENTS */
+document.querySelector(".btn-skills").onclick = () =>
+  goTo(10, 0, "Skills",
+  "Snowflake, Python, SQL, PySpark, AWS, GenAI, Flask, Streamlit");
+
+document.querySelector(".btn-projects").onclick = () =>
+  goTo(-10, 0, "Projects",
+  "Automated Data Pipelines, Vector Search Applications, AI Data Apps");
+
+document.querySelector(".btn-resume").onclick = () =>
+  goTo(0, -10, "Resume",
+  "Download my resume from GitHub Pages");
+
+document.querySelector(".btn-contact").onclick = () =>
+  goTo(0, 10, "Contact",
+  "Email: cherukupally.sowmya19@gmail.com");
+
+/* ANIMATE */
 function animate() {
   requestAnimationFrame(animate);
+
+  player.position.x += (target.x - player.position.x) * 0.08;
+  player.position.z += (target.z - player.position.z) * 0.08;
+
+  camera.position.x += (player.position.x - camera.position.x) * 0.05;
+  camera.position.z += (player.position.z + 14 - camera.position.z) * 0.05;
+  camera.lookAt(player.position);
+
   renderer.render(scene, camera);
 }
 animate();
 
+/* RESIZE */
 addEventListener("resize", () => {
   camera.aspect = innerWidth / innerHeight;
   camera.updateProjectionMatrix();
