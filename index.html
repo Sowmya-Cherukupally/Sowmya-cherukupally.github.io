@@ -23,6 +23,11 @@ html, body {
   inset: 0;
   z-index: 0;
 }
+<div class="hero">
+  <h1>Sowmya Cherukupally</h1>
+  <p>Data Engineer</p>
+</div>
+  
 
 /* UI BUTTONS */
 .ui button {
@@ -86,6 +91,28 @@ html, body {
   color: #38bdf8;
   text-decoration: none;
   font-size: 14px;
+}
+
+  .hero {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.hero h1 {
+  font-size: clamp(26px, 5vw, 44px);
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.hero p {
+  margin-top: 4px;
+  font-size: 14px;
+  color: #94a3b8;
 }
 
 /* PROJECT CARDS */
