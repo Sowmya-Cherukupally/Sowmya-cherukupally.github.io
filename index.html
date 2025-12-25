@@ -24,8 +24,7 @@ html, body {
   z-index: 0;
 }
 
-/* HERO (TOP-LEFT, BRUNO STYLE) */
-/* HERO – CENTERED & CLEAN */
+/* HERO – CENTERED */
 .hero {
   position: fixed;
   top: 18px;
@@ -43,24 +42,10 @@ html, body {
   background: linear-gradient(90deg, #e5e7eb, #38bdf8);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-}
-
-
-  /* subtle glow */
   text-shadow:
     0 0 12px rgba(56,189,248,0.35),
     0 0 30px rgba(56,189,248,0.15);
 }
-
-
-.hero p {
-  margin-top: 6px;
-  font-size: 14px;
-  color: #94a3b8;
-  letter-spacing: 0.8px;
-}
-
-
 
 /* UI BUTTONS */
 .ui button {
@@ -91,7 +76,7 @@ html, body {
 /* INFO PANEL */
 .panel {
   position: fixed;
-  bottom: 28px;   /* was 20px → move DOWN */
+  bottom: 28px;
   left: 50%;
   transform: translateX(-50%);
   background: rgba(2,6,23,.95);
@@ -104,7 +89,6 @@ html, body {
   overflow-y: auto;
   z-index: 20;
 }
-
 
 .panel h3 {
   margin-top: 0;
@@ -149,7 +133,6 @@ html, body {
   <h1>Sowmya Cherukupally</h1>
 </div>
 
-
 <!-- UI -->
 <div class="ui">
   <button class="btn-about">ABOUT</button>
@@ -165,7 +148,7 @@ html, body {
 <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
 
 <script>
-/* THREE SETUP */
+/* ================= THREE SETUP ================= */
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x020617);
 
@@ -193,7 +176,28 @@ const player = new THREE.Mesh(
 player.position.set(0, 0.8, 0);
 scene.add(player);
 
-/* PANEL CONTENT */
+/* ================= TRACK SYSTEM ================= */
+const trackPositions = {
+  about: 0,
+  skills: 12,
+  projects: 24,
+  contact: -12,
+  resume: -24
+};
+
+let targetX = 0;
+
+/* Track markers (visual stations) */
+Object.values(trackPositions).forEach(x => {
+  const marker = new THREE.Mesh(
+    new THREE.BoxGeometry(2, 0.2, 2),
+    new THREE.MeshStandardMaterial({ color: 0x1e40af })
+  );
+  marker.position.set(x, 0.1, 0);
+  scene.add(marker);
+});
+
+/* ================= PANEL CONTENT ================= */
 const panel = document.getElementById("panel");
 
 const content = {
@@ -218,9 +222,8 @@ const content = {
     <div class="project-card">
       <h4>Automated Data Ingestion and Transformation</h4>
       <img src="data.jpg" onerror="this.style.display='none'">
-      <p>Designed and implemented a fully automated data ingestion pipeline using Snowflake, PySpark, and Python. 
-      The system ingests raw files from cloud storage, applies transformation logic,
-      enforces data quality checks, and loads curated datasets into analytics-ready tables following medallion architecture.</p>
+      <p>Designed and implemented a fully automated data ingestion pipeline using Snowflake, PySpark, and Python. The system ingests raw files from cloud storage,
+      applies transformation logic, enforces data quality checks, and loads curated datasets into analytics-ready tables following medallion architecture.</p>
       <a href="https://github.com/Sowmya-Cherukupally/Agentic" target="_blank">View on GitHub →</a>
     </div>
 
@@ -235,15 +238,15 @@ const content = {
     <div class="project-card">
       <h4>RAG Application</h4>
       <img src="RAG.png" onerror="this.style.display='none'">
-      <p>Implementing Retrieval-Augmented Generation (RAG) significantly enhances a PDF-to-MCQ application by ensuring questions are grounded in the document's actual content
-      rather than the AI's general training data.</p>
+      <p>Implementing Retrieval-Augmented Generation (RAG) significantly enhances a PDF-to-MCQ application by ensuring questions
+      are grounded in the document's actual content rather than the AI's general training data</p>
       <a href="https://github.com/Sowmya-Cherukupally/RAG_Application" target="_blank">View on GitHub →</a>
     </div>
 
     <div class="project-card">
       <h4>WhatsApp Chatbot</h4>
       <img src="woliul-hasan-7FhOgd6itoU-unsplash.jpg" onerror="this.style.display='none'">
-      <p>WhatsApp Chatbot is a simple chabot which responds to predefined messages .
+      <p>WhatsApp Chatbot is a simple chabot which responds to predefined messages . 
       The chatbot is capable of receiving messages from WhatsApp, processing them, and sending responses back to the user using Gupshup as a API.</p>
       <a href="https://github.com/Sowmya-Cherukupally/WhatsApp_Chatbot" target="_blank">View on GitHub →</a>
     </div>
@@ -273,22 +276,46 @@ const content = {
 panel.innerHTML = content.about;
 
 /* BUTTON EVENTS */
-document.querySelector(".btn-about").onclick = () => panel.innerHTML = content.about;
-document.querySelector(".btn-skills").onclick = () => panel.innerHTML = content.skills;
-document.querySelector(".btn-projects").onclick = () => panel.innerHTML = content.projects;
-document.querySelector(".btn-contact").onclick = () => panel.innerHTML = content.contact;
-document.querySelector(".btn-resume").onclick = () =>
-  window.open("SowmyaCherukupallyResume.pdf", "_blank");
+document.querySelector(".btn-about").onclick = () => {
+  panel.innerHTML = content.about;
+  targetX = trackPositions.about;
+};
 
-/* ANIMATION */
+document.querySelector(".btn-skills").onclick = () => {
+  panel.innerHTML = content.skills;
+  targetX = trackPositions.skills;
+};
+
+document.querySelector(".btn-projects").onclick = () => {
+  panel.innerHTML = content.projects;
+  targetX = trackPositions.projects;
+};
+
+document.querySelector(".btn-contact").onclick = () => {
+  panel.innerHTML = content.contact;
+  targetX = trackPositions.contact;
+};
+
+document.querySelector(".btn-resume").onclick = () => {
+  targetX = trackPositions.resume;
+  window.open("SowmyaCherukupallyResume.pdf", "_blank");
+};
+
+/* ================= ANIMATION ================= */
 function animate() {
   requestAnimationFrame(animate);
-  player.rotation.y += 0.003;
-  camera.lookAt(player.position);
+
+  player.position.x += (targetX - player.position.x) * 0.08;
+  camera.position.x += (targetX - camera.position.x) * 0.05;
+
+  player.rotation.y += 0.01;
+
+  camera.lookAt(player.position.x, player.position.y, player.position.z);
   renderer.render(scene, camera);
 }
 animate();
 
+/* RESIZE */
 window.addEventListener("resize", () => {
   camera.aspect = innerWidth / innerHeight;
   camera.updateProjectionMatrix();
