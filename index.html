@@ -16,6 +16,41 @@ html, body {
   font-family: Inter, sans-serif;
   color: #e5e7eb;
 }
+/* PROJECT CARDS */
+.project-card {
+  border: 1px solid #1e293b;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 28px;
+  background: rgba(2,6,23,.75);
+}
+
+.project-card h4 {
+  margin: 0 0 10px;
+  color: #e5e7eb;
+}
+
+.project-card img {
+  width: 100%;
+  max-height: 240px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin: 10px 0;
+}
+
+.project-card p {
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: #94a3b8;
+}
+
+.project-card a {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 14px;
+  color: #38bdf8;
+  text-decoration: none;
+}
 
 /* CANVAS */
 #bg {
@@ -188,33 +223,75 @@ const content = {
   `,
 
   projects: `
-    <h3>Projects</h3>
+  <h3>Projects</h3>
 
-    <p><strong>Automated Data Ingestion & Transformation</strong></p>
-    <img src="data.jpg">
-    <p>Snowflake + PySpark pipeline using Medallion Architecture.</p>
-    <a href="https://github.com/Sowmya-Cherukupally/Agentic" target="_blank">View on GitHub →</a>
+  <div class="project-card">
+    <h4>Automated Data Ingestion and Transformation</h4>
+    <img src="data.jpg" alt="Data Pipeline Project">
+    <p>
+      Designed and implemented a fully automated data ingestion pipeline using
+      Snowflake, PySpark, and Python. The system ingests raw files from cloud
+      storage, applies transformation logic, enforces data quality checks, and
+      loads curated datasets into analytics-ready tables following
+      <strong>Medallion Architecture</strong>.
+    </p>
+    <a href="https://github.com/Sowmya-Cherukupally/Agentic" target="_blank">
+      View on GitHub →
+    </a>
+  </div>
 
-    <p><strong>Real Estate Comparison Tool</strong></p>
-    <img src="realestate.jpg">
-    <p>Vector search based property comparison using embeddings.</p>
-    <a href="https://github.com/sowmya-ch-19/PropelensRealestate" target="_blank">View on GitHub →</a>
+  <div class="project-card">
+    <h4>Real Estate Comparison Tool</h4>
+    <img src="realestate.jpg" alt="Real Estate Tool">
+    <p>
+      Developed a real estate comparison tool using vector search capabilities.
+      The application compares properties based on price, location, and amenities
+      using vector embeddings for semantic similarity, with a Streamlit-based UI.
+    </p>
+    <a href="https://github.com/sowmya-ch-19/PropelensRealestate" target="_blank">
+      View on GitHub →
+    </a>
+  </div>
 
-    <p><strong>RAG Application</strong></p>
-    <img src="RAG.png">
-    <p>PDF-to-MCQ RAG system grounded in document context.</p>
-    <a href="https://github.com/Sowmya-Cherukupally/RAG_Application" target="_blank">View on GitHub →</a>
+  <div class="project-card">
+    <h4>RAG Application (PDF-to-MCQ)</h4>
+    <img src="RAG.png" alt="RAG Application">
+    <p>
+      Implemented a Retrieval-Augmented Generation (RAG) application to generate
+      MCQs grounded in document context, ensuring accuracy and relevance instead
+      of relying on general LLM knowledge.
+    </p>
+    <a href="https://github.com/Sowmya-Cherukupally/RAG_Application" target="_blank">
+      View on GitHub →
+    </a>
+  </div>
 
-    <p><strong>WhatsApp Chatbot</strong></p>
-    <img src="whatsappchatbot.jpg">
-    <p>WhatsApp chatbot using Gupshup API for automated responses.</p>
-    <a href="https://github.com/Sowmya-Cherukupally/WhatsApp_Chatbot" target="_blank">View on GitHub →</a>
+  <div class="project-card">
+    <h4>WhatsApp Chatbot</h4>
+    <img src="whatsappchatbot.jpg" alt="WhatsApp Chatbot">
+    <p>
+      Built a WhatsApp chatbot using the Gupshup API that processes incoming
+      messages and responds automatically to predefined intents, enabling simple
+      customer interaction workflows.
+    </p>
+    <a href="https://github.com/Sowmya-Cherukupally/WhatsApp_Chatbot" target="_blank">
+      View on GitHub →
+    </a>
+  </div>
 
-    <p><strong>Weather Application</strong></p>
-    <img src="weather_application.jpg">
-    <p>Weather app using OpenWeatherMap API.</p>
-    <a href="https://github.com/Sowmya-Cherukupally/Weather-Application" target="_blank">View on GitHub →</a>
-  `,
+  <div class="project-card">
+    <h4>Weather Application</h4>
+    <img src="weather_application.jpg" alt="Weather Application">
+    <p>
+      Developed a user-friendly weather forecasting application using the
+      OpenWeatherMap API to provide real-time weather data for locations worldwide.
+    </p>
+    <a href="https://github.com/Sowmya-Cherukupally/Weather-Application" target="_blank">
+      View on GitHub →
+    </a>
+  </div>
+`
+
 
   contact: `
     <h3>Contact</h3>
