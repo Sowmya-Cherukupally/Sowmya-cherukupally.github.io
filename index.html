@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Sowmya Cherukupally | Data Engineer Portfolio</title>
+<title>Sowmya Cherukupally | 3D Portfolio</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -16,96 +16,54 @@ html, body {
   font-family: Inter, sans-serif;
   color: #e5e7eb;
 }
-/* PROJECT CARDS */
-.project-card {
-  border: 1px solid #1e293b;
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 28px;
-  background: rgba(2,6,23,.75);
-}
-
-.project-card h4 {
-  margin: 0 0 10px;
-  color: #e5e7eb;
-}
-
-.project-card img {
-  width: 100%;
-  max-height: 240px;
-  object-fit: cover;
-  border-radius: 12px;
-  margin: 10px 0;
-}
-
-.project-card p {
-  font-size: 14.5px;
-  line-height: 1.7;
-  color: #94a3b8;
-}
-
-.project-card a {
-  display: inline-block;
-  margin-top: 10px;
-  font-size: 14px;
-  color: #38bdf8;
-  text-decoration: none;
-}
 
 /* CANVAS */
 #bg {
   position: fixed;
   inset: 0;
+  z-index: 0;
 }
 
-/* FLOATING UI */
-.ui {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-}
-
+/* UI BUTTONS */
 .ui button {
-  pointer-events: auto;
-  position: absolute;
+  position: fixed;
   padding: 10px 18px;
   border-radius: 12px;
-  background: rgba(2,6,23,.8);
-  border: 1px solid #2563eb;
+  background: rgba(2,6,23,.85);
+  border: 1px solid #3b82f6;
   color: #93c5fd;
   cursor: pointer;
   transition: .3s;
-  font-size: 13px;
+  z-index: 10;
 }
 
 .ui button:hover {
-  background: #2563eb;
+  background: #3b82f6;
   color: #020617;
 }
 
 /* Button positions */
-.btn-about   { top: 30px; left: 50%; transform: translateX(-50%); }
-.btn-skills  { right: 30px; top: 35%; }
-.btn-projects{ right: 30px; top: 50%; }
+.btn-about { top: 30px; left: 50%; transform: translateX(-50%); }
+.btn-skills { right: 30px; top: 40%; }
+.btn-projects { right: 30px; top: 50%; }
 .btn-contact { left: 30px; top: 50%; }
 
 /* INFO PANEL */
 .panel {
   position: fixed;
-  bottom: 24px;
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(2,6,23,.9);
+  background: rgba(2,6,23,.95);
   border: 1px solid #1e293b;
   border-radius: 18px;
   padding: 22px 26px;
-  max-width: 720px;
+  max-width: 780px;
   width: calc(100% - 40px);
-  opacity: 0;
-  transition: .35s;
+  max-height: 70vh;
+  overflow-y: auto;
+  z-index: 10;
 }
-
-.panel.active { opacity: 1; }
 
 .panel h3 {
   margin-top: 0;
@@ -129,6 +87,15 @@ html, body {
   text-decoration: none;
   font-size: 14px;
 }
+
+/* PROJECT CARDS */
+.project-card {
+  border: 1px solid #1e293b;
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 24px;
+  background: rgba(2,6,23,.7);
+}
 </style>
 </head>
 
@@ -148,27 +115,37 @@ html, body {
 <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
 
 <script>
-/* SCENE */
+/* ================= THREE SETUP ================= */
 const scene = new THREE.Scene();
-scene.fog = new THREE.Fog(0x020617, 12, 90);
+scene.background = new THREE.Color(0x020617);
 
-const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 300);
-camera.position.set(0, 6, 16);
+const camera = new THREE.PerspectiveCamera(
+  60,
+  innerWidth / innerHeight,
+  0.1,
+  200
+);
+camera.position.set(0, 8, 14);
 
-const renderer = new THREE.WebGLRenderer({ canvas: bg, antialias: true });
+const renderer = new THREE.WebGLRenderer({
+  canvas: bg,
+  antialias: true
+});
 renderer.setSize(innerWidth, innerHeight);
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 
-scene.add(new THREE.AmbientLight(0xffffff, 0.9));
-const light = new THREE.DirectionalLight(0x60a5fa, 1);
-light.position.set(8, 12, 6);
-scene.add(light);
+/* LIGHTING */
+scene.add(new THREE.AmbientLight(0xffffff, 1));
+const dir = new THREE.DirectionalLight(0x60a5fa, 1.2);
+dir.position.set(10, 15, 10);
+scene.add(dir);
 
-/* GRID FLOOR */
-const grid = new THREE.GridHelper(200, 80, 0x2563eb, 0x1e40af);
+/* GRID */
+const grid = new THREE.GridHelper(200, 80, 0x3b82f6, 0x1e40af);
+grid.position.y = 0;
 scene.add(grid);
 
-/* PLAYER */
+/* PLAYER CUBE */
 const player = new THREE.Mesh(
   new THREE.BoxGeometry(1.6, 1.6, 1.6),
   new THREE.MeshStandardMaterial({ color: 0x22c55e })
@@ -176,32 +153,7 @@ const player = new THREE.Mesh(
 player.position.set(0, 0.8, 0);
 scene.add(player);
 
-/* BOARD CREATOR */
-function board(x, z) {
-  const b = new THREE.Mesh(
-    new THREE.BoxGeometry(5, 2.5, 0.3),
-    new THREE.MeshStandardMaterial({
-      color: 0x020617,
-      emissive: 0x2563eb,
-      emissiveIntensity: .8
-    })
-  );
-  b.position.set(x, 1.8, z);
-  scene.add(b);
-  return b;
-}
-
-/* BOARD POSITIONS */
-const locations = {
-  about:    { x: 0,   z: -12 },
-  skills:   { x: 12,  z: 0 },
-  projects: { x: -12, z: 0 },
-  contact:  { x: 0,   z: 12 }
-};
-
-Object.values(locations).forEach(p => board(p.x, p.z));
-
-/* PANEL CONTENT */
+/* ================= PANEL CONTENT ================= */
 const panel = document.getElementById("panel");
 
 const content = {
@@ -217,118 +169,101 @@ const content = {
     <h3>Skills</h3>
     <p>
       Snowflake • Python • SQL • PySpark • AWS (EC2, S3, Rekognition) • DBT •
-      GenAI • LLMs • Agentic AI (Cortex Search, Cortex Analyst) • REST APIs •
+      Gen AI • LLMs • Agentic AI (Cortex Search, Cortex Analyst) • REST APIs •
       Flask • Dialogflow • Streamlit • Git • GitHub
     </p>
   `,
 
   projects: `
-  <h3>Projects</h3>
+    <h3>Projects</h3>
 
-  <div class="project-card">
-    <h4>Automated Data Ingestion and Transformation</h4>
-    <img src="data.jpg" alt="Data Pipeline Project">
-    <p>
-      Designed and implemented a fully automated data ingestion pipeline using
-      Snowflake, PySpark, and Python. The system ingests raw files from cloud
-      storage, applies transformation logic, enforces data quality checks, and
-      loads curated datasets into analytics-ready tables following
-      <strong>Medallion Architecture</strong>.
-    </p>
-    <a href="https://github.com/Sowmya-Cherukupally/Agentic" target="_blank">
-      View on GitHub →
-    </a>
-  </div>
+    <div class="project-card">
+      <h4>Automated Data Ingestion and Transformation</h4>
+      <img src="data.jpg">
+      <p>
+        Fully automated Snowflake + PySpark pipeline following Medallion
+        Architecture with data quality checks.
+      </p>
+      <a href="https://github.com/Sowmya-Cherukupally/Agentic" target="_blank">
+        View on GitHub →
+      </a>
+    </div>
 
-  <div class="project-card">
-    <h4>Real Estate Comparison Tool</h4>
-    <img src="realestate.jpg" alt="Real Estate Tool">
-    <p>
-      Developed a real estate comparison tool using vector search capabilities.
-      The application compares properties based on price, location, and amenities
-      using vector embeddings for semantic similarity, with a Streamlit-based UI.
-    </p>
-    <a href="https://github.com/sowmya-ch-19/PropelensRealestate" target="_blank">
-      View on GitHub →
-    </a>
-  </div>
+    <div class="project-card">
+      <h4>Real Estate Comparison Tool</h4>
+      <img src="realestate.jpg">
+      <p>
+        Vector search–based real estate comparison using embeddings and Streamlit.
+      </p>
+      <a href="https://github.com/sowmya-ch-19/PropelensRealestate" target="_blank">
+        View on GitHub →
+      </a>
+    </div>
 
-  <div class="project-card">
-    <h4>RAG Application (PDF-to-MCQ)</h4>
-    <img src="RAG.png" alt="RAG Application">
-    <p>
-      Implemented a Retrieval-Augmented Generation (RAG) application to generate
-      MCQs grounded in document context, ensuring accuracy and relevance instead
-      of relying on general LLM knowledge.
-    </p>
-    <a href="https://github.com/Sowmya-Cherukupally/RAG_Application" target="_blank">
-      View on GitHub →
-    </a>
-  </div>
+    <div class="project-card">
+      <h4>RAG Application</h4>
+      <img src="RAG.png">
+      <p>
+        PDF-to-MCQ RAG system grounded in document context.
+      </p>
+      <a href="https://github.com/Sowmya-Cherukupally/RAG_Application" target="_blank">
+        View on GitHub →
+      </a>
+    </div>
 
-  <div class="project-card">
-    <h4>WhatsApp Chatbot</h4>
-    <img src="whatsappchatbot.jpg" alt="WhatsApp Chatbot">
-    <p>
-      Built a WhatsApp chatbot using the Gupshup API that processes incoming
-      messages and responds automatically to predefined intents, enabling simple
-      customer interaction workflows.
-    </p>
-    <a href="https://github.com/Sowmya-Cherukupally/WhatsApp_Chatbot" target="_blank">
-      View on GitHub →
-    </a>
-  </div>
+    <div class="project-card">
+      <h4>WhatsApp Chatbot</h4>
+      <img src="whatsappchatbot.jpg">
+      <p>
+        WhatsApp chatbot using Gupshup API for automated responses.
+      </p>
+      <a href="https://github.com/Sowmya-Cherukupally/WhatsApp_Chatbot" target="_blank">
+        View on GitHub →
+      </a>
+    </div>
 
-  <div class="project-card">
-    <h4>Weather Application</h4>
-    <img src="weather_application.jpg" alt="Weather Application">
-    <p>
-      Developed a user-friendly weather forecasting application using the
-      OpenWeatherMap API to provide real-time weather data for locations worldwide.
-    </p>
-    <a href="https://github.com/Sowmya-Cherukupally/Weather-Application" target="_blank">
-      View on GitHub →
-    </a>
-  </div>
-`
-
+    <div class="project-card">
+      <h4>Weather Application</h4>
+      <img src="weather_application.jpg">
+      <p>
+        Weather forecasting app using OpenWeatherMap API.
+      </p>
+      <a href="https://github.com/Sowmya-Cherukupally/Weather-Application" target="_blank">
+        View on GitHub →
+      </a>
+    </div>
+  `,
 
   contact: `
     <h3>Contact</h3>
     <p>📞 +91 70953 38146</p>
     <p>📧 cherukupally.sowmya19@gmail.com</p>
-    <p><a href="https://www.linkedin.com/in/sowmya-cherukupally-a92911251" target="_blank">LinkedIn</a></p>
-    <p><a href="https://github.com/Sowmya-Cherukupally" target="_blank">GitHub</a></p>
+    <p>
+      <a href="https://www.linkedin.com/in/sowmya-cherukupally-a92911251" target="_blank">
+        LinkedIn
+      </a>
+      |
+      <a href="https://github.com/Sowmya-Cherukupally" target="_blank">
+        GitHub
+      </a>
+    </p>
   `
 };
 
-/* MOVEMENT */
-let target = new THREE.Vector3(0, player.position.y, 0);
+/* DEFAULT CONTENT (IMPORTANT FIX) */
+panel.innerHTML = content.about;
 
-function go(section) {
-  const p = locations[section];
-  target.set(p.x, player.position.y, p.z);
-  panel.innerHTML = content[section];
-  panel.classList.add("active");
-}
+/* BUTTON EVENTS */
+document.querySelector(".btn-about").onclick    = () => panel.innerHTML = content.about;
+document.querySelector(".btn-skills").onclick   = () => panel.innerHTML = content.skills;
+document.querySelector(".btn-projects").onclick = () => panel.innerHTML = content.projects;
+document.querySelector(".btn-contact").onclick  = () => panel.innerHTML = content.contact;
 
-/* UI EVENTS */
-document.querySelector(".btn-about").onclick    = () => go("about");
-document.querySelector(".btn-skills").onclick   = () => go("skills");
-document.querySelector(".btn-projects").onclick = () => go("projects");
-document.querySelector(".btn-contact").onclick  = () => go("contact");
-
-/* LOOP */
+/* ================= ANIMATION ================= */
 function animate() {
   requestAnimationFrame(animate);
-
-  player.position.x += (target.x - player.position.x) * 0.07;
-  player.position.z += (target.z - player.position.z) * 0.07;
-
-  camera.position.x += (player.position.x - camera.position.x) * 0.05;
-  camera.position.z += (player.position.z + 16 - camera.position.z) * 0.05;
+  player.rotation.y += 0.003;
   camera.lookAt(player.position);
-
   renderer.render(scene, camera);
 }
 animate();
@@ -343,3 +278,4 @@ addEventListener("resize", () => {
 
 </body>
 </html>
+
