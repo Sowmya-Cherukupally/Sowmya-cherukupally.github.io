@@ -37,18 +37,29 @@ html, body {
 }
 
 .hero h1 {
-  font-size: clamp(28px, 5vw, 46px);
+  font-size: clamp(30px, 5vw, 48px);
   font-weight: 700;
-  letter-spacing: 1px;
   margin: 0;
-  color: #e5e7eb;
+  background: linear-gradient(90deg, #e5e7eb, #38bdf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
+
+
+  /* subtle glow */
+  text-shadow:
+    0 0 12px rgba(56,189,248,0.35),
+    0 0 30px rgba(56,189,248,0.15);
+}
+
 
 .hero p {
   margin-top: 6px;
   font-size: 14px;
   color: #94a3b8;
+  letter-spacing: 0.8px;
 }
+
 
 
 /* UI BUTTONS */
