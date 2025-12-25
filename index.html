@@ -154,19 +154,47 @@ scene.add(player);
 
 /* ================= BOARDS ================= */
 const boardData = [
-  { name:'ABOUT',    x: 0 },
-  { name:'SKILLS',   x: 14 },
-  { name:'PROJECTS', x: 28 },
-  { name:'CONTACT',  x: -14 },
-  { name:'RESUME',   x: -28 }
+  { name:'ABOUT',    x: 0,   z: 0 },
+  { name:'SKILLS',   x: 14,  z: 0 },
+  { name:'CONTACT',  x: -14, z: 0 },
+  { name:'RESUME',   x: -28, z: 0 },
+
+  // PROJECTS ENTRY (off main track)
+  { name:'PROJECTS', x: 28,  z: -10 }
 ];
 
 boardData.forEach(b => {
   const board = new THREE.Mesh(
     new THREE.BoxGeometry(5, 3, .6),
-    new THREE.MeshStandardMaterial({ color:0x020617, emissive:0x2563eb })
+    new THREE.MeshStandardMaterial({
+      color: 0x020617,
+      emissive: 0x2563eb,
+      emissiveIntensity: 0.8
+    })
   );
-  board.position.set(b.x, 2, 0);
+  board.position.set(b.x, 2, b.z);
+  scene.add(board);
+});
+
+/* PROJECT BOARDS CLUSTER */
+const projectBoards = [
+  { x: 26, z: -16 },
+  { x: 30, z: -16 },
+  { x: 26, z: -22 },
+  { x: 30, z: -22 },
+  { x: 28, z: -28 }
+];
+
+projectBoards.forEach(p => {
+  const board = new THREE.Mesh(
+    new THREE.BoxGeometry(4, 2.5, .6),
+    new THREE.MeshStandardMaterial({
+      color: 0x020617,
+      emissive: 0x22c55e,
+      emissiveIntensity: 0.6
+    })
+  );
+  board.position.set(p.x, 2, p.z);
   scene.add(board);
 });
 
@@ -197,50 +225,35 @@ const content = {
     <div class="project-card">
       <h4>Automated Data Ingestion & Transformation</h4>
       <img src="data.jpg" onerror="this.style.display='none'">
-      <p>
-        Designed and implemented a fully automated data ingestion pipeline using Snowflake, PySpark, and Python. The system ingests raw files from cloud storage, applies transformation logic, enforces data quality checks,
-        and loads curated datasets into analytics-ready tables following medallion architecture.
-      </p>
+      <p>Snowflake + PySpark Medallion Architecture pipeline.</p>
       <a href="https://github.com/Sowmya-Cherukupally/Agentic" target="_blank">View on GitHub →</a>
     </div>
 
     <div class="project-card">
       <h4>Real Estate Comparison Tool</h4>
       <img src="realestate.jpg" onerror="this.style.display='none'">
-      <p>
-        Developed a real estate comparison tool using vector search capabilities. The application allows users to compare properties based on features like price, location, and amenities.
-        It leverages vector embeddings for similarity matching and provides an streamlit UI for property
-      </p>
+      <p>Vector search based real estate comparison.</p>
       <a href="https://github.com/sowmya-ch-19/PropelensRealestate" target="_blank">View on GitHub →</a>
     </div>
 
     <div class="project-card">
       <h4>RAG Application</h4>
       <img src="RAG.png" onerror="this.style.display='none'">
-      <p>
-        Implementing Retrieval-Augmented Generation (RAG) significantly enhances a 
-        PDF-to-MCQ application by ensuring questions are grounded in the document's actual content rather than the AI's general training data.
-      </p>
+      <p>Document-grounded MCQ generation using RAG.</p>
       <a href="https://github.com/Sowmya-Cherukupally/RAG_Application" target="_blank">View on GitHub →</a>
     </div>
 
     <div class="project-card">
       <h4>WhatsApp Chatbot</h4>
       <img src="woliul-hasan-7FhOgd6itoU-unsplash.jpg" onerror="this.style.display='none'">
-      <p>
-       WhatsApp Chatbot is a simple chabot which responds to predefined messages .
-       The chatbot is capable of receiving messages from WhatsApp, processing them, and sending responses back to the user using Gupshup as a API.
-      </p>
+      <p>WhatsApp chatbot using Gupshup API.</p>
       <a href="https://github.com/Sowmya-Cherukupally/WhatsApp_Chatbot" target="_blank">View on GitHub →</a>
     </div>
 
     <div class="project-card">
       <h4>Weather Application</h4>
       <img src="lloyd-dirks-kz8pEH4IsUo-unsplash.jpg" onerror="this.style.display='none'">
-      <p>
-        WeatherApplication is a simple, user-friendly weather forecasting application that provides real-time weather information.
-        It utilizes the OpenWeatherMap API to fetch current weather data for locations worldwide
-      </p>
+      <p>Real-time weather application.</p>
       <a href="https://github.com/Sowmya-Cherukupally/Weather-Application" target="_blank">View on GitHub →</a>
     </div>
   `,
@@ -258,39 +271,46 @@ panel.innerHTML = content.about;
 
 /* ================= NAV ================= */
 let targetX = 0;
+let targetZ = 0;
 
 document.querySelector(".btn-about").onclick = () => {
-  targetX = 0;
+  targetX = 0; targetZ = 0;
   panel.innerHTML = content.about;
 };
 
 document.querySelector(".btn-skills").onclick = () => {
-  targetX = 14;
+  targetX = 14; targetZ = 0;
   panel.innerHTML = content.skills;
 };
 
 document.querySelector(".btn-projects").onclick = () => {
-  targetX = 28;
+  targetX = 28; targetZ = -18;
   panel.innerHTML = content.projects;
 };
 
 document.querySelector(".btn-contact").onclick = () => {
-  targetX = -14;
+  targetX = -14; targetZ = 0;
   panel.innerHTML = content.contact;
 };
 
 document.querySelector(".btn-resume").onclick = () => {
-  targetX = -28;
+  targetX = -28; targetZ = 0;
   window.open("SowmyaCherukupallyResume.pdf","_blank");
 };
 
 /* ================= LOOP ================= */
 function animate(){
   requestAnimationFrame(animate);
+
   player.position.x += (targetX - player.position.x) * .08;
+  player.position.z += (targetZ - player.position.z) * .08;
+
   camera.position.x += (targetX - camera.position.x) * .05;
+  camera.position.z += (targetZ - camera.position.z) * .05;
+
   player.rotation.y += .01;
   camera.lookAt(player.position);
+
   renderer.render(scene,camera);
 }
 animate();
