@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Sowmya Cherukupally | 3D World Portfolio</title>
+<title>Sowmya Cherukupally | Data Engineer Portfolio</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -34,12 +34,13 @@ html, body {
   pointer-events: auto;
   position: absolute;
   padding: 10px 18px;
-  border-radius: 10px;
-  background: rgba(2,6,23,.7);
+  border-radius: 12px;
+  background: rgba(2,6,23,.8);
   border: 1px solid #2563eb;
   color: #93c5fd;
   cursor: pointer;
   transition: .3s;
+  font-size: 13px;
 }
 
 .ui button:hover {
@@ -47,26 +48,26 @@ html, body {
   color: #020617;
 }
 
-/* Positions */
-.btn-skills { right: 30px; top: 40%; }
-.btn-projects { right: 30px; top: 50%; }
-.btn-resume { left: 30px; top: 40%; }
+/* Button positions */
+.btn-about   { top: 30px; left: 50%; transform: translateX(-50%); }
+.btn-skills  { right: 30px; top: 35%; }
+.btn-projects{ right: 30px; top: 50%; }
 .btn-contact { left: 30px; top: 50%; }
 
 /* INFO PANEL */
 .panel {
   position: fixed;
-  bottom: 30px;
+  bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(2,6,23,.85);
+  background: rgba(2,6,23,.9);
   border: 1px solid #1e293b;
-  border-radius: 16px;
-  padding: 20px 28px;
-  max-width: 520px;
-  text-align: center;
+  border-radius: 18px;
+  padding: 22px 26px;
+  max-width: 720px;
+  width: calc(100% - 40px);
   opacity: 0;
-  transition: .3s;
+  transition: .35s;
 }
 
 .panel.active { opacity: 1; }
@@ -78,7 +79,20 @@ html, body {
 
 .panel p {
   color: #94a3b8;
-  line-height: 1.6;
+  line-height: 1.7;
+  font-size: 15px;
+}
+
+.panel img {
+  width: 100%;
+  border-radius: 12px;
+  margin: 12px 0;
+}
+
+.panel a {
+  color: #38bdf8;
+  text-decoration: none;
+  font-size: 14px;
 }
 </style>
 </head>
@@ -88,9 +102,9 @@ html, body {
 <canvas id="bg"></canvas>
 
 <div class="ui">
+  <button class="btn-about">ABOUT</button>
   <button class="btn-skills">SKILLS</button>
   <button class="btn-projects">PROJECTS</button>
-  <button class="btn-resume">RESUME</button>
   <button class="btn-contact">CONTACT</button>
 </div>
 
@@ -101,18 +115,18 @@ html, body {
 <script>
 /* SCENE */
 const scene = new THREE.Scene();
-scene.fog = new THREE.Fog(0x020617, 10, 80);
+scene.fog = new THREE.Fog(0x020617, 12, 90);
 
-const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 200);
-camera.position.set(0, 6, 14);
+const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 300);
+camera.position.set(0, 6, 16);
 
 const renderer = new THREE.WebGLRenderer({ canvas: bg, antialias: true });
 renderer.setSize(innerWidth, innerHeight);
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 
-scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+scene.add(new THREE.AmbientLight(0xffffff, 0.9));
 const light = new THREE.DirectionalLight(0x60a5fa, 1);
-light.position.set(5, 10, 5);
+light.position.set(8, 12, 6);
 scene.add(light);
 
 /* GRID FLOOR */
@@ -121,72 +135,121 @@ scene.add(grid);
 
 /* PLAYER */
 const player = new THREE.Mesh(
-  new THREE.BoxGeometry(1.5,1.5,1.5),
+  new THREE.BoxGeometry(1.6, 1.6, 1.6),
   new THREE.MeshStandardMaterial({ color: 0x22c55e })
 );
-player.position.set(0, 0.75, 0);
+player.position.set(0, 0.8, 0);
 scene.add(player);
 
-/* BOARDS (SECTIONS) */
-function createBoard(x, z, label) {
-  const board = new THREE.Mesh(
-    new THREE.BoxGeometry(4,2,0.3),
-    new THREE.MeshStandardMaterial({ color: 0x020617, emissive: 0x2563eb })
+/* BOARD CREATOR */
+function board(x, z) {
+  const b = new THREE.Mesh(
+    new THREE.BoxGeometry(5, 2.5, 0.3),
+    new THREE.MeshStandardMaterial({
+      color: 0x020617,
+      emissive: 0x2563eb,
+      emissiveIntensity: .8
+    })
   );
-  board.position.set(x, 1.5, z);
-  scene.add(board);
-  return board;
+  b.position.set(x, 1.8, z);
+  scene.add(b);
+  return b;
 }
 
-const boards = {
-  skills: createBoard(10, 0),
-  projects: createBoard(-10, 0),
-  resume: createBoard(0, -10),
-  contact: createBoard(0, 10)
+/* BOARD POSITIONS */
+const locations = {
+  about:    { x: 0,   z: -12 },
+  skills:   { x: 12,  z: 0 },
+  projects: { x: -12, z: 0 },
+  contact:  { x: 0,   z: 12 }
 };
+
+Object.values(locations).forEach(p => board(p.x, p.z));
 
 /* PANEL CONTENT */
 const panel = document.getElementById("panel");
 
-function showPanel(title, text) {
-  panel.innerHTML = `<h3>${title}</h3><p>${text}</p>`;
+const content = {
+  about: `
+    <h3>Data Engineer</h3>
+    <p>
+      Data Engineer with expertise in Python and strong experience in building
+      scalable data pipelines, automation, and AI-driven data solutions.
+    </p>
+  `,
+
+  skills: `
+    <h3>Skills</h3>
+    <p>
+      Snowflake • Python • SQL • PySpark • AWS (EC2, S3, Rekognition) • DBT •
+      GenAI • LLMs • Agentic AI (Cortex Search, Cortex Analyst) • REST APIs •
+      Flask • Dialogflow • Streamlit • Git • GitHub
+    </p>
+  `,
+
+  projects: `
+    <h3>Projects</h3>
+
+    <p><strong>Automated Data Ingestion & Transformation</strong></p>
+    <img src="data.jpg">
+    <p>Snowflake + PySpark pipeline using Medallion Architecture.</p>
+    <a href="https://github.com/Sowmya-Cherukupally/Agentic" target="_blank">View on GitHub →</a>
+
+    <p><strong>Real Estate Comparison Tool</strong></p>
+    <img src="realestate.jpg">
+    <p>Vector search based property comparison using embeddings.</p>
+    <a href="https://github.com/sowmya-ch-19/PropelensRealestate" target="_blank">View on GitHub →</a>
+
+    <p><strong>RAG Application</strong></p>
+    <img src="RAG.png">
+    <p>PDF-to-MCQ RAG system grounded in document context.</p>
+    <a href="https://github.com/Sowmya-Cherukupally/RAG_Application" target="_blank">View on GitHub →</a>
+
+    <p><strong>WhatsApp Chatbot</strong></p>
+    <img src="whatsappchatbot.jpg">
+    <p>WhatsApp chatbot using Gupshup API for automated responses.</p>
+    <a href="https://github.com/Sowmya-Cherukupally/WhatsApp_Chatbot" target="_blank">View on GitHub →</a>
+
+    <p><strong>Weather Application</strong></p>
+    <img src="weather_application.jpg">
+    <p>Weather app using OpenWeatherMap API.</p>
+    <a href="https://github.com/Sowmya-Cherukupally/Weather-Application" target="_blank">View on GitHub →</a>
+  `,
+
+  contact: `
+    <h3>Contact</h3>
+    <p>📞 +91 70953 38146</p>
+    <p>📧 cherukupally.sowmya19@gmail.com</p>
+    <p><a href="https://www.linkedin.com/in/sowmya-cherukupally-a92911251" target="_blank">LinkedIn</a></p>
+    <p><a href="https://github.com/Sowmya-Cherukupally" target="_blank">GitHub</a></p>
+  `
+};
+
+/* MOVEMENT */
+let target = new THREE.Vector3(0, player.position.y, 0);
+
+function go(section) {
+  const p = locations[section];
+  target.set(p.x, player.position.y, p.z);
+  panel.innerHTML = content[section];
   panel.classList.add("active");
 }
 
-/* NAVIGATION */
-let target = new THREE.Vector3(0, player.position.y, 0);
+/* UI EVENTS */
+document.querySelector(".btn-about").onclick    = () => go("about");
+document.querySelector(".btn-skills").onclick   = () => go("skills");
+document.querySelector(".btn-projects").onclick = () => go("projects");
+document.querySelector(".btn-contact").onclick  = () => go("contact");
 
-function goTo(x, z, title, text) {
-  target.set(x, player.position.y, z);
-  showPanel(title, text);
-}
-
-/* BUTTON EVENTS */
-document.querySelector(".btn-skills").onclick = () =>
-  goTo(10, 0, "Skills",
-  "Snowflake, Python, SQL, PySpark, AWS, GenAI, Flask, Streamlit");
-
-document.querySelector(".btn-projects").onclick = () =>
-  goTo(-10, 0, "Projects",
-  "Automated Data Pipelines, Vector Search Applications, AI Data Apps");
-
-document.querySelector(".btn-resume").onclick = () =>
-  goTo(0, -10, "Resume",
-  "Download my resume from GitHub Pages");
-
-document.querySelector(".btn-contact").onclick = () =>
-  goTo(0, 10, "Contact",
-  "Email: cherukupally.sowmya19@gmail.com");
-
-/* ANIMATE */
+/* LOOP */
 function animate() {
   requestAnimationFrame(animate);
 
-  player.position.x += (target.x - player.position.x) * 0.08;
-  player.position.z += (target.z - player.position.z) * 0.08;
+  player.position.x += (target.x - player.position.x) * 0.07;
+  player.position.z += (target.z - player.position.z) * 0.07;
 
   camera.position.x += (player.position.x - camera.position.x) * 0.05;
-  camera.position.z += (player.position.z + 14 - camera.position.z) * 0.05;
+  camera.position.z += (player.position.z + 16 - camera.position.z) * 0.05;
   camera.lookAt(player.position);
 
   renderer.render(scene, camera);
