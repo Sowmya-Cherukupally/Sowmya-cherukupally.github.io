@@ -30,7 +30,7 @@ html, body {
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
-  z-index: 20;
+  z-index: 30;
   pointer-events: none;
 }
 
@@ -62,6 +62,7 @@ html, body {
   color: #020617;
 }
 
+.btn-about    { top: 70px; left: 50%; transform: translateX(-50%); }
 .btn-skills   { right: 30px; top: 40%; }
 .btn-projects { right: 30px; top: 50%; }
 .btn-contact  { left: 30px; top: 50%; }
@@ -77,7 +78,7 @@ html, body {
   border: 1px solid #1e293b;
   border-radius: 18px;
   padding: 22px 26px;
-  max-width: 780px;
+  max-width: 820px;
   width: calc(100% - 40px);
   max-height: 65vh;
   overflow-y: auto;
@@ -112,6 +113,7 @@ html, body {
 </div>
 
 <div class="ui">
+  <button class="btn-about">ABOUT</button>
   <button class="btn-skills">SKILLS</button>
   <button class="btn-projects">PROJECTS</button>
   <button class="btn-contact">CONTACT</button>
@@ -151,14 +153,15 @@ player.position.set(0, .8, 0);
 scene.add(player);
 
 /* ================= BOARDS ================= */
-const boards = [
+const boardData = [
+  { name:'ABOUT',    x: 0 },
   { name:'SKILLS',   x: 14 },
   { name:'PROJECTS', x: 28 },
   { name:'CONTACT',  x: -14 },
   { name:'RESUME',   x: -28 }
 ];
 
-boards.forEach(b => {
+boardData.forEach(b => {
   const board = new THREE.Mesh(
     new THREE.BoxGeometry(5, 3, .6),
     new THREE.MeshStandardMaterial({ color:0x020617, emissive:0x2563eb })
@@ -171,23 +174,73 @@ boards.forEach(b => {
 const panel = document.getElementById("panel");
 
 const content = {
+  about: `
+    <h3>Data Engineer</h3>
+    <p>
+      Data Engineer with expertise in Python and strong experience in building scalable data pipelines,
+      automation, and AI-driven data solutions. Hands-on with Snowflake, PySpark, AWS and modern GenAI workflows.
+    </p>
+  `,
+
   skills: `
     <h3>Skills</h3>
     <p>
-    Snowflake • Python • SQL • PySpark • AWS (EC2, S3, Rekognition) • DBT •
-    Gen AI • LLMs • Agentic AI (Cortex Search, Cortex Analyst) • REST APIs •
-    Flask • Dialogflow • Streamlit • Git • GitHub
+      Snowflake • Python • SQL • PySpark • AWS (EC2, S3, Rekognition) • DBT •
+      Gen AI • LLMs • Agentic AI (Cortex Search, Cortex Analyst) • REST APIs •
+      Flask • Dialogflow • Streamlit • Git • GitHub
     </p>
   `,
+
   projects: `
     <h3>Projects</h3>
+
     <div class="project-card">
       <h4>Automated Data Ingestion & Transformation</h4>
       <img src="data.jpg" onerror="this.style.display='none'">
-      <p>Snowflake + PySpark Medallion Architecture pipeline.</p>
+      <p>
+        Fully automated Snowflake + PySpark pipeline implementing Medallion Architecture with
+        data quality checks and scalable transformations.
+      </p>
       <a href="https://github.com/Sowmya-Cherukupally/Agentic" target="_blank">View on GitHub →</a>
     </div>
+
+    <div class="project-card">
+      <h4>Real Estate Comparison Tool</h4>
+      <img src="realestate.jpg" onerror="this.style.display='none'">
+      <p>
+        Vector search–based real estate comparison tool using embeddings and Streamlit UI.
+      </p>
+      <a href="https://github.com/sowmya-ch-19/PropelensRealestate" target="_blank">View on GitHub →</a>
+    </div>
+
+    <div class="project-card">
+      <h4>RAG Application</h4>
+      <img src="RAG.png" onerror="this.style.display='none'">
+      <p>
+        Retrieval-Augmented Generation system ensuring document-grounded MCQ generation.
+      </p>
+      <a href="https://github.com/Sowmya-Cherukupally/RAG_Application" target="_blank">View on GitHub →</a>
+    </div>
+
+    <div class="project-card">
+      <h4>WhatsApp Chatbot</h4>
+      <img src="whatsappchatbot.jpg" onerror="this.style.display='none'">
+      <p>
+        WhatsApp chatbot using Gupshup API for automated customer interactions.
+      </p>
+      <a href="https://github.com/Sowmya-Cherukupally/WhatsApp_Chatbot" target="_blank">View on GitHub →</a>
+    </div>
+
+    <div class="project-card">
+      <h4>Weather Application</h4>
+      <img src="weather_application.jpg" onerror="this.style.display='none'">
+      <p>
+        Real-time weather forecasting app powered by OpenWeatherMap API.
+      </p>
+      <a href="https://github.com/Sowmya-Cherukupally/Weather-Application" target="_blank">View on GitHub →</a>
+    </div>
   `,
+
   contact: `
     <h3>Contact</h3>
     <p>📞 +91 70953 38146</p>
@@ -197,10 +250,15 @@ const content = {
   `
 };
 
-panel.innerHTML = content.skills;
+panel.innerHTML = content.about;
 
 /* ================= NAV ================= */
 let targetX = 0;
+
+document.querySelector(".btn-about").onclick = () => {
+  targetX = 0;
+  panel.innerHTML = content.about;
+};
 
 document.querySelector(".btn-skills").onclick = () => {
   targetX = 14;
