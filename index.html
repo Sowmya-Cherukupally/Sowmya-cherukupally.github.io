@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Sowmya Cherukupally | 3D Portfolio</title>
+<title>Sowmya Cherukupally | Data Engineer</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -24,26 +24,25 @@ html, body {
   z-index: 0;
 }
 
-/* HERO NAME */
+/* HERO (TOP-LEFT, BRUNO STYLE) */
 .hero {
   position: fixed;
-  top: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  text-align: center;
+  top: 22px;
+  left: 26px;
   z-index: 30;
   pointer-events: none;
 }
 
 .hero h1 {
-  font-size: clamp(26px, 5vw, 44px);
+  font-size: 22px;
   font-weight: 700;
-  letter-spacing: 1px;
+  margin: 0;
+  letter-spacing: .5px;
 }
 
 .hero p {
-  margin-top: 4px;
-  font-size: 14px;
+  margin: 2px 0 0;
+  font-size: 13px;
   color: #94a3b8;
 }
 
@@ -58,6 +57,7 @@ html, body {
   cursor: pointer;
   transition: .3s;
   z-index: 20;
+  font-size: 13px;
 }
 
 .ui button:hover {
@@ -66,10 +66,11 @@ html, body {
 }
 
 /* Button positions */
-.btn-about { top: 80px; left: 50%; transform: translateX(-50%); }
-.btn-skills { right: 30px; top: 40%; }
+.btn-about    { top: 70px; left: 50%; transform: translateX(-50%); }
+.btn-skills   { right: 30px; top: 40%; }
 .btn-projects { right: 30px; top: 50%; }
-.btn-contact { left: 30px; top: 50%; }
+.btn-contact  { left: 30px; top: 50%; }
+.btn-resume   { left: 30px; top: 40%; }
 
 /* INFO PANEL */
 .panel {
@@ -126,7 +127,7 @@ html, body {
 
 <canvas id="bg"></canvas>
 
-<!-- HERO NAME -->
+<!-- HERO -->
 <div class="hero">
   <h1>Sowmya Cherukupally</h1>
   <p>Data Engineer</p>
@@ -138,6 +139,7 @@ html, body {
   <button class="btn-skills">SKILLS</button>
   <button class="btn-projects">PROJECTS</button>
   <button class="btn-contact">CONTACT</button>
+  <button class="btn-resume">RESUME</button>
 </div>
 
 <!-- PANEL -->
@@ -220,7 +222,7 @@ const content = {
     <div class="project-card">
       <h4>WhatsApp Chatbot</h4>
       <img src="whatsapp-chatbot.jpg" onerror="this.style.display='none'">
-      <p>WhatsApp chatbot using Gupshup API for automated responses.</p>
+      <p>WhatsApp chatbot using Gupshup API.</p>
       <a href="https://github.com/Sowmya-Cherukupally/WhatsApp_Chatbot" target="_blank">View on GitHub →</a>
     </div>
 
@@ -250,8 +252,10 @@ document.querySelector(".btn-about").onclick = () => panel.innerHTML = content.a
 document.querySelector(".btn-skills").onclick = () => panel.innerHTML = content.skills;
 document.querySelector(".btn-projects").onclick = () => panel.innerHTML = content.projects;
 document.querySelector(".btn-contact").onclick = () => panel.innerHTML = content.contact;
+document.querySelector(".btn-resume").onclick = () =>
+  window.open("SowmyaCherukupallyResume.pdf", "_blank");
 
-/* ANIMATE */
+/* ANIMATION */
 function animate() {
   requestAnimationFrame(animate);
   player.rotation.y += 0.003;
