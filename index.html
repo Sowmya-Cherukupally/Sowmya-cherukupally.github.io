@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Sowmya Cherukupally | 3D Track Portfolio</title>
+<title>Sowmya Cherukupally | 3D Portfolio</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -17,7 +17,7 @@ html, body {
   color: #e5e7eb;
 }
 
-/* ===== START SCREEN ===== */
+/* START SCREEN */
 .start {
   position: fixed;
   inset: 0;
@@ -30,15 +30,8 @@ html, body {
   cursor: pointer;
 }
 
-.start h1 {
-  font-size: 48px;
-  margin-bottom: 10px;
-}
-
-.start p {
-  opacity: .6;
-  margin-bottom: 30px;
-}
+.start h1 { font-size: 46px; margin-bottom: 8px; }
+.start p { opacity: .6; margin-bottom: 28px; }
 
 .start .ring {
   width: 120px;
@@ -58,28 +51,41 @@ html, body {
   70% { box-shadow: 0 0 0 40px rgba(56,189,248,0); }
 }
 
-/* ===== INFO PANEL ===== */
+/* INFO PANEL */
 .panel {
   position: fixed;
   left: 30px;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(2,6,23,0.9);
+  background: rgba(2,6,23,.92);
   border: 1px solid #1e293b;
-  border-radius: 14px;
+  border-radius: 16px;
   padding: 24px;
-  width: 320px;
+  width: 340px;
   opacity: 0;
   transition: opacity .3s ease;
 }
 
-.panel.active {
-  opacity: 1;
-}
+.panel.active { opacity: 1; }
 
 .panel h3 {
-  margin-top: 0;
   color: #38bdf8;
+  margin-top: 0;
+}
+
+.panel p, .panel li {
+  color: #94a3b8;
+  line-height: 1.6;
+  font-size: 15px;
+}
+
+.panel ul { padding-left: 18px; }
+
+/* CANVAS */
+#bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
 }
 </style>
 </head>
@@ -89,7 +95,7 @@ html, body {
 <!-- START -->
 <div class="start" id="start">
   <h1>Sowmya Cherukupally</h1>
-  <p>Move along the track</p>
+  <p>Move through my work</p>
   <div class="ring">START</div>
 </div>
 
@@ -101,29 +107,28 @@ html, body {
 <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
 
 <script>
-/* ================= BASIC THREE ================= */
+/* SCENE */
 const scene = new THREE.Scene();
-scene.fog = new THREE.Fog(0x020617, 10, 80);
+scene.fog = new THREE.Fog(0x020617, 10, 90);
 
 const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 200);
-camera.position.set(0, 8, 14);
+camera.position.set(0, 8, 16);
 
 const renderer = new THREE.WebGLRenderer({ canvas: bg, antialias: true });
 renderer.setSize(innerWidth, innerHeight);
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 
-scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+scene.add(new THREE.AmbientLight(0xffffff, 0.9));
 
-/* ================= GRID FLOOR ================= */
+/* GRID */
 const grid = new THREE.GridHelper(200, 80, 0x2563eb, 0x1e40af);
-grid.position.y = 0;
 scene.add(grid);
 
-/* ================= TRACK ================= */
-const track = [];
-const trackPositions = [];
+/* TRACK */
+const tiles = [];
+const positions = [];
 
-for (let i = 0; i < 5; i++) {
+for (let i = 0; i < 6; i++) {
   const tile = new THREE.Mesh(
     new THREE.BoxGeometry(3, 0.5, 3),
     new THREE.MeshStandardMaterial({
@@ -134,52 +139,90 @@ for (let i = 0; i < 5; i++) {
   );
   tile.position.set(i * 6, 0.25, 0);
   scene.add(tile);
-  track.push(tile);
-  trackPositions.push(tile.position.x);
+  tiles.push(tile);
+  positions.push(tile.position.x);
 }
 
-/* ================= TRACK LABELS ================= */
+/* SECTIONS (FROM UI VERSION) */
 const sections = [
-  { title: "Start", text: "Welcome to my portfolio" },
-  { title: "Skills", text: "Snowflake, Python, SQL, PySpark, AWS, GenAI" },
-  { title: "Projects", text: "Automated Pipelines, Vector Search, Data Apps" },
-  { title: "Contact", text: "cherukupally.sowmya19@gmail.com" },
-  { title: "Resume", text: "Download resume from GitHub" }
+  {
+    title: "Start",
+    content: `
+      <p><strong>Data Engineer</strong></p>
+      <p>Experienced in Python, Snowflake, SQL, PySpark and building scalable data pipelines with AI-driven solutions.</p>
+    `
+  },
+  {
+    title: "Skills",
+    content: `
+      <ul>
+        <li>Snowflake, SQL, Python, PySpark</li>
+        <li>AWS (S3, EC2, Lambda)</li>
+        <li>GenAI, Agentic AI (Cortex Search, Analyst)</li>
+        <li>Flask, Streamlit, REST APIs</li>
+      </ul>
+    `
+  },
+  {
+    title: "Project 1",
+    content: `
+      <p><strong>Automated Data Ingestion & Transformation</strong></p>
+      <p>Built automated pipelines using Snowflake & PySpark following Medallion Architecture.</p>
+    `
+  },
+  {
+    title: "Project 2",
+    content: `
+      <p><strong>Real Estate Vector Search App</strong></p>
+      <p>Vector-based similarity search with Streamlit UI.</p>
+      <a href="https://github.com/sowmya-ch-19/PropelensRealestate" target="_blank">View on GitHub</a>
+    `
+  },
+  {
+    title: "Contact",
+    content: `
+      <p>📧 cherukupally.sowmya19@gmail.com</p>
+      <p>💼 <a href="https://www.linkedin.com/in/sowmya-cherukupally-a92911251" target="_blank">LinkedIn</a></p>
+      <p>🐙 <a href="https://github.com/sowmya-ch-19" target="_blank">GitHub</a></p>
+    `
+  },
+  {
+    title: "Resume",
+    content: `
+      <p><a href="SowmyaCherukupallyResume.pdf" target="_blank">⬇ Download Resume</a></p>
+    `
+  }
 ];
 
-/* ================= PLAYER ================= */
+/* PLAYER */
 const player = new THREE.Mesh(
-  new THREE.BoxGeometry(1.5, 1.5, 1.5),
+  new THREE.BoxGeometry(1.5,1.5,1.5),
   new THREE.MeshStandardMaterial({ color: 0x22c55e })
 );
-player.position.set(0, 1.2, 0);
+player.position.set(0,1.2,0);
 scene.add(player);
 
-/* ================= STATE ================= */
+/* STATE */
 let index = 0;
 let started = false;
 const panel = document.getElementById("panel");
 
-/* ================= UPDATE PANEL ================= */
+/* PANEL UPDATE */
 function updatePanel() {
   const s = sections[index];
-  panel.innerHTML = `<h3>${s.title}</h3><p>${s.text}</p>`;
+  panel.innerHTML = `<h3>${s.title}</h3>${s.content}`;
   panel.classList.add("active");
 }
 
-/* ================= MOVE ================= */
+/* MOVE */
 function move(dir) {
   if (!started) return;
-  index = Math.max(0, Math.min(track.length - 1, index + dir));
+  index = Math.max(0, Math.min(sections.length - 1, index + dir));
   updatePanel();
 }
 
-/* ================= INPUT ================= */
-window.addEventListener("wheel", e => {
-  if (e.deltaY > 0) move(1);
-  else move(-1);
-});
-
+/* INPUT */
+window.addEventListener("wheel", e => move(e.deltaY > 0 ? 1 : -1));
 window.addEventListener("keydown", e => {
   if (e.key === "ArrowRight") move(1);
   if (e.key === "ArrowLeft") move(-1);
@@ -192,29 +235,26 @@ window.addEventListener("touchend", e => {
   if (Math.abs(diff) > 40) move(diff > 0 ? 1 : -1);
 });
 
-/* ================= START ================= */
+/* START */
 document.getElementById("start").onclick = () => {
   started = true;
   document.getElementById("start").remove();
   updatePanel();
 };
 
-/* ================= LOOP ================= */
+/* LOOP */
 function animate() {
   requestAnimationFrame(animate);
-
-  const targetX = trackPositions[index];
-
+  const targetX = positions[index];
   player.position.x += (targetX - player.position.x) * 0.15;
   camera.position.x += (targetX - camera.position.x) * 0.08;
   camera.lookAt(player.position.x, 0, 0);
-
   renderer.render(scene, camera);
 }
 animate();
 
-/* ================= RESIZE ================= */
-window.addEventListener("resize", () => {
+/* RESIZE */
+addEventListener("resize", () => {
   camera.aspect = innerWidth / innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(innerWidth, innerHeight);
