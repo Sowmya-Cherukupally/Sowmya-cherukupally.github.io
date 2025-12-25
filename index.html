@@ -25,26 +25,31 @@ html, body {
 }
 
 /* HERO (TOP-LEFT, BRUNO STYLE) */
+/* HERO – CENTERED & CLEAN */
 .hero {
   position: fixed;
-  top: 22px;
-  left: 26px;
+  top: 48px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
   z-index: 30;
   pointer-events: none;
 }
 
 .hero h1 {
-  font-size: 22px;
+  font-size: clamp(28px, 5vw, 46px);
   font-weight: 700;
+  letter-spacing: 1px;
   margin: 0;
-  letter-spacing: .5px;
+  color: #e5e7eb;
 }
 
 .hero p {
-  margin: 2px 0 0;
-  font-size: 13px;
+  margin-top: 6px;
+  font-size: 14px;
   color: #94a3b8;
 }
+
 
 /* UI BUTTONS */
 .ui button {
@@ -132,6 +137,7 @@ html, body {
   <h1>Sowmya Cherukupally</h1>
   <p>Data Engineer</p>
 </div>
+
 
 <!-- UI -->
 <div class="ui">
