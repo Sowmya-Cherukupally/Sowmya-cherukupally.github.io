@@ -141,7 +141,8 @@ light.position.set(10, 15, 10);
 scene.add(light);
 
 /* GRID */
-scene.add(new THREE.GridHelper(300, 120, 0x3b82f6, 0x1e40af));
+const grid = new THREE.GridHelper(300, 120, 0x3b82f6, 0x1e40af);
+scene.add(grid);
 
 /* PLAYER */
 const player = new THREE.Mesh(
@@ -151,70 +152,161 @@ const player = new THREE.Mesh(
 player.position.set(0, .8, 0);
 scene.add(player);
 
-/* ================= LABEL HELPER ================= */
-function createLabel(text) {
-  const canvas = document.createElement("canvas");
-  canvas.width = 512;
-  canvas.height = 128;
-  const ctx = canvas.getContext("2d");
-
-  ctx.fillStyle = "#38bdf8";
-  ctx.font = "bold 64px Inter";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText(text, canvas.width / 2, canvas.height / 2);
-
-  const texture = new THREE.CanvasTexture(canvas);
-  const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
-  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(4, 1), material);
-  return mesh;
-}
-
 /* ================= BOARDS ================= */
-const labels = [];
-
 const boardData = [
   { name:'ABOUT',    x: 0,   z: 0 },
   { name:'SKILLS',   x: 14,  z: 0 },
   { name:'CONTACT',  x: -14, z: 0 },
   { name:'RESUME',   x: -28, z: 0 },
+
+  // PROJECTS ENTRY (off main track)
   { name:'PROJECTS', x: 28,  z: -10 }
 ];
 
-boardData.forEach((b, i) => {
+boardData.forEach(b => {
   const board = new THREE.Mesh(
     new THREE.BoxGeometry(5, 3, .6),
-    new THREE.MeshStandardMaterial({ color:0x020617, emissive:0x2563eb })
+    new THREE.MeshStandardMaterial({
+      color: 0x020617,
+      emissive: 0x2563eb,
+      emissiveIntensity: 0.8
+    })
   );
   board.position.set(b.x, 2, b.z);
   scene.add(board);
-
-  const label = createLabel(b.name);
-  label.position.set(b.x, 4.1, b.z);
-  scene.add(label);
-  labels.push(label);
 });
+
+/* PROJECT BOARDS CLUSTER */
+/* ================= PROJECT ISLAND (CURVED) ================= */
+const projectIsland = [];
+const centerX = 28;
+const centerZ = -22;
+const radius = 6;
+
+for (let i = 0; i < 5; i++) {
+  const angle = (-Math.PI / 2) + (i * Math.PI / 4); // arc
+
+  const x = centerX + Math.cos(angle) * radius;
+  const z = centerZ + Math.sin(angle) * radius;
+
+  const board = new THREE.Mesh(
+    new THREE.BoxGeometry(4, 2.5, .6),
+    new THREE.MeshStandardMaterial({
+      color: 0x020617,
+      emissive: 0x22c55e,
+      emissiveIntensity: 0.7
+    })
+  );
+
+  board.position.set(x, 2, z);
+  board.rotation.y = angle + Math.PI / 2;
+
+  scene.add(board);
+  projectIsland.push(board);
+}
+
 
 /* ================= CONTENT ================= */
 const panel = document.getElementById("panel");
 
 const content = {
-  about: `<h3>Data Engineer</h3><p>Expert in Python, scalable pipelines, automation & AI-driven solutions.</p>`,
-  skills: `<h3>Skills</h3><p>Snowflake • Python • SQL • PySpark • AWS • DBT • GenAI • REST APIs • Streamlit</p>`,
-  projects: `<h3>Projects</h3><p>Explore projects in the 3D zone.</p>`,
-  contact: `<h3>Contact</h3><p>📧 cherukupally.sowmya19@gmail.com</p>`
+  about: `
+    <h3>Data Engineer</h3>
+    <p>
+      Data Engineer with expertise in Python and strong experience in building scalable data pipelines,
+      automation, and AI-driven data solutions. Hands-on with Snowflake, PySpark, AWS and modern GenAI workflows.
+    </p>
+  `,
+
+  skills: `
+    <h3>Skills</h3>
+    <p>
+      Snowflake • Python • SQL • PySpark • AWS (EC2, S3, Rekognition) • DBT •
+      Gen AI • LLMs • Agentic AI (Cortex Search, Cortex Analyst) • REST APIs •
+      Flask • Dialogflow • Streamlit • Git • GitHub
+    </p>
+  `,
+
+  projects: `
+    <h3>Projects</h3>
+
+    <div class="project-card">
+      <h4>Automated Data Ingestion & Transformation</h4>
+      <img src="data.jpg" onerror="this.style.display='none'">
+      <p>Snowflake + PySpark Medallion Architecture pipeline.</p>
+      <a href="https://github.com/Sowmya-Cherukupally/Agentic" target="_blank">View on GitHub →</a>
+    </div>
+
+    <div class="project-card">
+      <h4>Real Estate Comparison Tool</h4>
+      <img src="realestate.jpg" onerror="this.style.display='none'">
+      <p>Vector search based real estate comparison.</p>
+      <a href="https://github.com/sowmya-ch-19/PropelensRealestate" target="_blank">View on GitHub →</a>
+    </div>
+
+    <div class="project-card">
+      <h4>RAG Application</h4>
+      <img src="RAG.png" onerror="this.style.display='none'">
+      <p>Document-grounded MCQ generation using RAG.</p>
+      <a href="https://github.com/Sowmya-Cherukupally/RAG_Application" target="_blank">View on GitHub →</a>
+    </div>
+
+    <div class="project-card">
+      <h4>WhatsApp Chatbot</h4>
+      <img src="woliul-hasan-7FhOgd6itoU-unsplash.jpg" onerror="this.style.display='none'">
+      <p>WhatsApp chatbot using Gupshup API.</p>
+      <a href="https://github.com/Sowmya-Cherukupally/WhatsApp_Chatbot" target="_blank">View on GitHub →</a>
+    </div>
+
+    <div class="project-card">
+      <h4>Weather Application</h4>
+      <img src="lloyd-dirks-kz8pEH4IsUo-unsplash.jpg" onerror="this.style.display='none'">
+      <p>Real-time weather application.</p>
+      <a href="https://github.com/Sowmya-Cherukupally/Weather-Application" target="_blank">View on GitHub →</a>
+    </div>
+  `,
+
+  contact: `
+    <h3>Contact</h3>
+    <p>📞 +91 70953 38146</p>
+    <p>📧 cherukupally.sowmya19@gmail.com</p>
+    <p><a href="https://www.linkedin.com/in/sowmya-cherukupally-a92911251" target="_blank">LinkedIn</a></p>
+    <p><a href="https://github.com/Sowmya-Cherukupally" target="_blank">GitHub</a></p>
+  `
 };
 
 panel.innerHTML = content.about;
 
 /* ================= NAV ================= */
-let targetX = 0, targetZ = 0;
+let targetX = 0;
+let targetZ = 0;
 
-document.querySelector(".btn-about").onclick    = () => { targetX=0; targetZ=0; panel.innerHTML=content.about; };
-document.querySelector(".btn-skills").onclick   = () => { targetX=14; targetZ=0; panel.innerHTML=content.skills; };
-document.querySelector(".btn-projects").onclick = () => { targetX=28; targetZ=-18; panel.innerHTML=content.projects; };
-document.querySelector(".btn-contact").onclick  = () => { targetX=-14; targetZ=0; panel.innerHTML=content.contact; };
-document.querySelector(".btn-resume").onclick   = () => window.open("SowmyaCherukupallyResume.pdf","_blank");
+document.querySelector(".btn-about").onclick = () => {
+  targetX = 0; targetZ = 0;
+  panel.innerHTML = content.about;
+};
+
+document.querySelector(".btn-skills").onclick = () => {
+  targetX = 14; targetZ = 0;
+  panel.innerHTML = content.skills;
+};
+
+document.querySelector(".btn-projects").onclick = () => {
+  targetX = 28;
+  targetZ = -22;   // center of island
+  panel.innerHTML = content.projects;
+};
+
+
+document.querySelector(".btn-contact").onclick = () => {
+  targetX = -14; targetZ = 0;
+  panel.innerHTML = content.contact;
+};
+
+document.querySelector(".btn-resume").onclick = () => {
+  targetX = -28; targetZ = 0;
+  window.open("SowmyaCherukupallyResume.pdf","_blank");
+};
 
 /* ================= LOOP ================= */
 function animate(){
@@ -226,15 +318,22 @@ function animate(){
   camera.position.x += (targetX - camera.position.x) * .05;
   camera.position.z += (targetZ - camera.position.z) * .05;
 
-  labels.forEach((label, i) => {
-    label.position.y = 4.1 + Math.sin(Date.now()*0.002 + i) * 0.15;
-    label.lookAt(camera.position);
-  });
+  player.rotation.y += .01;
+  camera.lookAt(player.position);
 
   renderer.render(scene,camera);
 }
 animate();
+
+window.addEventListener("resize",()=>{
+  camera.aspect = innerWidth/innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth,innerHeight);
+});
 </script>
 
 </body>
 </html>
+
+
+this is my complete code please include the above steps of code and give me complete code
