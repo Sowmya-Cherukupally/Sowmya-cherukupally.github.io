@@ -88,13 +88,34 @@ html, body {
 .panel h3 { color: #60a5fa; margin-top: 0; }
 .panel p  { color: #94a3b8; line-height: 1.7; }
 
+/* PROJECTS HORIZONTAL STRIP */
+.projects-strip {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  scroll-snap-type: x mandatory;
+}
+
 .project-card {
+  min-width: 300px;
+  max-width: 320px;
+  scroll-snap-align: center;
   border: 1px solid #1e293b;
   border-radius: 16px;
   padding: 18px;
-  margin-bottom: 24px;
-  background: rgba(2,6,23,.7);
+  background: rgba(2,6,23,.75);
+  flex-shrink: 0;
 }
+
+.projects-strip::-webkit-scrollbar {
+  height: 6px;
+}
+.projects-strip::-webkit-scrollbar-thumb {
+  background: #38bdf8;
+  border-radius: 10px;
+}
+
 
 .panel img {
   width: 100%;
@@ -251,6 +272,54 @@ for (let i = 0; i < 5; i++) {
   projectIsland.push({ board, label });
 }
 
+/* ================= PROJECT BOARD CLICK ================= */
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+
+window.addEventListener("click", (e) => {
+  mouse.x = (e.clientX / innerWidth) * 2 - 1;
+  mouse.y = -(e.clientY / innerHeight) * 2 + 1;
+
+  raycaster.setFromCamera(mouse, camera);
+
+  const intersects = raycaster.intersectObjects(
+    projectIsland.map(p => p.board)
+  );
+
+  if (intersects.length > 0) {
+    const clickedBoard = intersects[0].object;
+    const boardObj = projectIsland.find(p => p.board === clickedBoard);
+
+    if (!boardObj) return;
+
+    // Move player + camera
+    targetX = clickedBoard.position.x;
+    targetZ = clickedBoard.position.z;
+
+    // Load projects panel
+    panel.innerHTML = content.projects;
+
+    // Auto-scroll to selected project
+    setTimeout(() => {
+      const el = document.getElementById(`project-${boardObj.index + 1}`);
+      el?.scrollIntoView({
+        behavior: "smooth",
+        inline: "center",
+        block: "nearest"
+      });
+    }, 200);
+  }
+});
+  
+// Map project boards to project cards
+const projectMap = [
+  "project-1",
+  "project-2",
+  "project-3",
+  "project-4",
+  "project-5"
+];
+
 /* ================= PANEL CONTENT ================= */
 const panel = document.getElementById("panel");
 
@@ -270,8 +339,9 @@ const content = {
   `,
 projects: `
   <h3>Projects</h3>
-
-  <div class="project-card">
+  <div class="projects-strip">
+  
+  <div class="project-card" id="project-1">
     <h4>Automated Data Ingestion & Transformation</h4>
     <img src="data.jpg" onerror="this.style.display='none'">
     <p>
@@ -285,7 +355,7 @@ projects: `
     </a>
   </div>
 
-  <div class="project-card">
+  <div class="project-card" id="project-2">
     <h4>Real Estate Comparison Tool</h4>
     <img src="realestate.jpg" onerror="this.style.display='none'">
     <p>
@@ -299,7 +369,7 @@ projects: `
     </a>
   </div>
 
-  <div class="project-card">
+  <div class="project-card" id="project-3">
     <h4>RAG Application</h4>
     <img src="RAG.png" onerror="this.style.display='none'">
     <p>
@@ -312,7 +382,7 @@ projects: `
     </a>
   </div>
 
-  <div class="project-card">
+  <div class="project-card" id="project-4">
     <h4>WhatsApp Chatbot</h4>
     <img src="woliul-hasan-7FhOgd6itoU-unsplash.jpg" onerror="this.style.display='none'">
     <p>
@@ -325,7 +395,7 @@ projects: `
     </a>
   </div>
 
-  <div class="project-card">
+  <div class="project-card" id="project-5">
     <h4>Weather Application</h4>
     <img src="lloyd-dirks-kz8pEH4IsUo-unsplash.jpg" onerror="this.style.display='none'">
     <p>
@@ -415,4 +485,3 @@ window.addEventListener("resize",()=>{
 </html>
 
 
-this is my complete code please include the above steps of code and give me complete code
