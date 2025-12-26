@@ -244,41 +244,72 @@ let targetX=0,targetZ=0;
 const raycaster=new THREE.Raycaster();
 const mouse=new THREE.Vector2();
 
-window.addEventListener("click",(e)=>{
-  mouse.x=(e.clientX/innerWidth)*2-1;
-  mouse.y=-(e.clientY/innerHeight)*2+1;
-  raycaster.setFromCamera(mouse,camera);
+window.addEventListener("click", (e) => {
+  mouse.x = (e.clientX / innerWidth) * 2 - 1;
+  mouse.y = -(e.clientY / innerHeight) * 2 + 1;
 
-  const hits=raycaster.intersectObjects(projectIsland.map(p=>p.board));
-  if(!hits.length) return;
+  raycaster.setFromCamera(mouse, camera);
 
-  const hit=projectIsland.find(p=>p.board===hits[0].object);
-  const p=projectsData[hit.index];
+  const hits = raycaster.intersectObjects(
+    projectIsland.map(p => p.board)
+  );
 
-  targetX=hit.board.position.x;
-  targetZ=hit.board.position.z;
+  if (!hits.length) return;
+
+  const hit = projectIsland.find(
+    p => p.board === hits[0].object
+  );
+
+  if (!hit) return;
+
+  currentProjectIndex = hit.index;
+
+  openProject(currentProjectIndex);
+});
+
+function openProject(index) {
+  const p = projectsData[index];
 
   openPanel(`
     <h3 class="project-title">${p.title}</h3>
     <img src="${p.image}" onerror="this.style.display='none'">
     <p>${p.desc}</p>
-    <a href="${p.link}" target="_blank">View on GitHub →</a>
-  `);
-});
 
+    <div style="display:flex; justify-content:space-between; margin-top:16px;">
+      <button onclick="prevProject()">⬅ Previous</button>
+      <a href="${p.link}" target="_blank">View on GitHub →</a>
+      <button onclick="nextProject()">Next ➡</button>
+    </div>
+  `);
+}
+function nextProject() {
+  if (currentProjectIndex === null) return;
+  currentProjectIndex =
+    (currentProjectIndex + 1) % projectsData.length;
+  openProject(currentProjectIndex);
+}
+
+function prevProject() {
+  if (currentProjectIndex === null) return;
+  currentProjectIndex =
+    (currentProjectIndex - 1 + projectsData.length) % projectsData.length;
+  openProject(currentProjectIndex);
+}
+  
 /* ================= BUTTON NAV ================= */
 document.querySelector(".btn-about").onclick=()=>{targetX=0;targetZ=0;openPanel(content.about)};
 document.querySelector(".btn-skills").onclick=()=>{targetX=14;targetZ=0;openPanel(content.skills)};
 document.querySelector(".btn-projects").onclick = () => {
   targetX = 28;
   targetZ = -22;
+  currentProjectIndex = null;
 
-  // ensure panel clears and camera resets properly
   openPanel(`
     <h3>Projects</h3>
-    <p>Click any project board to explore details.</p>
+    <p>Click any project board on the island to explore.</p>
   `);
 };
+
 
 document.querySelector(".btn-contact").onclick=()=>{targetX=-14;targetZ=0;openPanel(content.contact)};
 document.querySelector(".btn-resume").onclick=()=>window.open("SowmyaCherukupallyResume.pdf","_blank");
