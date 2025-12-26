@@ -126,7 +126,7 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x020617);
 
 const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, .1, 200);
-camera.position.set(0, 8, 16);
+camera.position.set(0, 10, 18);
 
 const renderer = new THREE.WebGLRenderer({ canvas: bg, antialias:true });
 renderer.setSize(innerWidth, innerHeight);
@@ -140,6 +140,29 @@ scene.add(light);
 const grid = new THREE.GridHelper(300, 120, 0x3b82f6, 0x1e40af);
 scene.add(grid);
 
+/* ================= PROJECT TRACK ================= */
+const trackMaterial = new THREE.MeshStandardMaterial({
+  color: 0x020617,
+  emissive: 0x2563eb,
+  emissiveIntensity: 0.35
+});
+
+// Main straight path
+const mainTrack = new THREE.Mesh(
+  new THREE.BoxGeometry(60, 0.1, 6),
+  trackMaterial
+);
+mainTrack.position.set(0, 0.01, 0);
+scene.add(mainTrack);
+
+// Curved project path
+const projectTrack = new THREE.Mesh(
+  new THREE.BoxGeometry(14, 0.1, 28),
+  trackMaterial
+);
+projectTrack.position.set(28, 0.01, -18);
+scene.add(projectTrack);
+  
 const player = new THREE.Mesh(
   new THREE.BoxGeometry(1.6,1.6,1.6),
   new THREE.MeshStandardMaterial({ color:0x22c55e })
@@ -210,7 +233,7 @@ projectsData.forEach((p,i)=>{
     new THREE.BoxGeometry(4,2.5,.6),
     new THREE.MeshStandardMaterial({color:0x020617,emissive:0x22c55e,emissiveIntensity:.7})
   );
-  b.position.set(x,2,z);
+  b.position.set(x,2.6,z);
   b.rotation.y=a+Math.PI/2;
   scene.add(b);
   projectIsland.push({board:b,index:i});
@@ -246,7 +269,17 @@ window.addEventListener("click",(e)=>{
 /* ================= BUTTON NAV ================= */
 document.querySelector(".btn-about").onclick=()=>{targetX=0;targetZ=0;openPanel(content.about)};
 document.querySelector(".btn-skills").onclick=()=>{targetX=14;targetZ=0;openPanel(content.skills)};
-document.querySelector(".btn-projects").onclick=()=>{targetX=28;targetZ=-22;panel.innerHTML=""};
+document.querySelector(".btn-projects").onclick = () => {
+  targetX = 28;
+  targetZ = -22;
+
+  // ensure panel clears and camera resets properly
+  openPanel(`
+    <h3>Projects</h3>
+    <p>Click any project board to explore details.</p>
+  `);
+};
+
 document.querySelector(".btn-contact").onclick=()=>{targetX=-14;targetZ=0;openPanel(content.contact)};
 document.querySelector(".btn-resume").onclick=()=>window.open("SowmyaCherukupallyResume.pdf","_blank");
 
