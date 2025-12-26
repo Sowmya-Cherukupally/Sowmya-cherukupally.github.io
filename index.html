@@ -116,6 +116,12 @@ html, body {
   border-radius: 10px;
 }
 
+.project-title {
+  font-size: clamp(16px, 3.5vw, 20px);
+  color: #38bdf8;
+  margin-bottom: 6px;
+}
+  
 
 .panel img {
   width: 100%;
@@ -268,37 +274,57 @@ projectsData.forEach((p,i)=>{
 
 /* ================= PANEL ================= */
 const panel=document.getElementById("panel");
+function openPanel(html) {
+  panel.scrollTop = 0;   // ⬅️ closes previous content feel
+  panel.innerHTML = html;
+}
+  
 const content={
   about:`<h3>Data Engineer</h3><p>Expert in Python, Snowflake, scalable pipelines & AI-driven data systems.</p>`,
   skills:`<h3>Skills</h3><p>Snowflake • Python • SQL • PySpark • AWS • DBT • GenAI • RAG • REST APIs</p>`,
   contact:`<h3>Contact</h3><p>📧 cherukupally.sowmya19@gmail.com<br>📞 +91 70953 38146</p>`
 };
-panel.innerHTML=content.about;
+openPanel(content.about);
+
 
 /* ================= CLICK HANDLING ================= */
 let targetX=0,targetZ=0;
 const raycaster=new THREE.Raycaster();
 const mouse=new THREE.Vector2();
 
-window.addEventListener("click",e=>{
-  mouse.x=(e.clientX/innerWidth)*2-1;
-  mouse.y=-(e.clientY/innerHeight)*2+1;
-  raycaster.setFromCamera(mouse,camera);
+window.addEventListener("click", (e) => {
+  mouse.x = (e.clientX / innerWidth) * 2 - 1;
+  mouse.y = -(e.clientY / innerHeight) * 2 + 1;
 
-  const hits=raycaster.intersectObjects(projectIsland.map(p=>p.board));
-  if(hits.length){
-    const hit=projectIsland.find(p=>p.board===hits[0].object);
-    const p=projectsData[hit.index];
-    targetX=hit.board.position.x;
-    targetZ=hit.board.position.z;
-    panel.innerHTML=`
-      <h3>${p.title}</h3>
-      <img src="${p.image}" onerror="this.style.display='none'">
-      <p>${p.desc}</p>
-      <a href="${p.link}" target="_blank">View on GitHub →</a>
-    `;
-  }
+  raycaster.setFromCamera(mouse, camera);
+
+  const hits = raycaster.intersectObjects(
+    projectIsland.map(p => p.board)
+  );
+
+  if (!hits.length) return;
+
+  const hit = projectIsland.find(
+    p => p.board === hits[0].object
+  );
+
+  if (!hit) return;
+
+  const p = projectsData[hit.index];
+
+  // Move player + camera
+  targetX = hit.board.position.x;
+  targetZ = hit.board.position.z;
+
+  // ✅ OPEN PANEL CLEANLY
+  openPanel(`
+    <h3 class="project-title">${p.title}</h3>
+    <img src="${p.image}" onerror="this.style.display='none'">
+    <p>${p.desc}</p>
+    <a href="${p.link}" target="_blank">View on GitHub →</a>
+  `);
 });
+
 
 /* ================= BUTTON NAV ================= */
 document.querySelector(".btn-about").onclick=()=>{targetX=0;targetZ=0;panel.innerHTML=content.about};
