@@ -88,40 +88,10 @@ html, body {
 .panel h3 { color: #60a5fa; margin-top: 0; }
 .panel p  { color: #94a3b8; line-height: 1.7; }
 
-/* PROJECTS HORIZONTAL STRIP */
-.projects-strip {
-  display: flex;
-  gap: 20px;
-  overflow-x: auto;
-  padding-bottom: 10px;
-  scroll-snap-type: x mandatory;
-}
-
-.project-card {
-  min-width: 300px;
-  max-width: 320px;
-  scroll-snap-align: center;
-  border: 1px solid #1e293b;
-  border-radius: 16px;
-  padding: 18px;
-  background: rgba(2,6,23,.75);
-  flex-shrink: 0;
-}
-
-.projects-strip::-webkit-scrollbar {
-  height: 6px;
-}
-.projects-strip::-webkit-scrollbar-thumb {
-  background: #38bdf8;
-  border-radius: 10px;
-}
-
 .project-title {
   font-size: clamp(16px, 3.5vw, 20px);
   color: #38bdf8;
-  margin-bottom: 6px;
 }
-  
 
 .panel img {
   width: 100%;
@@ -167,11 +137,9 @@ const light = new THREE.DirectionalLight(0x60a5fa, 1.2);
 light.position.set(10, 15, 10);
 scene.add(light);
 
-/* GRID */
 const grid = new THREE.GridHelper(300, 120, 0x3b82f6, 0x1e40af);
 scene.add(grid);
 
-/* PLAYER */
 const player = new THREE.Mesh(
   new THREE.BoxGeometry(1.6,1.6,1.6),
   new THREE.MeshStandardMaterial({ color:0x22c55e })
@@ -179,75 +147,53 @@ const player = new THREE.Mesh(
 player.position.set(0,.8,0);
 scene.add(player);
 
-/* ================= LABEL ================= */
-function createLabel(text){
-  const c=document.createElement("canvas");
-  c.width=512; c.height=128;
-  const ctx=c.getContext("2d");
-  ctx.font="600 48px Inter";
-  ctx.textAlign="center";
-  ctx.textBaseline="middle";
-  ctx.fillStyle="#38bdf8";
-  ctx.shadowColor="#38bdf8";
-  ctx.shadowBlur=20;
-  ctx.fillText(text,256,64);
-  const t=new THREE.CanvasTexture(c);
-  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:t,transparent:true}));
-  s.scale.set(6,1.5,1);
-  return s;
+/* ================= PANEL HANDLING ================= */
+const panel = document.getElementById("panel");
+
+function openPanel(html) {
+  panel.scrollTop = 0;
+  panel.innerHTML = html;
 }
 
-/* ================= MAIN BOARDS ================= */
-const boards=[];
-[
-  {name:'ABOUT',x:0,z:0},
-  {name:'SKILLS',x:14,z:0},
-  {name:'CONTACT',x:-14,z:0},
-  {name:'RESUME',x:-28,z:0},
-  {name:'PROJECTS',x:28,z:-10}
-].forEach(b=>{
-  const m=new THREE.Mesh(
-    new THREE.BoxGeometry(5,3,.6),
-    new THREE.MeshStandardMaterial({color:0x020617,emissive:0x2563eb,emissiveIntensity:.8})
-  );
-  m.position.set(b.x,2,b.z);
-  scene.add(m);
-  const l=createLabel(b.name);
-  l.position.set(b.x,4.2,b.z);
-  scene.add(l);
-  boards.push({board:m,label:l});
-});
+/* ================= CONTENT ================= */
+const content = {
+  about: `<h3>Data Engineer</h3><p>Expert in Python, Snowflake, scalable pipelines & AI-driven data systems.</p>`,
+  skills: `<h3>Skills</h3><p>Snowflake • Python • SQL • PySpark • AWS • DBT • GenAI • RAG • REST APIs</p>`,
+  contact: `<h3>Contact</h3><p>📧 cherukupally.sowmya19@gmail.com<br>📞 +91 70953 38146</p>`
+};
+
+openPanel(content.about);
 
 /* ================= PROJECT DATA ================= */
 const projectsData = [
   {
     title:"Automated Data Ingestion & Transformation",
     image:"data.jpg",
-    desc:"Automated Snowflake + PySpark medallion pipeline with data quality enforcement.",
+    desc:"Automated Snowflake + PySpark medallion pipeline.",
     link:"https://github.com/Sowmya-Cherukupally/Agentic"
   },
   {
     title:"Real Estate Comparison Tool",
     image:"realestate.jpg",
-    desc:"Vector-search powered real estate comparison with Streamlit UI.",
+    desc:"Vector search powered real estate comparison.",
     link:"https://github.com/sowmya-ch-19/PropelensRealestate"
   },
   {
     title:"RAG Application",
     image:"RAG.png",
-    desc:"PDF-grounded MCQ generation using Retrieval-Augmented Generation.",
+    desc:"PDF-grounded MCQ generation using RAG.",
     link:"https://github.com/Sowmya-Cherukupally/RAG_Application"
   },
   {
     title:"WhatsApp Chatbot",
     image:"woliul-hasan-7FhOgd6itoU-unsplash.jpg",
-    desc:"Automated WhatsApp chatbot built using Gupshup API.",
+    desc:"WhatsApp chatbot using Gupshup API.",
     link:"https://github.com/Sowmya-Cherukupally/WhatsApp_Chatbot"
   },
   {
     title:"Weather Application",
     image:"lloyd-dirks-kz8pEH4IsUo-unsplash.jpg",
-    desc:"Real-time weather forecasting using OpenWeatherMap API.",
+    desc:"Real-time weather forecasting app.",
     link:"https://github.com/Sowmya-Cherukupally/Weather-Application"
   }
 ];
@@ -255,6 +201,7 @@ const projectsData = [
 /* ================= PROJECT ISLAND ================= */
 const projectIsland=[];
 const cx=28, cz=-22, r=6;
+
 projectsData.forEach((p,i)=>{
   const a=(-Math.PI/2)+(i*Math.PI/4);
   const x=cx+Math.cos(a)*r;
@@ -266,57 +213,28 @@ projectsData.forEach((p,i)=>{
   b.position.set(x,2,z);
   b.rotation.y=a+Math.PI/2;
   scene.add(b);
-  const l=createLabel(p.title.split(" ")[0].toUpperCase());
-  l.position.set(x,4,z);
-  scene.add(l);
-  projectIsland.push({board:b,label:l,index:i});
+  projectIsland.push({board:b,index:i});
 });
 
-/* ================= PANEL ================= */
-const panel=document.getElementById("panel");
-function openPanel(html) {
-  panel.scrollTop = 0;   // ⬅️ closes previous content feel
-  panel.innerHTML = html;
-}
-  
-const content={
-  about:`<h3>Data Engineer</h3><p>Expert in Python, Snowflake, scalable pipelines & AI-driven data systems.</p>`,
-  skills:`<h3>Skills</h3><p>Snowflake • Python • SQL • PySpark • AWS • DBT • GenAI • RAG • REST APIs</p>`,
-  contact:`<h3>Contact</h3><p>📧 cherukupally.sowmya19@gmail.com<br>📞 +91 70953 38146</p>`
-};
-openPanel(content.about);
-
-
-/* ================= CLICK HANDLING ================= */
+/* ================= RAYCASTER ================= */
 let targetX=0,targetZ=0;
 const raycaster=new THREE.Raycaster();
 const mouse=new THREE.Vector2();
 
-window.addEventListener("click", (e) => {
-  mouse.x = (e.clientX / innerWidth) * 2 - 1;
-  mouse.y = -(e.clientY / innerHeight) * 2 + 1;
+window.addEventListener("click",(e)=>{
+  mouse.x=(e.clientX/innerWidth)*2-1;
+  mouse.y=-(e.clientY/innerHeight)*2+1;
+  raycaster.setFromCamera(mouse,camera);
 
-  raycaster.setFromCamera(mouse, camera);
+  const hits=raycaster.intersectObjects(projectIsland.map(p=>p.board));
+  if(!hits.length) return;
 
-  const hits = raycaster.intersectObjects(
-    projectIsland.map(p => p.board)
-  );
+  const hit=projectIsland.find(p=>p.board===hits[0].object);
+  const p=projectsData[hit.index];
 
-  if (!hits.length) return;
+  targetX=hit.board.position.x;
+  targetZ=hit.board.position.z;
 
-  const hit = projectIsland.find(
-    p => p.board === hits[0].object
-  );
-
-  if (!hit) return;
-
-  const p = projectsData[hit.index];
-
-  // Move player + camera
-  targetX = hit.board.position.x;
-  targetZ = hit.board.position.z;
-
-  // ✅ OPEN PANEL CLEANLY
   openPanel(`
     <h3 class="project-title">${p.title}</h3>
     <img src="${p.image}" onerror="this.style.display='none'">
@@ -325,28 +243,21 @@ window.addEventListener("click", (e) => {
   `);
 });
 
-
 /* ================= BUTTON NAV ================= */
-document.querySelector(".btn-about").onclick=()=>{targetX=0;targetZ=0;panel.innerHTML=content.about};
-document.querySelector(".btn-skills").onclick=()=>{targetX=14;targetZ=0;panel.innerHTML=content.skills};
-document.querySelector(".btn-projects").onclick=()=>{targetX=28;targetZ=-22};
-document.querySelector(".btn-contact").onclick=()=>{targetX=-14;targetZ=0;panel.innerHTML=content.contact};
+document.querySelector(".btn-about").onclick=()=>{targetX=0;targetZ=0;openPanel(content.about)};
+document.querySelector(".btn-skills").onclick=()=>{targetX=14;targetZ=0;openPanel(content.skills)};
+document.querySelector(".btn-projects").onclick=()=>{targetX=28;targetZ=-22;panel.innerHTML=""};
+document.querySelector(".btn-contact").onclick=()=>{targetX=-14;targetZ=0;openPanel(content.contact)};
 document.querySelector(".btn-resume").onclick=()=>window.open("SowmyaCherukupallyResume.pdf","_blank");
 
 /* ================= LOOP ================= */
-let t=0;
 function animate(){
   requestAnimationFrame(animate);
-  t+=.02;
   player.position.x+=(targetX-player.position.x)*.08;
   player.position.z+=(targetZ-player.position.z)*.08;
   camera.position.x+=(targetX-camera.position.x)*.05;
   camera.position.z+=(targetZ-camera.position.z)*.05;
   camera.lookAt(player.position);
-  [...boards,...projectIsland].forEach((o,i)=>{
-    o.label.position.y+=Math.sin(t+i)*.005;
-    o.label.quaternion.copy(camera.quaternion);
-  });
   renderer.render(scene,camera);
 }
 animate();
@@ -359,4 +270,3 @@ window.addEventListener("resize",()=>{
 </script>
 </body>
 </html>
-
