@@ -1,353 +1,246 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>Sowmya Cherukupally | 3D Portfolio</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8" />
+  <title>Sowmya Cherukupally | Data Engineer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
-<style>
-html, body {
-  margin: 0;
-  height: 100%;
-  overflow: hidden;
-  background: #020617;
-  font-family: Inter, sans-serif;
-  color: #e5e7eb;
-}
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
 
-#bg {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-}
+    body {
+      background: #020617;
+      color: #e5e7eb;
+      line-height: 1.6;
+    }
 
-/* HERO */
-.hero {
-  position: fixed;
-  top: 16px;
-  left: 50%;
-  transform: translateX(-50%);
-  text-align: center;
-  z-index: 30;
-  pointer-events: none;
-}
+    a {
+      color: #38bdf8;
+      text-decoration: none;
+    }
 
-.hero h1 {
-  font-size: clamp(28px, 5vw, 46px);
-  font-weight: 700;
-  background: linear-gradient(90deg, #e5e7eb, #38bdf8);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 20px rgba(56,189,248,.3);
-}
+    /* NAVBAR */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #020617;
+      border-bottom: 1px solid #1e293b;
+      padding: 16px 8%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-/* UI BUTTONS */
-.ui button {
-  position: fixed;
-  padding: 10px 18px;
-  border-radius: 14px;
-  background: rgba(2,6,23,.85);
-  border: 1px solid #3b82f6;
-  color: #93c5fd;
-  cursor: pointer;
-  transition: .3s;
-  z-index: 20;
-  font-size: 13px;
-}
+    nav h1 {
+      color: #38bdf8;
+      font-size: 20px;
+      font-weight: 700;
+    }
 
-.ui button:hover {
-  background: #3b82f6;
-  color: #020617;
-}
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+    }
 
-.btn-about    { top: 95px; left: 50%; transform: translateX(-50%); }
-.btn-skills   { right: 30px; top: 40%; }
-.btn-projects { right: 30px; top: 50%; }
-.btn-contact  { left: 30px; top: 50%; }
-.btn-resume   { left: 30px; top: 40%; }
+    nav ul a {
+      color: #cbd5f5;
+      font-weight: 500;
+    }
 
-/* PANEL */
-.panel {
-  position: fixed;
-  bottom: 26px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(2,6,23,.95);
-  border: 1px solid #1e293b;
-  border-radius: 18px;
-  padding: 22px 26px;
-  max-width: 820px;
-  width: calc(100% - 40px);
-  max-height: 65vh;
-  overflow-y: auto;
-  z-index: 20;
-}
+    nav ul a:hover {
+      color: #38bdf8;
+    }
 
-.panel h3 { color: #60a5fa; margin-top: 0; }
-.panel p  { color: #94a3b8; line-height: 1.7; }
+    /* SECTIONS */
+    section {
+      padding: 80px 8%;
+      max-width: 1100px;
+      margin: auto;
+    }
 
-.project-title {
-  font-size: clamp(16px, 3.5vw, 20px);
-  color: #38bdf8;
-}
+    h2 {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
 
-.panel img {
-  width: 100%;
-  border-radius: 12px;
-  margin: 12px 0;
-}
-</style>
+    p {
+      color: #94a3b8;
+      max-width: 800px;
+    }
+
+    /* HERO */
+    .hero h1 {
+      font-size: 44px;
+      margin-bottom: 10px;
+    }
+
+    .hero span {
+      color: #38bdf8;
+    }
+
+    .hero h3 {
+      font-weight: 500;
+      color: #cbd5f5;
+    }
+
+    /* SKILLS */
+    .skills {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+    }
+
+    .skill {
+      background: #020617;
+      border: 1px solid #1e293b;
+      padding: 14px;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    /* PROJECTS */
+    .project {
+      background: #020617;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .project h3 {
+      color: #38bdf8;
+      margin-bottom: 8px;
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 30px;
+      border-top: 1px solid #1e293b;
+      color: #64748b;
+    }
+
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 32px;
+      }
+    }
+  </style>
 </head>
-
 <body>
 
-<canvas id="bg"></canvas>
+<!-- NAV -->
+<nav>
+  <h1>Sowmya</h1>
+  <ul>
+    <li><a href="#home">Home</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
 
-<div class="hero">
-  <h1>Sowmya Cherukupally</h1>
-</div>
+<!-- HERO -->
+<section id="home" class="hero">
+  <h1>Sowmya <span>Cherukupally</span></h1>
+  <h3>Data Engineer</h3>
+  <p>
+    Data Engineer with hands-on experience building scalable data pipelines using
+    Python, SQL, Snowflake, and DBT. Focused on data quality, automation, and
+    analytics-ready data platforms.
+  </p>
+</section>
 
-<div class="ui">
-  <button class="btn-about">ABOUT</button>
-  <button class="btn-skills">SKILLS</button>
-  <button class="btn-projects">PROJECTS</button>
-  <button class="btn-contact">CONTACT</button>
-  <button class="btn-resume">RESUME</button>
-</div>
+<!-- ABOUT -->
+<section id="about">
+  <h2>About Me</h2>
+  <p>
+    I design and build end-to-end data pipelines, automate manual workflows, and
+    transform raw data into reliable, analytics-ready datasets. I enjoy working
+    with modern data stacks and continuously improving performance and reliability.
+  </p>
+</section>
 
-<div class="panel" id="panel"></div>
+<!-- SKILLS -->
+<section id="skills">
+  <h2>Skills</h2>
+  <div class="skills">
+    <div class="skill">Python</div>
+    <div class="skill">SQL</div>
+    <div class="skill">Snowflake</div>
+    <div class="skill">DBT</div>
+    <div class="skill">PySpark (Basics)</div>
+    <div class="skill">AWS / Azure (Fundamentals)</div>
+    <div class="skill">ETL / ELT</div>
+    <div class="skill">Git & GitHub</div>
+  </div>
+</section>
 
-<script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
-<script>
-/* ================= THREE ================= */
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x020617);
+<!-- PROJECTS -->
+<section id="projects">
+  <h2>Projects</h2>
 
-const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, .1, 200);
-camera.position.set(0, 10, 18);
+  <div class="project">
+    <h3>Automated Data Ingestion & Transformation</h3>
+    <p>
+      Built an automated data pipeline using Snowflake, Python, and PySpark,
+      reducing manual effort by 60% and improving data availability for analytics.
+    </p>
+    <a href="https://github.com/Sowmya-Cherukupally/Agentic" target="_blank">
+      View on GitHub →
+    </a>
+  </div>
 
-const renderer = new THREE.WebGLRenderer({ canvas: bg, antialias:true });
-renderer.setSize(innerWidth, innerHeight);
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  <div class="project">
+    <h3>RAG Application</h3>
+    <p>
+      Implemented a Retrieval-Augmented Generation system using vector databases
+      and LLMs to generate context-aware responses grounded in source documents.
+    </p>
+  </div>
 
-scene.add(new THREE.AmbientLight(0xffffff, 1));
-const light = new THREE.DirectionalLight(0x60a5fa, 1.2);
-light.position.set(10, 15, 10);
-scene.add(light);
+  <div class="project">
+    <h3>Real Estate Comparison Tool</h3>
+    <p>
+      Developed a data-driven real estate comparison tool integrating multiple
+      APIs and similarity search for better investment insights.
+    </p>
+  </div>
+</section>
 
-const grid = new THREE.GridHelper(300, 120, 0x3b82f6, 0x1e40af);
-const glow = new THREE.Mesh(
-  new THREE.CircleGeometry(10, 64),
-  new THREE.MeshStandardMaterial({
-    color: 0x22c55e,
-    emissive: 0x22c55e,
-    emissiveIntensity: 0.15
-  })
-);
-glow.rotation.x = -Math.PI / 2;
-glow.position.set(28, 0.02, -22);
-scene.add(glow);
-  
-scene.add(grid);
+<!-- CONTACT -->
+<section id="contact">
+  <h2>Contact</h2>
+  <p>Email: cherukupally.sowmya19@gmail.com</p>
+  <p>Phone: +91 7095338146</p>
+  <p>
+    LinkedIn:
+    <a href="https://www.linkedin.com/in/sowmya-cherukupally-a92911251" target="_blank">
+      linkedin.com/in/sowmya-cherukupally
+    </a>
+  </p>
+  <p>
+    GitHub:
+    <a href="https://github.com/Sowmya-Cherukupally" target="_blank">
+      github.com/Sowmya-Cherukupally
+    </a>
+  </p>
+</section>
 
-/* ================= PROJECT TRACK ================= */
-const trackMaterial = new THREE.MeshStandardMaterial({
-  color: 0x020617,
-  emissive: 0x2563eb,
-  emissiveIntensity: 0.35
-});
+<footer>
+  © 2025 Sowmya Cherukupally
+</footer>
 
-// Main straight path
-const mainTrack = new THREE.Mesh(
-  new THREE.BoxGeometry(60, 0.1, 6),
-  trackMaterial
-);
-mainTrack.position.set(0, 0.01, 0);
-scene.add(mainTrack);
-
-// Curved project path
-const projectTrack = new THREE.Mesh(
-  new THREE.BoxGeometry(14, 0.1, 28),
-  trackMaterial
-);
-projectTrack.position.set(28, 0.01, -18);
-scene.add(projectTrack);
-  
-const player = new THREE.Mesh(
-  new THREE.BoxGeometry(1.6,1.6,1.6),
-  new THREE.MeshStandardMaterial({ color:0x22c55e })
-);
-player.position.set(0,.8,0);
-scene.add(player);
-
-/* ================= PANEL HANDLING ================= */
-const panel = document.getElementById("panel");
-
-function openPanel(html) {
-  panel.scrollTop = 0;
-  panel.innerHTML = html;
-}
-
-/* ================= CONTENT ================= */
-const content = {
-  about: `<h3>Data Engineer</h3><p>Data Engineer Proficient in Python, build scalable pipelines & AI-driven data systems.</p>`,
-  skills: `<h3>Skills</h3><p>Snowflake • Python • SQL • PySpark • AWS(Ec2,S3,Rekognition) • DBT • GenAI • Agentic AI(Cortexx Search, Cortex Analyst)• LLMs • RAG • Flask • Dialog flow • REST APIs• Git/Github •</p>`,
-  contact: `<h3>Contact</h3><p>📧 cherukupally.sowmya19@gmail.com<br>📞 +91 7095338146</p><p> 💼 https://www.linkedin.com/in/sowmya-cherukupally-a92911251 </p> <p> 🐙 https://github.com/Sowmya-Cherukupally </p>`
-};
-
-openPanel(content.about);
-
-/* ================= PROJECT DATA ================= */
-const projectsData = [
-  {
-    title:"Automated Data Ingestion & Transformation",
-    image:"data.jpg",
-    desc:`Designed and implemented a fully automated data ingestion pipeline using Snowflake, PySpark, and Python.
-    The system ingests raw files from cloud storage, applies transformation logic, enforces data quality checks, and loads curated datasets into analytics-ready tables following medallion architecture.`,
-    link:"https://github.com/Sowmya-Cherukupally/Agentic"
-  },
-  {
-    title:"Real Estate Comparison Tool",
-    image:"realestate.jpg",
-    desc:`Developed a real estate comparison tool using vector search capabilities. The application allows users to compare properties based on features like price, location, and amenities.
-    It leverages vector embeddings for similarity matching and provides a Streamlit UI.`,
-    link:"https://github.com/sowmya-ch-19/PropelensRealestate"
-  },
-  {
-    title:"RAG Application",
-    image:"RAG.png",
-    desc:`Implementing Retrieval-Augmented Generation (RAG) significantly enhances a PDF-to-MCQ application
-      by ensuring questions are grounded in the document's actual content rather than the AI's general training data.`,
-    link:"https://github.com/Sowmya-Cherukupally/RAG_Application"
-  },
-  {
-    title:"WhatsApp Chatbot",
-    image:"woliul-hasan-7FhOgd6itoU-unsplash.jpg",
-    desc:`WhatsApp Chatbot is a simple chatbot that responds to predefined messages.
-    It can receive messages from WhatsApp, process them, and send automated responses using the Gupshup API.`,
-    link:"https://github.com/Sowmya-Cherukupally/WhatsApp_Chatbot"
-  },
-  {
-    title:"Weather Application",
-    image:"lloyd-dirks-kz8pEH4IsUo-unsplash.jpg",
-    desc:`WeatherApplication is a simple, user-friendly weather forecasting application that provides real-time weather information using the OpenWeatherMap API.`,
-    link:"https://github.com/Sowmya-Cherukupally/Weather-Application"
-  }
-];
-
-/* ================= PROJECT ISLAND ================= */
-const projectIsland=[];
-const cx=28, cz=-22, r=6;
-
-projectsData.forEach((p,i)=>{
-  const a=(-Math.PI/2)+(i*Math.PI/4);
-  const x=cx+Math.cos(a)*r;
-  const z=cz+Math.sin(a)*r;
-  const b=new THREE.Mesh(
-    new THREE.BoxGeometry(4,2.5,.6),
-    new THREE.MeshStandardMaterial({color:0x020617,emissive:0x22c55e,emissiveIntensity:.7})
-  );
-  b.position.set(x,2.6,z);
-  b.rotation.y=a+Math.PI/2;
-  scene.add(b);
-  projectIsland.push({board:b,index:i});
-});
-
-/* ================= RAYCASTER ================= */
-let currentProjectIndex = null;
-let targetX=0,targetZ=0;
-const raycaster=new THREE.Raycaster();
-const mouse=new THREE.Vector2();
-
-window.addEventListener("click", (e) => {
-  mouse.x = (e.clientX / innerWidth) * 2 - 1;
-  mouse.y = -(e.clientY / innerHeight) * 2 + 1;
-
-  raycaster.setFromCamera(mouse, camera);
-
-  const hits = raycaster.intersectObjects(
-    projectIsland.map(p => p.board)
-  );
-
-  if (!hits.length) return;
-
-  const hit = projectIsland.find(
-    p => p.board === hits[0].object
-  );
-
-  if (!hit) return;
-
-  currentProjectIndex = hit.index;
-
-  openProject(currentProjectIndex);
-});
-
-function openProject(index) {
-  const p = projectsData[index];
-
-  openPanel(`
-    <h3 class="project-title">${p.title}</h3>
-    <img src="${p.image}" onerror="this.style.display='none'">
-    <p>${p.desc}</p>
-
-    <div style="display:flex; justify-content:space-between; margin-top:16px;">
-      <button onclick="prevProject()">⬅ Previous</button>
-      <a href="${p.link}" target="_blank">View on GitHub →</a>
-      <button onclick="nextProject()">Next ➡</button>
-    </div>
-  `);
-}
-function nextProject() {
-  if (currentProjectIndex === null) return;
-  currentProjectIndex =
-    (currentProjectIndex + 1) % projectsData.length;
-  openProject(currentProjectIndex);
-}
-
-function prevProject() {
-  if (currentProjectIndex === null) return;
-  currentProjectIndex =
-    (currentProjectIndex - 1 + projectsData.length) % projectsData.length;
-  openProject(currentProjectIndex);
-}
-  
-/* ================= BUTTON NAV ================= */
-document.querySelector(".btn-about").onclick=()=>{targetX=0;targetZ=0;openPanel(content.about)};
-document.querySelector(".btn-skills").onclick=()=>{targetX=14;targetZ=0;openPanel(content.skills)};
-document.querySelector(".btn-projects").onclick = () => {
-  targetX = 28;
-  targetZ = -22;
-  currentProjectIndex = null;
-
-  openPanel(`
-    <h3>Projects</h3>
-    <p>Click any project board on the island to explore.</p>
-  `);
-};
-
-
-document.querySelector(".btn-contact").onclick=()=>{targetX=-14;targetZ=0;openPanel(content.contact)};
-document.querySelector(".btn-resume").onclick=()=>window.open("SowmyaCherukupallyResume.pdf","_blank");
-
-/* ================= LOOP ================= */
-function animate(){
-  requestAnimationFrame(animate);
-  player.position.x+=(targetX-player.position.x)*.08;
-  player.position.z+=(targetZ-player.position.z)*.08;
-  camera.position.x+=(targetX-camera.position.x)*.05;
-  camera.position.z+=(targetZ-camera.position.z)*.05;
-  camera.lookAt(player.position.x, player.position.y + 1.5, player.position.z);
-  renderer.render(scene,camera);
-}
-animate();
-
-window.addEventListener("resize",()=>{
-  camera.aspect=innerWidth/innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth,innerHeight);
-});
-</script>
 </body>
 </html>
