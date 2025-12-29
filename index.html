@@ -1,245 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Sowmya Cherukupally | Data Engineer</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Inter', sans-serif;
-    }
-
-    body {
-      background: #020617;
-      color: #e5e7eb;
-      line-height: 1.6;
-    }
-
-    a {
-      color: #38bdf8;
-      text-decoration: none;
-    }
-
-    /* NAVBAR */
-    nav {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: #020617;
-      border-bottom: 1px solid #1e293b;
-      padding: 16px 8%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    nav h1 {
-      color: #38bdf8;
-      font-size: 20px;
-      font-weight: 700;
-    }
-
-    nav ul {
-      list-style: none;
-      display: flex;
-      gap: 20px;
-    }
-
-    nav ul a {
-      color: #cbd5f5;
-      font-weight: 500;
-    }
-
-    nav ul a:hover {
-      color: #38bdf8;
-    }
-
-    /* SECTIONS */
-    section {
-      padding: 80px 8%;
-      max-width: 1100px;
-      margin: auto;
-    }
-
-    h2 {
-      font-size: 28px;
-      margin-bottom: 20px;
-    }
-
-    p {
-      color: #94a3b8;
-      max-width: 800px;
-    }
-
-    /* HERO */
-    .hero h1 {
-      font-size: 44px;
-      margin-bottom: 10px;
-    }
-
-    .hero span {
-      color: #38bdf8;
-    }
-
-    .hero h3 {
-      font-weight: 500;
-      color: #cbd5f5;
-    }
-
-    /* SKILLS */
-    .skills {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 14px;
-    }
-
-    .skill {
-      background: #020617;
-      border: 1px solid #1e293b;
-      padding: 14px;
-      border-radius: 10px;
-      text-align: center;
-      font-weight: 600;
-    }
-
-    /* PROJECTS */
-    .project {
-      background: #020617;
-      border: 1px solid #1e293b;
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 20px;
-    }
-
-    .project h3 {
-      color: #38bdf8;
-      margin-bottom: 8px;
-    }
-
-    /* FOOTER */
-    footer {
-      text-align: center;
-      padding: 30px;
-      border-top: 1px solid #1e293b;
-      color: #64748b;
-    }
-
-    @media (max-width: 768px) {
-      .hero h1 {
-        font-size: 32px;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<!-- NAV -->
+<!-- NAVBAR -->
 <nav>
-  <h1>Sowmya</h1>
+  <div class="logo">Sb.</div>
   <ul>
     <li><a href="#home">Home</a></li>
     <li><a href="#about">About</a></li>
-    <li><a href="#skills">Skills</a></li>
     <li><a href="#projects">Projects</a></li>
-    <li><a href="#contact">Contact</a></li>
+    <li><a href="#resume">Resume</a></li>
+    <li><a href="#blogs">Blogs</a></li>
   </ul>
 </nav>
 
-<!-- HERO -->
-<section id="home" class="hero">
-  <h1>Sowmya <span>Cherukupally</span></h1>
-  <h3>Data Engineer</h3>
-  <p>
-    Data Engineer with hands-on experience building scalable data pipelines using
-    Python, SQL, Snowflake, and DBT. Focused on data quality, automation, and
-    analytics-ready data platforms.
-  </p>
+<!-- HOME -->
+<section id="home" class="section hero">
+  <div class="hero-text">
+    <h1>Hi There! 👋</h1>
+    <h2>I’M <span>SOWMYA CHERUKUPALLY</span></h2>
+    <h3>DATA ENGINEER</h3>
+    <p>
+      Building scalable data pipelines, analytics platforms,
+      and AI-driven data solutions.
+    </p>
+  </div>
+  <div class="hero-image">
+    <img src="assets/hero.svg" alt="developer illustration">
+  </div>
 </section>
 
 <!-- ABOUT -->
-<section id="about">
-  <h2>About Me</h2>
-  <p>
-    I design and build end-to-end data pipelines, automate manual workflows, and
-    transform raw data into reliable, analytics-ready datasets. I enjoy working
-    with modern data stacks and continuously improving performance and reliability.
-  </p>
-</section>
-
-<!-- SKILLS -->
-<section id="skills">
-  <h2>Skills</h2>
-  <div class="skills">
-    <div class="skill">Python</div>
-    <div class="skill">SQL</div>
-    <div class="skill">Snowflake</div>
-    <div class="skill">DBT</div>
-    <div class="skill">PySpark (Basics)</div>
-    <div class="skill">AWS / Azure (Fundamentals)</div>
-    <div class="skill">ETL / ELT</div>
-    <div class="skill">Git & GitHub</div>
+<section id="about" class="section">
+  <h2>LET ME <span>INTRODUCE</span> MYSELF</h2>
+  <div class="about-content">
+    <p>
+      I’m a <strong>Data Engineer</strong> passionate about transforming raw data
+      into reliable, scalable, and analytics-ready systems.
+    </p>
+    <p>
+      My expertise includes <span>Python, SQL, Snowflake, DBT, PySpark</span> and
+      modern cloud-based data platforms.
+    </p>
+    <p>
+      I enjoy building automated pipelines, improving data quality,
+      and enabling data-driven decision-making.
+    </p>
+    <img src="assets/avatar.png" alt="avatar">
   </div>
 </section>
 
 <!-- PROJECTS -->
-<section id="projects">
-  <h2>Projects</h2>
+<section id="projects" class="section">
+  <h2>PROJECTS</h2>
 
-  <div class="project">
+  <div class="project-card">
     <h3>Automated Data Ingestion & Transformation</h3>
     <p>
-      Built an automated data pipeline using Snowflake, Python, and PySpark,
-      reducing manual effort by 60% and improving data availability for analytics.
+      Built an end-to-end data pipeline using Snowflake, Python, PySpark,
+      and DBT. Reduced manual effort by 60%.
     </p>
-    <a href="https://github.com/Sowmya-Cherukupally/Agentic" target="_blank">
-      View on GitHub →
-    </a>
+    <a href="https://github.com/Sowmya-Cherukupally/Agentic" target="_blank">View on GitHub →</a>
   </div>
 
-  <div class="project">
+  <div class="project-card">
     <h3>RAG Application</h3>
     <p>
-      Implemented a Retrieval-Augmented Generation system using vector databases
-      and LLMs to generate context-aware responses grounded in source documents.
+      Implemented Retrieval-Augmented Generation using vector databases
+      and LLMs for context-aware responses.
     </p>
   </div>
 
-  <div class="project">
+  <div class="project-card">
     <h3>Real Estate Comparison Tool</h3>
     <p>
-      Developed a data-driven real estate comparison tool integrating multiple
-      APIs and similarity search for better investment insights.
+      Developed a data-driven tool for comparing properties using APIs
+      and similarity search.
     </p>
   </div>
+</section>
+
+<!-- RESUME -->
+<section id="resume" class="section">
+  <h2>RESUME</h2>
+  <p>You can download my resume below:</p>
+  <a class="btn" href="resume.pdf" target="_blank">Download Resume</a>
+</section>
+
+<!-- BLOGS -->
+<section id="blogs" class="section">
+  <h2>BLOGS</h2>
+  <p>Coming soon — articles on Data Engineering, DBT, and Cloud.</p>
 </section>
 
 <!-- CONTACT -->
-<section id="contact">
-  <h2>Contact</h2>
-  <p>Email: cherukupally.sowmya19@gmail.com</p>
-  <p>Phone: +91 7095338146</p>
-  <p>
-    LinkedIn:
-    <a href="https://www.linkedin.com/in/sowmya-cherukupally-a92911251" target="_blank">
-      linkedin.com/in/sowmya-cherukupally
-    </a>
-  </p>
-  <p>
-    GitHub:
-    <a href="https://github.com/Sowmya-Cherukupally" target="_blank">
-      github.com/Sowmya-Cherukupally
-    </a>
-  </p>
+<section id="contact" class="section contact">
+  <h2>FIND ME ON</h2>
+  <p>Feel free to connect with me</p>
+
+  <div class="socials">
+    <a href="https://github.com/Sowmya-Cherukupally" target="_blank">GitHub</a>
+    <a href="https://www.linkedin.com/in/sowmya-cherukupally-a92911251" target="_blank">LinkedIn</a>
+    <a href="mailto:cherukupally.sowmya19@gmail.com">Email</a>
+  </div>
 </section>
 
 <footer>
-  © 2025 Sowmya Cherukupally
+  <p>Designed and Developed by Sowmya Cherukupally</p>
+  <p>Copyright © 2025</p>
 </footer>
 
 </body>
