@@ -63,7 +63,7 @@ function Projects() {
 
           <Col md={4} className="project-card">
             <ProjectCard
-              imgPath={lloyd-dirks-kz8pEH4IsUo-unsplash (1)}
+              imgPath={lloyd-dirks-kz8pEH4IsUo-unsplash (1).jpg}
               isBlog={false}
               title="Weather Application"
               description="Weather Application is a simple,user-friendly weather forecasting application that provides real-time weather information using the OpenWeatherMap API"
