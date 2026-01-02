@@ -53,7 +53,7 @@ function Projects() {
 
           <Col md={4} className="project-card">
             <ProjectCard
-              imgPath={woliul-hasan-7FhOgd6itoU-unsplash}
+              imgPath={whatsapp}
               isBlog={false}
               title="WhatsApp Chatbot"
               description="WhatsApp Chatbot is a simple chatbot that responds to predefined messages.It can receive messages from WhatsApp,process them and send automated responses using the Gupshup API"
@@ -63,7 +63,7 @@ function Projects() {
 
           <Col md={4} className="project-card">
             <ProjectCard
-              imgPath={lloyd-dirks-kz8pEH4IsUo-unsplash (1).jpg}
+              imgPath={weather}
               isBlog={false}
               title="Weather Application"
               description="Weather Application is a simple,user-friendly weather forecasting application that provides real-time weather information using the OpenWeatherMap API"
