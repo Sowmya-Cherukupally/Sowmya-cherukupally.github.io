@@ -1,32 +1,272 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
+<meta charset="UTF-8" />
+<title>Sowmya Cherukupally | 3D Portfolio</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Remove CRA placeholders -->
-  <link rel="icon" href="Images/readme-img.png" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#000000" />
+<style>
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #020617;
+  font-family: Inter, sans-serif;
+  color: #e5e7eb;
+}
 
-  <title>Sowmya | Portfolio</title>
+#bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
 
-  <meta name="description" content="Self Developed personal portfolio" />
+/* HERO */
+.hero {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 30;
+  pointer-events: none;
+}
 
-  <!-- SEO -->
-  <meta itemprop="name" content="Sowmya | Portfolio">
-  <meta itemprop="description" content="Data Engineer portfolio built with Three.js and modern UI">
-  <meta itemprop="image"
-        content="https://sowmya-cherukupally.github.io/Images/readme-img.png">
+.hero h1 {
+  font-size: clamp(28px, 5vw, 46px);
+  font-weight: 700;
+  background: linear-gradient(90deg, #e5e7eb, #38bdf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 20px rgba(56,189,248,.3);
+}
+
+/* UI BUTTONS */
+.ui button {
+  position: fixed;
+  padding: 10px 18px;
+  border-radius: 14px;
+  background: rgba(2,6,23,.85);
+  border: 1px solid #3b82f6;
+  color: #93c5fd;
+  cursor: pointer;
+  transition: .3s;
+  z-index: 20;
+  font-size: 13px;
+}
+
+.ui button:hover {
+  background: #3b82f6;
+  color: #020617;
+}
+
+.btn-about    { top: 95px; left: 50%; transform: translateX(-50%); }
+.btn-skills   { right: 30px; top: 40%; }
+.btn-projects { right: 30px; top: 50%; }
+.btn-contact  { left: 30px; top: 50%; }
+.btn-resume   { left: 30px; top: 40%; }
+
+/* PANEL */
+.panel {
+  position: fixed;
+  bottom: 26px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(2,6,23,.95);
+  border: 1px solid #1e293b;
+  border-radius: 18px;
+  padding: 22px 26px;
+  max-width: 820px;
+  width: calc(100% - 40px);
+  max-height: 65vh;
+  overflow-y: auto;
+  z-index: 20;
+}
+
+.panel h3 { color: #60a5fa; margin-top: 0; }
+.panel p  { color: #94a3b8; line-height: 1.7; }
+
+.project-title {
+  font-size: clamp(16px, 3.5vw, 20px);
+  color: #38bdf8;
+}
+
+.panel img {
+  width: 100%;
+  border-radius: 12px;
+  margin: 12px 0;
+}
+</style>
 </head>
 
 <body>
-  <!-- ❌ REMOVE React root -->
-  <!-- <div id="root"></div> -->
 
-  <!-- ✅ Your actual site content goes here -->
-  <h1 style="display:none;">Sowmya Cherukupally Portfolio</h1>
+<canvas id="bg"></canvas>
 
-  <script src="main.js"></script>
+<div class="hero">
+  <h1>Sowmya Cherukupally</h1>
+</div>
+
+<div class="ui">
+  <button class="btn-about">ABOUT</button>
+  <button class="btn-skills">SKILLS</button>
+  <button class="btn-projects">PROJECTS</button>
+  <button class="btn-contact">CONTACT</button>
+  <button class="btn-resume">RESUME</button>
+</div>
+
+<div class="panel" id="panel"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
+<script>
+/* ================= THREE ================= */
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x020617);
+
+const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, .1, 200);
+camera.position.set(0, 8, 16);
+
+const renderer = new THREE.WebGLRenderer({ canvas: bg, antialias:true });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+
+scene.add(new THREE.AmbientLight(0xffffff, 1));
+const light = new THREE.DirectionalLight(0x60a5fa, 1.2);
+light.position.set(10, 15, 10);
+scene.add(light);
+
+const grid = new THREE.GridHelper(300, 120, 0x3b82f6, 0x1e40af);
+scene.add(grid);
+
+const player = new THREE.Mesh(
+  new THREE.BoxGeometry(1.6,1.6,1.6),
+  new THREE.MeshStandardMaterial({ color:0x22c55e })
+);
+player.position.set(0,.8,0);
+scene.add(player);
+
+/* ================= PANEL HANDLING ================= */
+const panel = document.getElementById("panel");
+
+function openPanel(html) {
+  panel.scrollTop = 0;
+  panel.innerHTML = html;
+}
+
+/* ================= CONTENT ================= */
+const content = {
+  about: `<h3>Data Engineer</h3><p>Expert in Python, Snowflake, scalable pipelines & AI-driven data systems.</p>`,
+  skills: `<h3>Skills</h3><p>Snowflake • Python • SQL • PySpark • AWS • DBT • GenAI • RAG • REST APIs</p>`,
+  contact: `<h3>Contact</h3><p>📧 cherukupally.sowmya19@gmail.com<br>📞 +91 70953 38146</p>`
+};
+
+openPanel(content.about);
+
+/* ================= PROJECT DATA ================= */
+const projectsData = [
+  {
+    title:"Automated Data Ingestion & Transformation",
+    image:"data.jpg",
+    desc:"Automated Snowflake + PySpark medallion pipeline.",
+    link:"https://github.com/Sowmya-Cherukupally/Agentic"
+  },
+  {
+    title:"Real Estate Comparison Tool",
+    image:"realestate.jpg",
+    desc:"Vector search powered real estate comparison.",
+    link:"https://github.com/sowmya-ch-19/PropelensRealestate"
+  },
+  {
+    title:"RAG Application",
+    image:"RAG.png",
+    desc:"PDF-grounded MCQ generation using RAG.",
+    link:"https://github.com/Sowmya-Cherukupally/RAG_Application"
+  },
+  {
+    title:"WhatsApp Chatbot",
+    image:"woliul-hasan-7FhOgd6itoU-unsplash.jpg",
+    desc:"WhatsApp chatbot using Gupshup API.",
+    link:"https://github.com/Sowmya-Cherukupally/WhatsApp_Chatbot"
+  },
+  {
+    title:"Weather Application",
+    image:"lloyd-dirks-kz8pEH4IsUo-unsplash.jpg",
+    desc:"Real-time weather forecasting app.",
+    link:"https://github.com/Sowmya-Cherukupally/Weather-Application"
+  }
+];
+
+/* ================= PROJECT ISLAND ================= */
+const projectIsland=[];
+const cx=28, cz=-22, r=6;
+
+projectsData.forEach((p,i)=>{
+  const a=(-Math.PI/2)+(i*Math.PI/4);
+  const x=cx+Math.cos(a)*r;
+  const z=cz+Math.sin(a)*r;
+  const b=new THREE.Mesh(
+    new THREE.BoxGeometry(4,2.5,.6),
+    new THREE.MeshStandardMaterial({color:0x020617,emissive:0x22c55e,emissiveIntensity:.7})
+  );
+  b.position.set(x,2,z);
+  b.rotation.y=a+Math.PI/2;
+  scene.add(b);
+  projectIsland.push({board:b,index:i});
+});
+
+/* ================= RAYCASTER ================= */
+let targetX=0,targetZ=0;
+const raycaster=new THREE.Raycaster();
+const mouse=new THREE.Vector2();
+
+window.addEventListener("click",(e)=>{
+  mouse.x=(e.clientX/innerWidth)*2-1;
+  mouse.y=-(e.clientY/innerHeight)*2+1;
+  raycaster.setFromCamera(mouse,camera);
+
+  const hits=raycaster.intersectObjects(projectIsland.map(p=>p.board));
+  if(!hits.length) return;
+
+  const hit=projectIsland.find(p=>p.board===hits[0].object);
+  const p=projectsData[hit.index];
+
+  targetX=hit.board.position.x;
+  targetZ=hit.board.position.z;
+
+  openPanel(`
+    <h3 class="project-title">${p.title}</h3>
+    <img src="${p.image}" onerror="this.style.display='none'">
+    <p>${p.desc}</p>
+    <a href="${p.link}" target="_blank">View on GitHub →</a>
+  `);
+});
+
+/* ================= BUTTON NAV ================= */
+document.querySelector(".btn-about").onclick=()=>{targetX=0;targetZ=0;openPanel(content.about)};
+document.querySelector(".btn-skills").onclick=()=>{targetX=14;targetZ=0;openPanel(content.skills)};
+document.querySelector(".btn-projects").onclick=()=>{targetX=28;targetZ=-22;panel.innerHTML=""};
+document.querySelector(".btn-contact").onclick=()=>{targetX=-14;targetZ=0;openPanel(content.contact)};
+document.querySelector(".btn-resume").onclick=()=>window.open("SowmyaCherukupallyResume.pdf","_blank");
+
+/* ================= LOOP ================= */
+function animate(){
+  requestAnimationFrame(animate);
+  player.position.x+=(targetX-player.position.x)*.08;
+  player.position.z+=(targetZ-player.position.z)*.08;
+  camera.position.x+=(targetX-camera.position.x)*.05;
+  camera.position.z+=(targetZ-camera.position.z)*.05;
+  camera.lookAt(player.position);
+  renderer.render(scene,camera);
+}
+animate();
+
+window.addEventListener("resize",()=>{
+  camera.aspect=innerWidth/innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth,innerHeight);
+});
+</script>
 </body>
 </html>
