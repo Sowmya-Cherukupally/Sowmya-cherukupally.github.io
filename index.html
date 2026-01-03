@@ -118,7 +118,6 @@ html, body {
 </div>
 
 <div class="panel" id="panel"></div>
-
 <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
 <script>
 /* ================= THREE ================= */
@@ -137,9 +136,11 @@ const light = new THREE.DirectionalLight(0x60a5fa, 1.2);
 light.position.set(10, 15, 10);
 scene.add(light);
 
+/* GRID */
 const grid = new THREE.GridHelper(300, 120, 0x3b82f6, 0x1e40af);
 scene.add(grid);
 
+/* PLAYER */
 const player = new THREE.Mesh(
   new THREE.BoxGeometry(1.6,1.6,1.6),
   new THREE.MeshStandardMaterial({ color:0x22c55e })
@@ -147,22 +148,44 @@ const player = new THREE.Mesh(
 player.position.set(0,.8,0);
 scene.add(player);
 
-/* ================= PANEL HANDLING ================= */
-const panel = document.getElementById("panel");
-
-function openPanel(html) {
-  panel.scrollTop = 0;
-  panel.innerHTML = html;
+/* ================= LABEL ================= */
+function createLabel(text){
+  const c=document.createElement("canvas");
+  c.width=512; c.height=128;
+  const ctx=c.getContext("2d");
+  ctx.font="600 48px Inter";
+  ctx.textAlign="center";
+  ctx.textBaseline="middle";
+  ctx.fillStyle="#38bdf8";
+  ctx.shadowColor="#38bdf8";
+  ctx.shadowBlur=20;
+  ctx.fillText(text,256,64);
+  const t=new THREE.CanvasTexture(c);
+  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:t,transparent:true}));
+  s.scale.set(6,1.5,1);
+  return s;
 }
 
-/* ================= CONTENT ================= */
-const content = {
-  about: `<h3>Data Engineer</h3><p>I'm Data Engineer who loves transforming ideas into reliable and scalable pipelines and AI driven data systems.Over time, I’ve explored several technologies and found my passion in building high-performance systems and intuitive user experiences.</p>`,
-  skills: `<h3>Skills</h3><p>Snowflake • Python • SQL • PySpark • AWS(Ec2,S3,Rekognition,boto3) • DBT • GenAI • LLMs • Agentic AI (Cortex Search,Cortex Analyst) • RAG • Flask• REST APIs• Streamlit•</p>`,
-  contact: `<h3>Contact</h3><p>📧 cherukupally.sowmya19@gmail.com<br>https://github.com/Sowmya-Cherukupally<br>📞 +91 70953 38146</p>`
-};
-
-openPanel(content.about);
+/* ================= MAIN BOARDS ================= */
+const boards=[];
+[
+  {name:'ABOUT',x:0,z:0},
+  {name:'SKILLS',x:14,z:0},
+  {name:'CONTACT',x:-14,z:0},
+  {name:'RESUME',x:-28,z:0},
+  {name:'PROJECTS',x:28,z:-10}
+].forEach(b=>{
+  const m=new THREE.Mesh(
+    new THREE.BoxGeometry(5,3,.6),
+    new THREE.MeshStandardMaterial({color:0x020617,emissive:0x2563eb,emissiveIntensity:.8})
+  );
+  m.position.set(b.x,2,b.z);
+  scene.add(m);
+  const l=createLabel(b.name);
+  l.position.set(b.x,4.2,b.z);
+  scene.add(l);
+  boards.push({board:m,label:l});
+});
 
 /* ================= PROJECT DATA ================= */
 const projectsData = [
@@ -206,7 +229,6 @@ const projectsData = [
 /* ================= PROJECT ISLAND ================= */
 const projectIsland=[];
 const cx=28, cz=-22, r=6;
-
 projectsData.forEach((p,i)=>{
   const a=(-Math.PI/2)+(i*Math.PI/4);
   const x=cx+Math.cos(a)*r;
@@ -218,51 +240,67 @@ projectsData.forEach((p,i)=>{
   b.position.set(x,2,z);
   b.rotation.y=a+Math.PI/2;
   scene.add(b);
-  projectIsland.push({board:b,index:i});
+  const l=createLabel(p.title.split(" ")[0].toUpperCase());
+  l.position.set(x,4,z);
+  scene.add(l);
+  projectIsland.push({board:b,label:l,index:i});
 });
 
-/* ================= RAYCASTER ================= */
+/* ================= PANEL ================= */
+const panel=document.getElementById("panel");
+const content={
+  about:`<h3>Data Engineer</h3><p>Expert in Python, Snowflake, scalable pipelines & AI-driven data systems.</p>`,
+  skills:`<h3>Skills</h3><p>Snowflake • Python • SQL • PySpark • AWS(EC2,S3,Rekognition) • DBT • GenAI • Agentic AI(Cortex Search, Cortex Analyst) • RAG • Langchain • LLMs • Dialogflow • Postman • Flask • REST APIs • Streamlit •Git/Github</p>`,
+  contact:`<h3>Contact</h3><p>📧 cherukupally.sowmya19@gmail.com<br>📞 +91 70953 38146</p>`
+};
+panel.innerHTML=content.about;
+
+/* ================= CLICK HANDLING ================= */
 let targetX=0,targetZ=0;
 const raycaster=new THREE.Raycaster();
 const mouse=new THREE.Vector2();
 
-window.addEventListener("click",(e)=>{
+window.addEventListener("click",e=>{
   mouse.x=(e.clientX/innerWidth)*2-1;
   mouse.y=-(e.clientY/innerHeight)*2+1;
   raycaster.setFromCamera(mouse,camera);
 
   const hits=raycaster.intersectObjects(projectIsland.map(p=>p.board));
-  if(!hits.length) return;
-
-  const hit=projectIsland.find(p=>p.board===hits[0].object);
-  const p=projectsData[hit.index];
-
-  targetX=hit.board.position.x;
-  targetZ=hit.board.position.z;
-
-  openPanel(`
-    <h3 class="project-title">${p.title}</h3>
-    <img src="${p.image}" onerror="this.style.display='none'">
-    <p>${p.desc}</p>
-    <a href="${p.link}" target="_blank">View on GitHub →</a>
-  `);
+  if(hits.length){
+    const hit=projectIsland.find(p=>p.board===hits[0].object);
+    const p=projectsData[hit.index];
+    targetX=hit.board.position.x;
+    targetZ=hit.board.position.z;
+    panel.innerHTML=`
+      <h3>${p.title}</h3>
+      <img src="${p.image}" onerror="this.style.display='none'">
+      <p>${p.desc}</p>
+      <a href="${p.link}" target="_blank">View on GitHub →</a>
+    `;
+  }
 });
 
 /* ================= BUTTON NAV ================= */
-document.querySelector(".btn-about").onclick=()=>{targetX=0;targetZ=0;openPanel(content.about)};
-document.querySelector(".btn-skills").onclick=()=>{targetX=14;targetZ=0;openPanel(content.skills)};
-document.querySelector(".btn-projects").onclick=()=>{targetX=28;targetZ=-22;panel.innerHTML=""};
-document.querySelector(".btn-contact").onclick=()=>{targetX=-14;targetZ=0;openPanel(content.contact)};
+document.querySelector(".btn-about").onclick=()=>{targetX=0;targetZ=0;panel.innerHTML=content.about};
+document.querySelector(".btn-skills").onclick=()=>{targetX=14;targetZ=0;panel.innerHTML=content.skills};
+document.querySelector(".btn-projects").onclick=()=>{targetX=28;targetZ=-22};
+document.querySelector(".btn-contact").onclick=()=>{targetX=-14;targetZ=0;panel.innerHTML=content.contact};
 document.querySelector(".btn-resume").onclick=()=>window.open("SowmyaCherukupallyResume.pdf","_blank");
 
 /* ================= LOOP ================= */
+let t=0;
 function animate(){
   requestAnimationFrame(animate);
+  t+=.02;
   player.position.x+=(targetX-player.position.x)*.08;
   player.position.z+=(targetZ-player.position.z)*.08;
   camera.position.x+=(targetX-camera.position.x)*.05;
   camera.position.z+=(targetZ-camera.position.z)*.05;
   camera.lookAt(player.position);
+  [...boards,...projectIsland].forEach((o,i)=>{
+    o.label.position.y+=Math.sin(t+i)*.005;
+    o.label.quaternion.copy(camera.quaternion);
+  });
   renderer.render(scene,camera);
 }
 animate();
@@ -273,5 +311,8 @@ window.addEventListener("resize",()=>{
   renderer.setSize(innerWidth,innerHeight);
 });
 </script>
+
+
+
 </body>
 </html>
