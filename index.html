@@ -168,52 +168,82 @@ const projectsData = [
 
 /* ================= PROJECT BOARDS ================= */
 const projectIsland = [];
-projectsData.forEach((p,i)=>{
-  const board = new THREE.Mesh(
-    new THREE.BoxGeometry(4,2.5,.6),
-    new THREE.MeshStandardMaterial({ emissive:0x22c55e })
-  );
-  board.position.set(20 + i*6, 2, -10);
-  scene.add(board);
-  projectIsland.push({board,index:i});
-});
+document.querySelector(".btn-projects").onclick = e => {
+  e.stopPropagation();
+
+  if (isMobile) {
+    openPanel(`
+      <h3>Projects</h3>
+      ${projectsData.map(p => `
+        <div style="margin-bottom:18px">
+          <h4 style="color:#38bdf8">${p.title}</h4>
+          <img src="${p.image}" style="width:100%;border-radius:12px" 
+               onerror="this.style.display='none'">
+          <p>${p.desc}</p>
+          ${p.link ? `<a href="${p.link}" target="_blank">GitHub →</a>` : ""}
+        </div>
+      `).join("")}
+    `);
+  } else {
+    openPanel("<h3>Projects</h3><p>Click 3D boards to explore</p>");
+  }
+};
+
 
 /* ================= SAFE 3D CLICK ================= */
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
-renderer.domElement.addEventListener("pointerdown", e => {
-  if (e.target.closest(".ui")) return;
+if (!isMobile) {
 
-  mouse.x = (e.clientX / innerWidth) * 2 - 1;
-  mouse.y = -(e.clientY / innerHeight) * 2 + 1;
+  renderer.domElement.addEventListener("pointerdown", e => {
+    if (e.target.closest(".ui")) return;
 
-  raycaster.setFromCamera(mouse, camera);
-  const hits = raycaster.intersectObjects(projectIsland.map(p=>p.board));
-  if (!hits.length) return;
+    mouse.x = (e.clientX / innerWidth) * 2 - 1;
+    mouse.y = -(e.clientY / innerHeight) * 2 + 1;
 
-  const hit = projectIsland.find(p=>p.board===hits[0].object);
-  const p = projectsData[hit.index];
+    raycaster.setFromCamera(mouse, camera);
+    const hits = raycaster.intersectObjects(projectIsland.map(p=>p.board));
+    if (!hits.length) return;
 
-  openPanel(`
-  <h3>${p.title}</h3>
+    const hit = projectIsland.find(p=>p.board===hits[0].object);
+    const p = projectsData[hit.index];
 
-  <img 
-    src="${p.image}" 
-    alt="${p.title} project image"
-    onerror="this.style.display='none'">
+    openPanel(`
+      <h3>${p.title}</h3>
+      <img src="${p.image}">
+      <p>${p.desc}</p>
+    `);
+  });
 
-  <p>${p.desc}</p>
+}
 
-  ${p.link ? `<a href="${p.link}" target="_blank">GitHub →</a>` : ""}
-`);
-});
 
 /* ================= BUTTON NAV ================= */
 document.querySelector(".btn-about").onclick = e => { e.stopPropagation(); openPanel(content.about); };
 document.querySelector(".btn-skills").onclick = e => { e.stopPropagation(); openPanel(content.skills); };
 document.querySelector(".btn-contact").onclick = e => { e.stopPropagation(); openPanel(content.contact); };
-document.querySelector(".btn-projects").onclick = e => { e.stopPropagation(); openPanel("<h3>Projects</h3><p>Click boards to explore</p>"); };
+document.querySelector(".btn-projects").onclick = e => {
+  e.stopPropagation();
+
+  if (isMobile) {
+    openPanel(`
+      <h3>Projects</h3>
+      ${projectsData.map(p => `
+        <div style="margin-bottom:18px">
+          <h4 style="color:#38bdf8">${p.title}</h4>
+          <img src="${p.image}" style="width:100%;border-radius:12px" 
+               onerror="this.style.display='none'">
+          <p>${p.desc}</p>
+          ${p.link ? `<a href="${p.link}" target="_blank">GitHub →</a>` : ""}
+        </div>
+      `).join("")}
+    `);
+  } else {
+    openPanel("<h3>Projects</h3><p>Click 3D boards to explore</p>");
+  }
+};
+
 document.querySelector(".btn-resume").onclick = () => window.open("SowmyaCherukupallyResume.pdf");
 
 /* ================= LOOP ================= */
