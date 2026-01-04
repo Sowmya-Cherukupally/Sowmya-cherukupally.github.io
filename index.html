@@ -5,7 +5,7 @@
 <title>Sowmya Cherukupally | 3D Portfolio</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
 
 <style>
 html, body {
@@ -16,6 +16,7 @@ html, body {
   color: #e5e7eb;
 }
 
+/* Canvas */
 #bg {
   position: fixed;
   inset: 0;
@@ -45,7 +46,7 @@ html, body {
   position: fixed;
   padding: 10px 18px;
   border-radius: 14px;
-  background: rgba(2,6,23,.85);
+  background: rgba(2,6,23,.9);
   border: 1px solid #3b82f6;
   color: #93c5fd;
   cursor: pointer;
@@ -60,7 +61,6 @@ html, body {
 
 /* PANEL */
 .panel {
-  transition: opacity 0.25s ease, transform 0.25s ease;
   position: fixed;
   bottom: 80px;
   left: 50%;
@@ -68,18 +68,34 @@ html, body {
   background: rgba(2,6,23,.95);
   border: 1px solid #1e293b;
   border-radius: 18px;
-  padding: 20px;
+  padding: 22px;
   width: calc(100% - 40px);
   max-width: 900px;
   max-height: 65vh;
   overflow-y: auto;
   z-index: 20;
+  transition: opacity .25s ease, transform .25s ease;
 }
 
 .panel h3 { color: #60a5fa; margin-top: 0; }
-.panel p  { color: #94a3b8; line-height: 1.6; }
-.panel a  { color: #38bdf8; text-decoration: none; }
+.panel p {
+  font-family: 'JetBrains Mono', monospace;
+  font-style: italic;
+  font-size: 18px;
+  line-height: 1.8;
+  color: #e5e7eb;
+}
+
+.panel a {
+  color: #38bdf8;
+  text-decoration: none;
+}
 .panel a:hover { text-decoration: underline; }
+
+hr {
+  border: 1px solid #1e293b;
+  margin: 14px 0;
+}
 </style>
 </head>
 
@@ -103,7 +119,7 @@ html, body {
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
 <script>
-/* ================= THREE ================= */
+/* ================= THREE BACKGROUND ================= */
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x020617);
 
@@ -120,108 +136,92 @@ scene.add(new THREE.GridHelper(200, 100, 0x3b82f6, 0x1e40af));
 
 const cube = new THREE.Mesh(
   new THREE.BoxGeometry(1.6,1.6,1.6),
-  new THREE.MeshStandardMaterial({ color: 0x22c55e })
+  new THREE.MeshStandardMaterial({ color:0x22c55e })
 );
 cube.position.y = .8;
 scene.add(cube);
 
 /* ================= PANEL ================= */
 const panel = document.getElementById("panel");
-const openPanel = html => {
+function openPanel(html){
   panel.style.opacity = 0;
-  setTimeout(() => {
+  panel.style.transform = "translateX(-50%) translateY(10px)";
+  setTimeout(()=>{
     panel.innerHTML = html;
     panel.style.opacity = 1;
-  }, 120);
-};
+    panel.style.transform = "translateX(-50%) translateY(0)";
+  },120);
+}
 
 /* ================= CONTENT ================= */
 const content = {
   about: `
-    
-    <p style="
-  font-family: 'JetBrains Mono', monospace;
-  font-style: italic;
-  font-size: 20px;
-  line-height: 1.8;
-  color: #e5e7eb;
-">
-  I’m a Data Engineer passionate about building scalable, AI-driven data systems.
-  I enjoy transforming raw data into reliable, analytics-ready pipelines.
-  
-  I've explored several technologies and found my passion in building high performance systems and intuitive user experiences.
-</p>
-
-<p style="
-  font-family: 'JetBrains Mono', monospace;
-  font-style: italic;
-  font-size: 20px;
-  line-height: 1.8;
-  color: #e5e7eb;
-">
-  My key areas of interest include 
-  <span style="color:#a855f7; font-weight:500;">Gen AI</span> 
-  and 
-  <span style="color:#a855f7; font-weight:500;">Agentic AI</span>, 
-  and exploring new ways of bridging data systems.
-</p>
-
-<p style="
-  font-family: 'JetBrains Mono', monospace;
-  font-style: italic ;
-  font-size: 20px;
-  line-height: 1.8;
-  color: #e5e7eb;
-">
-Whenever possible, I love building projects with modern trending AI solutions.
-</p>
-
+    <h3>Data Engineer</h3>
+    <p>
+      I’m a Data Engineer passionate about building scalable, AI-driven data systems.
+      I enjoy transforming raw data into reliable, analytics-ready pipelines.
+    </p>
+    <p>
+      My key areas of interest include 
+      <span style="color:#a855f7;">Gen AI</span> and 
+      <span style="color:#a855f7;">Agentic AI</span>,
+      and exploring new ways of bridging data systems.
+    </p>
+    <p>
+      Whenever possible, I love building projects with modern trending AI solutions.
+    </p>
   `,
 
-  /* ✅ ZERO IMAGE SKILLS (EMOJI ICONS ONLY) */
   skills: `
     <h3>Skills</h3>
-    <p>
-      ❄️ <b>Snowflake</b> &nbsp;&nbsp;
-      🐍 <b>Python</b> &nbsp;&nbsp;
-      🗄️ <b>SQL</b> &nbsp;&nbsp;
-      🔥 <b>PySpark</b> &nbsp;&nbsp;
-      ☁️ <b>AWS</b>
-    </p>
-    <p>
-      🧱 <b>DBT</b> &nbsp;&nbsp;
-      🤖 <b>GenAI</b> &nbsp;&nbsp;
-      🧠 <b>Agentic AI</b> &nbsp;&nbsp;
-      📄 <b>RAG</b> &nbsp;&nbsp;
-      🔗 <b>LangChain</b>
-    </p>
-    <p>
-      🌐 <b>REST APIs</b> &nbsp;&nbsp;
-      🧪 <b>Postman</b> &nbsp;&nbsp;
-      🧰 <b>Flask</b> &nbsp;&nbsp;
-      📊 <b>Streamlit</b> &nbsp;&nbsp;
-      🔧 <b>Git/GitHub</b>
-    </p>
+    <p>❄️ Snowflake • 🐍 Python • 🗄️ SQL • 🔥 PySpark • ☁️ AWS</p>
+    <p>🧱 DBT • 🤖 GenAI • 🧠 Agentic AI • 📄 RAG • 🔗 LangChain</p>
+    <p>🌐 REST APIs • 🧪 Postman • 🧰 Flask • 📊 Streamlit • 🔧 Git/GitHub</p>
+  `,
+
+  projects: `
+    <h3>Projects</h3>
+
+    <p>🚀 <b>Automated Data Ingestion & Transformation</b><br>
+    Snowflake • Python • PySpark<br>
+    <a href="https://github.com/Sowmya-Cherukupally/Agentic" target="_blank">GitHub →</a></p>
+
+    <hr>
+
+    <p>🏠 <b>Real Estate Comparison Tool</b><br>
+    Vector Search • Streamlit<br>
+    <a href="https://github.com/Sowmya-Cherukupally/PropelensRealestate" target="_blank">GitHub →</a></p>
+
+    <hr>
+
+    <p>📄 <b>RAG Application</b><br>
+    LLMs • RAG<br>
+    <a href="https://github.com/Sowmya-Cherukupally/RAG_Application" target="_blank">GitHub →</a></p>
+
+    <hr>
+
+    <p>💬 <b>WhatsApp Chatbot</b><br>Gupshup API</p>
+    <p>🌦️ <b>Weather Application</b><br>OpenWeather API</p>
   `,
 
   contact: `
     <h3>Contact</h3>
-    <p>
-      📧 cherukupally.sowmya19@gmail.com<br>
-      📞 +91 70953 38146<br><br>
-      💼 <a href="https://www.linkedin.com/in/sowmya-cherukupally-a92911251" target="_blank">LinkedIn</a><br>
-      🐙 <a href="https://github.com/Sowmya-Cherukupally" target="_blank">GitHub</a>
-    </p>
+    <p>📧 cherukupally.sowmya19@gmail.com</p>
+    <p>📞 +91 70953 38146</p>
+    <p>💼 <a href="https://www.linkedin.com/in/sowmya-cherukupally-a92911251" target="_blank">LinkedIn</a></p>
+    <p>🐙 <a href="https://github.com/Sowmya-Cherukupally" target="_blank">GitHub</a></p>
   `
 };
 
-openPanel(content.about);
+/* ================= BUTTON EVENTS ================= */
+document.querySelector(".btn-about").onclick    = () => openPanel(content.about);
+document.querySelector(".btn-skills").onclick   = () => openPanel(content.skills);
+document.querySelector(".btn-projects").onclick = () => openPanel(content.projects);
+document.querySelector(".btn-contact").onclick  = () => openPanel(content.contact);
+document.querySelector(".btn-resume").onclick   = () =>
+  window.open("SowmyaCherukupallyResume.pdf", "_blank");
 
-/* ================= BUTTON ACTIONS ================= */
-document.querySelector(".btn-about").onclick   = () => openPanel(content.about);
-document.querySelector(".btn-skills").onclick  = () => openPanel(content.skills);
-document.querySelector(".btn-contact").onclick = () => openPanel(content.contact);
-document.querySelector(".btn-resume").onclick  = () => window.open("SowmyaCherukupallyResume.pdf", "_blank");
+openPanel(content.about);
 
 /* ================= LOOP ================= */
 function animate(){
