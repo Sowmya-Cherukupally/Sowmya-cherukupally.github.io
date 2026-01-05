@@ -73,6 +73,42 @@ html, body {
   overflow-y: auto;
   z-index: 20;
 }
+/* ABOUT SECTION STYLING */
+.about-wrapper {
+  border-left: 4px solid #38bdf8;
+  padding-left: 18px;
+}
+
+.about-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  margin-bottom: 12px;
+  border-radius: 999px;
+  background: rgba(56,189,248,0.15);
+  color: #38bdf8;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.about-wrapper p {
+  margin-bottom: 14px;
+  line-height: 1.8;
+}
+
+.about-highlight {
+  color: #22c55e;
+  font-weight: 600;
+}
+
+.about-ai {
+  color: #a855f7;
+  font-weight: 600;
+}
+
+.about-tech {
+  color: #38bdf8;
+  font-weight: 600;
+}
 
 /* PROJECT CARD */
 .project-card {
@@ -222,43 +258,47 @@ const content = {
   about: `
   <h3>About Me</h3>
 
-  <p>
-    I am a <span style="color:#38bdf8;font-weight:600;">Data Engineer</span>
-    who focuses on building
-    <span style="color:#22c55e;font-weight:600;">scalable, reliable data systems</span>
-    that turn complex requirements into
-    <span style="color:#a5b4fc;">production-ready solutions</span>.
-  </p>
+  <div class="about-badge">Data Engineer</div>
 
-  <p>
-    My work revolves around designing
-    <span style="color:#38bdf8;">high-performance data pipelines</span>,
-    optimizing data flows, and enabling
-    <span style="color:#a855f7;">analytics and AI-driven decision making</span>.
-  </p>
+  <div class="about-wrapper">
+    <p>
+      I focus on building
+      <span class="about-highlight">scalable, reliable data systems</span>
+      that transform complex requirements into
+      <span class="about-tech">production-ready solutions</span>.
+    </p>
 
-  <p>
-    I have hands-on experience with
-    <span style="color:#38bdf8;">Snowflake</span>,
-    <span style="color:#facc15;">Python</span>,
-    and cloud technologies, and I enjoy solving
-    <span style="color:#22c55e;">real-world data problems at scale</span>.
-  </p>
+    <p>
+      My work involves designing
+      <span class="about-tech">high-performance data pipelines</span>,
+      improving data quality, and enabling
+      <span class="about-ai">analytics and AI-driven decision making</span>.
+    </p>
 
-  <p>
-    Recently, I have been exploring
-    <span style="color:#a855f7;">Generative AI</span>,
-    <span style="color:#a855f7;">Agentic AI</span>,
-    and <span style="color:#38bdf8;">RAG-based systems</span>
-    to build intelligent, context-aware applications.
-  </p>
+    <p>
+      I have hands-on experience with
+      <span class="about-tech">Snowflake</span>,
+      <span class="about-tech">Python</span>,
+      and cloud technologies, and I enjoy solving
+      <span class="about-highlight">real-world data problems at scale</span>.
+    </p>
 
-  <p>
-    I am driven by curiosity, continuous learning, and the goal of creating
-    <span style="color:#60a5fa;">impactful data products</span>
-    that are both technically strong and user-focused.
-  </p>
+    <p>
+      Recently, I have been exploring
+      <span class="about-ai">Generative AI</span>,
+      <span class="about-ai">Agentic AI</span>, and
+      <span class="about-tech">RAG-based systems</span>
+      to build intelligent, context-aware applications.
+    </p>
+
+    <p>
+      I am driven by curiosity, continuous learning, and the goal of creating
+      <span class="about-tech">impactful data products</span>
+      that balance performance, scalability, and usability.
+    </p>
+  </div>
 `,
+
 
   skills: `
     <h3>Skills</h3>
