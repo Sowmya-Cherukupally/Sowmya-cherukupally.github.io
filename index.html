@@ -5,7 +5,7 @@
 <title>Sowmya Cherukupally | 3D Portfolio</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
 
 <style>
 html, body {
@@ -30,18 +30,16 @@ html, body {
   left: 50%;
   transform: translateX(-50%);
   z-index: 30;
-  pointer-events: none;
 }
 
 .hero h1 {
   font-size: clamp(28px, 5vw, 46px);
-  font-weight: 700;
   background: linear-gradient(90deg, #e5e7eb, #38bdf8);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-/* UI BUTTONS */
+/* BUTTONS */
 .ui button {
   position: fixed;
   padding: 10px 18px;
@@ -53,7 +51,7 @@ html, body {
   z-index: 20;
 }
 
-.btn-about    { top: 95px; left: 50%; transform: translateX(-50%); }
+.btn-about    { top: 90px; left: 50%; transform: translateX(-50%); }
 .btn-skills   { right: 30px; top: 40%; }
 .btn-projects { right: 30px; top: 50%; }
 .btn-contact  { left: 30px; top: 50%; }
@@ -74,22 +72,9 @@ html, body {
   max-height: 65vh;
   overflow-y: auto;
   z-index: 20;
-  transition: opacity .25s ease, transform .25s ease;
 }
 
-.panel h3 {
-  color: #60a5fa;
-  margin-top: 0;
-}
-
-.panel p {
-  font-family: 'JetBrains Mono', monospace;
-  font-style: italic;
-  font-size: 17px;
-  line-height: 1.8;
-}
-
-/* PROJECT CARDS */
+/* PROJECT CARD */
 .project-card {
   background: rgba(15,23,42,.9);
   border: 1px solid #1e293b;
@@ -104,23 +89,14 @@ html, body {
 }
 
 .project-card p {
-  font-style: normal;
   font-size: 14px;
+  line-height: 1.6;
 }
 
 .project-card a {
-  color: #38bdf8;
-  text-decoration: none;
+  color: #60a5fa;
   font-weight: 600;
-}
-
-.project-card a:hover {
-  text-decoration: underline;
-}
-
-hr {
-  border: 1px solid #1e293b;
-  margin: 14px 0;
+  text-decoration: none;
 }
 </style>
 </head>
@@ -146,111 +122,106 @@ hr {
 <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
 <script>
 /* ================= THREE BACKGROUND ================= */
+const canvas = document.getElementById("bg");
+
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x020617);
 
 const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 200);
 camera.position.set(0, 8, 16);
 
-const renderer = new THREE.WebGLRenderer({ canvas: bg, antialias:true });
+const renderer = new THREE.WebGLRenderer({ canvas, antialias:true });
 renderer.setSize(innerWidth, innerHeight);
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 
 scene.add(new THREE.AmbientLight(0xffffff, 1));
-scene.add(new THREE.DirectionalLight(0x60a5fa, 1.2));
+const light = new THREE.DirectionalLight(0x60a5fa, 1.2);
+light.position.set(5,10,5);
+scene.add(light);
+
 scene.add(new THREE.GridHelper(200, 100, 0x3b82f6, 0x1e40af));
 
 const cube = new THREE.Mesh(
   new THREE.BoxGeometry(1.6,1.6,1.6),
-  new THREE.MeshStandardMaterial({ color:0x22c55e })
+  new THREE.MeshStandardMaterial({ color: 0x22c55e })
 );
-cube.position.y = .8;
+cube.position.y = 0.8;
 scene.add(cube);
 
-/* ================= PANEL ================= */
+/* ================= PROJECT DATA ================= */
+const projectsData = [
+  {
+    title:"Automated Data Ingestion & Transformation",
+    image:"data.jpg",
+    desc:"Designed and implemented a fully automated data ingestion pipeline using Snowflake, PySpark, and Python. The system ingests raw files from cloud storage, applies transformation logic, enforces data quality checks and loads curated datasets following medallion architecture.",
+    link:"https://github.com/Sowmya-Cherukupally/Agentic"
+  },
+  {
+    title:"Real Estate Comparison Tool",
+    image:"realestate.jpg",
+    desc:"Developed a real estate comparison tool using vector search capabilities with embeddings and Streamlit UI.",
+    link:"https://github.com/Sowmya-Cherukupally/PropelensRealestate"
+  },
+  {
+    title:"RAG Application",
+    image:"RAG.png",
+    desc:"Retrieval-Augmented Generation (RAG) based PDF-to-MCQ application grounded on document content.",
+    link:"https://github.com/Sowmya-Cherukupally/RAG_Application"
+  },
+  {
+    title:"WhatsApp Chatbot",
+    image:"lloyd-dirks-kz8pEH4IsUo-unsplash.jpg",
+    desc:"WhatsApp chatbot using Gupshup API for automated responses."
+  },
+  {
+    title:"Weather Application",
+    image:"woliul-hasan-7FhOgd6itoU-unsplash.jpg",
+    desc:"Real-time weather forecasting application using OpenWeatherMap API."
+  }
+];
+
+/* ================= PANEL CONTENT ================= */
 const panel = document.getElementById("panel");
-function openPanel(html){
-  panel.style.opacity = 0;
-  setTimeout(()=>{
-    panel.innerHTML = html;
-    panel.style.opacity = 1;
-  },120);
+
+function renderProjects(){
+  return `
+    <h3>Projects</h3>
+    ${projectsData.map(p => `
+      <div class="project-card">
+        <h4>🚀 ${p.title}</h4>
+        <p>${p.desc}</p>
+        ${p.link ? `<a href="${p.link}" target="_blank">View on GitHub →</a>` : ""}
+      </div>
+    `).join("")}
+  `;
 }
 
-/* ================= CONTENT ================= */
 const content = {
   about: `
     <h3>About Me</h3>
     <p>
-      I’m a Data Engineer passionate about building scalable, AI-driven data systems.
-      I enjoy transforming raw data into reliable, analytics-ready pipelines.
-    </p>
-    <p>
-      My key areas of interest include
-      <span style="color:#a855f7;">Gen AI</span> and
-      <span style="color:#a855f7;">Agentic AI</span>,
-      exploring new ways of bridging data systems.
-    </p>
-    <p>
-      Whenever possible, I love building projects with modern trending AI solutions.
+      Data Engineer passionate about scalable AI-driven data platforms and
+      analytics-ready pipelines using Snowflake and Python.
     </p>
   `,
-
   skills: `
     <h3>Skills</h3>
     <p>❄️ Snowflake • 🐍 Python • 🗄️ SQL • 🔥 PySpark • ☁️ AWS</p>
-    <p>🧱 DBT • 🤖 GenAI • 🧠 Agentic AI • 📄 RAG • 🔗 LangChain</p>
-    <p>🌐 REST APIs • 🧪 Postman • 🧰 Flask • 📊 Streamlit • 🔧 Git/GitHub</p>
+    <p>🤖 GenAI • 🧠 Agentic AI • 📄 RAG • 🔗 LangChain</p>
   `,
-
-  projects: `
-    <h3>Projects</h3>
-
-    <div class="project-card">
-      {title: 🚀 Automated Data Ingestion & Transformation
-       image: "data.jpg",
-       desc: "Designed and implemented a fully automated data ingestion pipeline using Snowflake, PySpark, and Python. The system ingests raw files from cloud storage, applies transformation logic, enforces data quality checks and loads curated datasets into analytics-ready tables following medallion architecture",
-       link:"https://github.com/Sowmya-Cherukupally/Agentic" },
-      
-    </div>
-
-    <div class="project-card">
-      {title: 🏠 Real Estate Comparison Tool
-       image: "realestate.jpg",
-       desc:  "Developed a real estate comparison tool using vector search capabilities. The application allows users to compare properties based on features like price, location, and amenities. It leverages vector embeddings for similarity matching and provides a Streamlit UI",
-       link:"https://github.com/Sowmya-Cherukupally/PropelensRealestate" },
-    </div>
-
-    <div class="project-card">
-      {title: 📄 RAG Application
-       image: "RAG.png",
-       desc:  "Implementing Retrieval-Augmented Generation (RAG) significantly enhances a PDF-to-MCQ application by ensuring questions are grounded in the document's actual content rather than the AI's general training data.",
-       link:"https://github.com/Sowmya-Cherukupally/RAG_Application" },
-    </div>
-
-    <div class="project-card">
-      {title: 💬 WhatsApp Chatbot
-       image: "lloyd-dirks-kz8pEH4IsUo-unsplash.jpg",
-       desc:"WhatsApp Chatbot is a simple chatbot that responds to predefined messages. It can receive messages from WhatsApp, process them, and send automated responses using the Gupshup API.",
-       link: "https://github.com/Sowmya-Cherukupally/WhatsApp_Chatbot"},
-    </div>
-
-    <div class="project-card">
-      {title: 🌦️ Weather Application
-       image: "woliul-hasan-7FhOgd6itoU-unsplash.jpg",
-       desc: "WeatherApplication is a simple, user-friendly weather forecasting application that provides real-time weather information using the OpenWeatherMap API.",
-       link: "https://github.com/Sowmya-Cherukupally/Weather-Application"}
-    </div>
-  `,
-
+  projects: renderProjects(),
   contact: `
     <h3>Contact</h3>
     <p>📧 cherukupally.sowmya19@gmail.com</p>
     <p>📞 +91 70953 38146</p>
-    <p>💼 <a href="https://www.linkedin.com/in/sowmya-cherukupally-a92911251" target="_blank">LinkedIn</a></p>
-    <p>🐙 <a href="https://github.com/Sowmya-Cherukupally" target="_blank">GitHub</a></p>
+    <p><a href="https://github.com/Sowmya-Cherukupally" target="_blank">GitHub</a></p>
+    <p><a href="https://www.linkedin.com/in/sowmya-cherukupally-a92911251" target="_blank">LinkedIn</a></p>
   `
 };
+
+function openPanel(html){
+  panel.innerHTML = html;
+}
 
 /* ================= BUTTON EVENTS ================= */
 document.querySelector(".btn-about").onclick    = () => openPanel(content.about);
@@ -258,13 +229,14 @@ document.querySelector(".btn-skills").onclick   = () => openPanel(content.skills
 document.querySelector(".btn-projects").onclick = () => openPanel(content.projects);
 document.querySelector(".btn-contact").onclick  = () => openPanel(content.contact);
 document.querySelector(".btn-resume").onclick   = () =>
-  window.open("SowmyaCherukupallyResume.pdf", "_blank");
+  window.open("SowmyaCherukupallyResume.pdf","_blank");
 
 openPanel(content.about);
 
 /* ================= LOOP ================= */
 function animate(){
   requestAnimationFrame(animate);
+  cube.rotation.y += 0.005;
   camera.lookAt(cube.position);
   renderer.render(scene,camera);
 }
@@ -276,5 +248,6 @@ window.addEventListener("resize",()=>{
   renderer.setSize(innerWidth,innerHeight);
 });
 </script>
+
 </body>
 </html>
