@@ -183,17 +183,24 @@ const projectsData = [
 /* ================= PANEL CONTENT ================= */
 const panel = document.getElementById("panel");
 
-function renderProjects(){
-  return `
-    <h3>Projects</h3>
-    ${projectsData.map(p => `
+function renderProjects() {
+  let html = `<h3>Projects</h3>`;
+
+  projectsData.forEach(project => {
+    html += `
       <div class="project-card">
-        <h4>🚀 ${p.title}</h4>
-        <p>${p.desc}</p>
-        ${p.link ? `<a href="${p.link}" target="_blank">View on GitHub →</a>` : ""}
+        <h4>🚀 ${project.title}</h4>
+        <p>${project.desc}</p>
+        ${
+          project.link
+            ? `<a href="${project.link}" target="_blank">View on GitHub →</a>`
+            : ""
+        }
       </div>
-    `).join("")}
-  `;
+    `;
+  });
+
+  return html;
 }
 
 const content = {
