@@ -151,6 +151,29 @@ html, body {
   margin-top: 16px;
 }
 
+ /* 📱 Mobile devices */
+@media (max-width: 640px) {
+  .projects-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .project-card img {
+    height: 180px;
+  }
+
+  .project-card {
+    padding: 18px;
+  }
+}
+
+/* 📲 Tablets */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .projects-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+ 
 /* PROJECT CARD IMPROVEMENTS */
 .project-card {
   background: linear-gradient(
